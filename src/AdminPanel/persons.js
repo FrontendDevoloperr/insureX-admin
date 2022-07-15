@@ -38,7 +38,8 @@ function Rows({ item, setElements, datas }) {
         .post(`${_URL}/insured-persons`, getFormData(data))
         .then((res) => {
           console.log(res);
-          setIsLoading(true);
+          setIsLoading(false);
+          setElements([...datas, res.data.message.insured_person]);
         })
         .catch((err) => {
           console.log(err);
