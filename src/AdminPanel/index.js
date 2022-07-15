@@ -7,6 +7,7 @@ import AppraiserCompanies from "./appraiserCompanies";
 import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
+import "./index.css";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
