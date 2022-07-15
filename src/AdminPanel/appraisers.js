@@ -4,6 +4,7 @@ import axios from "axios";
 import { _URL } from "../utils";
 
 export default function Appraisers() {
+  const [insuredCompany, setInsuredCompany] = React.useState([]);
   const [appraiser, setAppraiser] = React.useState([]);
 
   React.useEffect(() => {
@@ -15,10 +16,27 @@ export default function Appraisers() {
     fetchData();
   }, []);
 
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get(`${_URL}/insurance-companies`);
+      console.log(result.data.message);
+      setInsuredCompany(result?.data?.message?.insurance_companies);
+    };
+    fetchData();
+  }, []);
+
+
+
   //   const rows = [];
   const rows = appraiser.map((element) => (
     <tr key={element?.id}>
-      <td>{element?.insurance_company_id}</td>
+      <td>
+        {insuredCompany.map((item) => {
+          if (item.id === element?.insurance_company_id) {
+            return item.title;
+          }
+        })}
+      </td>
       <td>{element?.appraisal_company_id}</td>
       <td>{element?.first_name}</td>
       <td>{element?.second_name}</td>

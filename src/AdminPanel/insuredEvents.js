@@ -1,26 +1,58 @@
 import React from "react";
 import { Table } from "@mantine/core";
 import axios from "axios";
-import { GetRegionName, _URL } from "../utils";
+import { GetRegionName, InsuredPerson, _URL } from "../utils";
 
 export default function InsuredEvent() {
+  const [insuredCompany, setInsuredCompany] = React.useState([]);
+  const [insuredPerson, setInsuredPerson] = React.useState([]);
   const [events, setEvents] = React.useState([]);
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`${_URL}/insured-events`);
+      console.log(result.data.message);
       setEvents(result?.data?.message?.insured_events);
-      console.log(result?.data?.message?.insured_events);
     };
     fetchData();
   }, []);
 
-  //   const rows = [];
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get(`${_URL}/insurance-companies`);
+      console.log(result.data.message);
+      setInsuredCompany(result?.data?.message?.insurance_companies);
+    };
+    fetchData();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get(`${_URL}/insured-persons`);
+      console.log(result.data.message);
+      setInsuredPerson(result?.data?.message?.insured_persons);
+    };
+    fetchData();
+  }, []);
+
+  console.log(insuredPerson, "dasdasdsdasds");
+
   const rows = events.map((element) => (
     <tr key={element?.id}>
-      <td>{GetRegionName(element?.insurance_company_id)?.title}</td>
-      {console.log(GetRegionName(element?.insurance_company_id),element?.insurance_company_id)}
+      <td>
+        {insuredCompany.map((item) => {
+          if (item.id === element?.insurance_company_id) {
+            return item.title;
+          }
+        })}
+      </td>
       <td>{element?.insured_event_number}</td>
-      <td>{element?.insured_person_id}</td>
+      <td>
+        {insuredPerson.map((item) => {
+          if (item.id === element?.insured_person_id) {
+            return item.first_name;
+          }
+        })}
+      </td>
       <td>{element?.id}</td>
       <td>{element?.region_id}</td>
       <td>{element?.address}</td>
