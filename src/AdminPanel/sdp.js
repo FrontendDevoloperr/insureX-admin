@@ -5,10 +5,20 @@ import { _URL } from "../utils";
 
 export default function Sdp() {
   const [sdp, setSdp] = React.useState([]);
+  const [regions, setRegions] = React.useState([]);
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`${_URL}/sdp`);
       setSdp(result?.data?.message?.sdp);
+    };
+    fetchData();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get(`${_URL}/regions`);
+      console.log(result?.data?.message?.regions, "regions");
+      setRegions(result?.data?.message?.regions);
     };
     fetchData();
   }, []);
@@ -26,7 +36,13 @@ export default function Sdp() {
       <td>{element?.first_name}</td>
       <td>{element?.phone}</td>
       <td>{element?.email}</td>
-      <td>{element?.region_id}</td>
+      <td>
+        {regions.map((item) => {
+          if (item.id === element?.region_id) {
+            return item?.region_name;
+          }
+        })}
+      </td>
       <td>{element?.address}</td>
       <td>{element?.login_id}</td>
     </tr>
