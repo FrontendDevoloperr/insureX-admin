@@ -26,13 +26,13 @@ export const LoginAuntification = () => {
           <Paper withBorder shadow="md" p={30} mt={30} radius="md">
             <TextInput
               label="username"
-              placeholder="הזן שם משתמש"
+              placeholder="enter username"
               {...register("username")}
               style={errors.username && { border: "1px solid red" }}
             />
             <PasswordInput
               label="password"
-              placeholder="הזן סיסמה"
+              placeholder="enter password"
               {...register("password")}
               style={errors.username && { border: "1px solid red" }}
               mt="md"
