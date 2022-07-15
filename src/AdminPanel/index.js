@@ -128,7 +128,6 @@ export default function AdminPanel() {
     <AppShell
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
-      fixed
       navbar={
         <Navbar
           height={"100vh"}
