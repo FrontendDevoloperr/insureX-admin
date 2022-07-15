@@ -3,6 +3,10 @@ import { Navbar, Text, createStyles, AppShell } from "@mantine/core";
 import { Link, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
+import AppraiserCompanies from "./appraiserCompanies";
+import Appraisers from "./appraisers";
+import Sdp from "./sdp";
+import InsuredEvent from "./insuredEvents";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -153,6 +157,10 @@ export default function AdminPanel() {
         <Routes>
           <Route path="/persons" element={<Persons />} />
           <Route path="/agents" element={<Agents />} />
+          <Route path="/appraiser-company" element={<AppraiserCompanies />} />
+          <Route path="/appraisers" element={<Appraisers />} />
+          <Route path="/sdp" element={<Sdp />} />
+          <Route path="/events" element={<InsuredEvent />} />
         </Routes>
       }
     ></AppShell>

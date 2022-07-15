@@ -3,23 +3,27 @@ import { Table } from "@mantine/core";
 import axios from "axios";
 import { _URL } from "../utils";
 
-export default function Agents() {
-  const [agent, setAgent] = React.useState([]);
-
+export default function Sdp() {
+  const [sdp, setSdp] = React.useState([]);
   React.useEffect(() => {
     const fetchData = async () => {
-      const result = await axios.get(`${_URL}/agents`);
-      setAgent(result?.data?.message?.agents);
+      const result = await axios.get(`${_URL}/sdp`);
+      setSdp(result?.data?.message?.sdp);
     };
     fetchData();
   }, []);
 
-  const rows = agent.map((element) => (
+  //   const rows = [];
+  const rows = sdp.map((element) => (
     <tr key={element?.id}>
-      <td>{element?.insurance_company_ids}</td>
+      <td>
+        <select>
+          {element?.insurance_company_ids?.map((element) => (
+            <option key={element}>{element}</option>
+          ))}
+        </select>
+      </td>
       <td>{element?.first_name}</td>
-      <td>{element?.second_name}</td>
-      <td>{element?.employee_number}</td>
       <td>{element?.phone}</td>
       <td>{element?.email}</td>
       <td>{element?.region_id}</td>
@@ -33,11 +37,12 @@ export default function Agents() {
       <thead>
         <tr>
           <th>insurance_companies</th>
-          <th>first_name</th>
-          <th>Last name</th>
-          <th>employee_number</th>
+          <th>name</th>
           <th>phone</th>
           <th>email</th>
+          {/* <th>ooo_number</th>
+          <th>ie_number</th>
+          <th>employee_number</th> */}
           <th>region</th>
           <th>address</th>
           <th>login_id</th>
