@@ -8,6 +8,7 @@ import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
 import "./index.css";
+import { LoginAuntification } from "./login";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -164,6 +165,7 @@ export default function AdminPanel() {
         <Route path="/appraisers" element={<Appraisers />} />
         <Route path="/sdp" element={<Sdp />} />
         <Route path="/events" element={<InsuredEvent />} />
+        <Route path="/login" element={<LoginAuntification />} />
       </Routes>
     </AppShell>
   );
