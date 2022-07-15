@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+// import toast from "react-hot-toast";
 import {
   TextInput,
   PasswordInput,
@@ -25,13 +26,13 @@ export const LoginAuntification = () => {
           <Paper withBorder shadow="md" p={30} mt={30} radius="md">
             <TextInput
               label="username"
-              placeholder="введите имя пользователя"
+              placeholder="הזן שם משתמש"
               {...register("username")}
               style={errors.username && { border: "1px solid red" }}
             />
             <PasswordInput
               label="password"
-              placeholder="введите пароль"
+              placeholder="הזן סיסמה"
               {...register("password")}
               style={errors.username && { border: "1px solid red" }}
               mt="md"
