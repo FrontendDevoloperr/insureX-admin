@@ -4,6 +4,7 @@ import axios from "axios";
 import { _URL } from "../utils";
 import { useForm } from "react-hook-form";
 import { getFormData } from "./../utils/index";
+import toast from "react-hot-toast";
 
 function Rows({ item, setElements, datas }) {
   const {
@@ -23,11 +24,13 @@ function Rows({ item, setElements, datas }) {
         .patch(`${_URL}/insured-persons/${item.id}`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
-          console.log(res);
+          toast.success("Обновлено");
+          setIsUpdated(false);
         })
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
+          toast.error("Ошибка при обновлении данных");
         });
     }
     if (!data?.id) {
@@ -37,13 +40,17 @@ function Rows({ item, setElements, datas }) {
       axios
         .post(`${_URL}/insured-persons`, getFormData(data))
         .then((res) => {
-          console.log(res);
           setIsLoading(false);
           setElements([...datas, res.data.message.insured_person]);
+          toast.success("Данные загружены, Создано новых пользователей");
+          setIsUpdated(false);
         })
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
+          toast.error(
+            "Ошибка при загрузке данных, пожалуйста повторите попытку"
+          );
         });
     }
   };
@@ -151,7 +158,7 @@ function Rows({ item, setElements, datas }) {
         />
         {isUpdated && (
           <button type="submit" onClick={() => {}}>
-            IsUpdate
+            {item?.id ? "IsUpdate" : "IsCreate"}
           </button>
         )}
         <button
@@ -191,9 +198,17 @@ export default function Persons() {
   React.useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
-      const result = await axios.get(`${_URL}/insured-persons`);
-      setElements(result?.data?.message?.insured_persons);
-      setLoading(false);
+      const result = await axios
+        .get(`${_URL}/insured-persons`)
+        .then((res) => {
+          setElements(res?.data?.message?.insured_persons);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setLoading(false);
+          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+        });
     };
     fetchData();
   }, []);
@@ -204,11 +219,14 @@ export default function Persons() {
         <button
           className="adder"
           onClick={() => {
-            elements.filter((item) => item?.new)?.length
-              ? alert(
-                  "Нельзя добавлять новые записи пока не закончите предыдущую"
-                )
-              : setElements(elements?.concat([{ new: true }])?.reverse());
+            if (elements.filter((item) => item?.new)?.length) {
+              toast.error(
+                "Нельзя добавлять новые записи пока не закончите предыдущую"
+              );
+            } else {
+              setElements(elements?.concat([{ new: true }])?.reverse());
+              toast.success("Можно заполнять новую запись");
+            }
           }}
         >
           <span>Добавить Person</span>
