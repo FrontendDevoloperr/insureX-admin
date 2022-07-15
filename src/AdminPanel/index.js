@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Navbar, Text, createStyles, AppShell, Table } from "@mantine/core";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import { Navbar, Text, createStyles, AppShell } from "@mantine/core";
+import { Link, Route, Routes } from "react-router-dom";
+import Persons from "./persons";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -102,35 +102,12 @@ const tabs = {
     { link: "", label: "Files", icon: null },
   ],
 };
-const elements = [
-  { position: 6, mass: 12.011, symbol: "C", name: "Carbon" },
-  { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen" },
-  { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium" },
-  { position: 56, mass: 137.33, symbol: "Ba", name: "Barium" },
-  { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium" },
-];
-const ths = (
-  <tr>
-    <th>Element position</th>
-    <th>Element name</th>
-    <th>Symbol</th>
-    <th>Atomic mass</th>
-  </tr>
-);
 
 export default function AdminPanel() {
   const { classes, cx } = useStyles();
   const [section, setSection] = useState("account");
   const [active, setActive] = useState("Billing");
-  const [insured, setInsuredPerson] = useState([]);
 
-  React.useEffect(() => {
-    axios.get("http://3.91.9.208:3002/api/insured-persons").then((res) => {
-      setInsuredPerson(res?.data?.message?.insured_persons);
-    });
-  }, []);
-
-  console.log(insured, "insured");
   const links = tabs[section].map((item) => (
     <Link
       className={cx(classes.link, {
@@ -173,27 +150,9 @@ export default function AdminPanel() {
         </Navbar>
       }
       aside={
-        <Table highlightOnHover verticalSpacing="xs" fontSize="xs">
-          <thead>{ths}</thead>
-          <tbody>
-            {insured.map((element) => {
-              <tr key={element.id}>
-                <td>{element?.address}</td>
-                <td>{element?.agent_id}</td>
-                <td>{element?.city_id}</td>
-                <td>{element?.email}..</td>
-                <td>{element?.first_name}</td>
-                <td>{element?.second_name}</td>
-                <td>{element?.id}</td>
-                <td>{element?.login_id}</td>
-                <td>{element?.phone}</td>
-                <td>{element?.region_id}</td>
-                <td>{element?.sign_picture}</td>
-                <td>{element?.user_id}</td>
-              </tr>;
-            })}
-          </tbody>
-        </Table>
+        <Routes>
+          <Route path="/persons" element={<Persons />} />
+        </Routes>
       }
     ></AppShell>
   );
