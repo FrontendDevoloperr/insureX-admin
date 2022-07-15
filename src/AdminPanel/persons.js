@@ -148,38 +148,41 @@ function Rows({ item, setElements, datas }) {
           defaultValue={item?.city_id}
           {...register(`city_id`)}
         />
-        {isUpdated && (
+        {isUpdated ? (
           <button type="submit" onClick={() => {}}>
             {item?.id ? "IsUpdate" : "IsCreate"}
           </button>
+        ) : (
+          <button
+            title="Удалить"
+            type="button"
+            className="delete"
+            onClick={() => {
+              if (!item?.id) {
+                setElements(datas.filter((item) => item?.new !== true));
+              }
+              if (item?.id) {
+                setIsLoading(true);
+                axios
+                  .delete(`${_URL}/insured-persons/${item.id}`)
+                  .then((res) => {
+                    setIsLoading(false);
+                    setElements(
+                      datas.filter((__res) => __res?.id !== item?.id)
+                    );
+                    toast.success("Удалено");
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    setIsLoading(false);
+                    toast.error("Ошибка при удалении данных");
+                  });
+              }
+            }}
+          >
+            <DeleteIcon />
+          </button>
         )}
-        <button
-          title="Удалить"
-          type="button"
-          className="delete"
-          onClick={() => {
-            if (!item?.id) {
-              setElements(datas.filter((item) => item?.new !== true));
-            }
-            if (item?.id) {
-              setIsLoading(true);
-              axios
-                .delete(`${_URL}/insured-persons/${item.id}`)
-                .then((res) => {
-                  setIsLoading(false);
-                  setElements(datas.filter((__res) => __res?.id !== item?.id));
-                  toast.success("Удалено");
-                })
-                .catch((err) => {
-                  console.log(err);
-                  setIsLoading(false);
-                  toast.error("Ошибка при удалении данных");
-                });
-            }
-          }}
-        >
-          <DeleteIcon />
-        </button>
       </form>
     </>
   );
