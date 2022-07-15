@@ -99,19 +99,21 @@ const tabs = {
     { link: "/events", label: "Insured events", icon: null },
   ],
   general: [
-    { link: "", label: "Orders", icon: null },
-    { link: "", label: "Receipts", icon: null },
-    { link: "", label: "Reviews", icon: null },
-    { link: "", label: "Messages", icon: null },
-    { link: "", label: "Customers", icon: null },
-    { link: "", label: "Refunds", icon: null },
-    { link: "", label: "Files", icon: null },
+    { link: "/persons", label: "INSURED PERSONS", icon: null },
+    { link: "/agents", label: "AGENTS", icon: null },
+    { link: "/appraiser-company", label: "Appraisal companies", icon: null },
+    { link: "/appraisers", label: "Appraisers", icon: null },
+    { link: "/sdp", label: "SDP", icon: null },
+    { link: "/events", label: "Insured events", icon: null },
   ],
 };
 
 export default function AdminPanel() {
   const { classes, cx } = useStyles();
-  const [section, setSection] = useState("account");
+  const [
+    section,
+    //  setSection
+  ] = useState("account");
   const [active, setActive] = useState("Billing");
 
   const links = tabs[section].map((item) => (

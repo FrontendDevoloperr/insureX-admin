@@ -25,28 +25,27 @@ export default function Appraisers() {
     fetchData();
   }, []);
 
-
-
-  //   const rows = [];
-  const rows = appraiser.map((element) => (
-    <tr key={element?.id}>
-      <td>
-        {insuredCompany.map((item) => {
-          if (item.id === element?.insurance_company_id) {
-            return item.title;
-          }
-        })}
-      </td>
-      <td>{element?.appraisal_company_id}</td>
-      <td>{element?.first_name}</td>
-      <td>{element?.second_name}</td>
-      <td>{element?.phone}</td>
-      <td>{element?.email}</td>
-      <td>{element?.region_id}</td>
-      <td>{element?.address}</td>
-      <td>{element?.login_id}</td>
-    </tr>
-  ));
+  const rows = appraiser.map((element) => {
+    return (
+      <tr key={element?.id}>
+        <td>
+          {insuredCompany.map((item) => {
+            if (item.id === element?.insurance_company_id) {
+              return item.title;
+            }
+          })}
+        </td>
+        <td>{element?.appraisal_company_id}</td>
+        <td>{element?.first_name}</td>
+        <td>{element?.second_name}</td>
+        <td>{element?.phone}</td>
+        <td>{element?.email}</td>
+        <td>{element?.region_id}</td>
+        <td>{element?.address}</td>
+        <td>{element?.login_id}</td>
+      </tr>
+    );
+  });
 
   return (
     <Table>

@@ -5,12 +5,12 @@ import { _URL } from "../utils";
 import { useForm } from "react-hook-form";
 import { getFormData } from "./../utils/index";
 import toast from "react-hot-toast";
+import { DeleteIcon, PlusUser } from "../icons";
 
 function Rows({ item, setElements, datas }) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
   } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -131,15 +131,6 @@ function Rows({ item, setElements, datas }) {
         />
         <input
           onInput={(e) => {
-            e.target.value !== item?.login_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.login_id}
-          {...register(`login_id`)}
-        />
-        <input
-          onInput={(e) => {
             e.target.value !== item?.agent_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
@@ -162,6 +153,7 @@ function Rows({ item, setElements, datas }) {
           </button>
         )}
         <button
+          title="Удалить"
           type="button"
           className="delete"
           onClick={() => {
@@ -174,17 +166,18 @@ function Rows({ item, setElements, datas }) {
                 .delete(`${_URL}/insured-persons/${item.id}`)
                 .then((res) => {
                   setIsLoading(false);
-                  console.log(res);
                   setElements(datas.filter((__res) => __res?.id !== item?.id));
+                  toast.success("Удалено");
                 })
                 .catch((err) => {
                   console.log(err);
                   setIsLoading(false);
+                  toast.error("Ошибка при удалении данных");
                 });
             }
           }}
         >
-          isDelet
+          <DeleteIcon />
         </button>
       </form>
     </>
@@ -198,7 +191,7 @@ export default function Persons() {
   React.useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
-      const result = await axios
+      await axios
         .get(`${_URL}/insured-persons`)
         .then((res) => {
           setElements(res?.data?.message?.insured_persons);
@@ -229,7 +222,8 @@ export default function Persons() {
             }
           }}
         >
-          <span>Добавить Person</span>
+          <span>Добавить </span>
+          <PlusUser color={"#fff"} />
         </button>
       </Header>
       {loading ? (
@@ -249,10 +243,9 @@ export default function Persons() {
             <input className="disabled" readOnly={true} value={"email"} />
             <input className="disabled" readOnly={true} value={"region"} />
             <input className="disabled" readOnly={true} value={"address"} />
-            <input className="disabled" readOnly={true} value={"login ID"} />
             <input className="disabled" readOnly={true} value={"agent ID"} />
             <input className="disabled" readOnly={true} value={"city ID"} />
-            <input className="disabled" readOnly={true} value={"funtions"} />
+            <input className="disabled fc" readOnly={true} value={"funtions"} />
           </div>
           {elements?.map((item, i) => (
             <Rows
