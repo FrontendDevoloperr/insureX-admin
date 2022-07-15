@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Navbar, Text, createStyles, AppShell } from "@mantine/core";
 import { Link, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
+import "./index.css";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -148,11 +149,10 @@ export default function AdminPanel() {
           <Navbar.Section mt="xl">{links}</Navbar.Section>
         </Navbar>
       }
-      aside={
-        <Routes>
-          <Route path="/persons" element={<Persons />} />
-        </Routes>
-      }
-    ></AppShell>
+    >
+      <Routes>
+        <Route path="/persons" element={<Persons />} />
+      </Routes>
+    </AppShell>
   );
 }

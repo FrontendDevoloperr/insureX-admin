@@ -1,0 +1,56 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#root {
+    max-width: 100vw;
+    margin: 0 auto;
+    overflow-x: hidden;
+}
+
+.ox-scroll {
+    overflow-X: auto;
+    height: 100%;
+    max-width: calc(100vw - 350px);
+}
+
+.ox-scroll .row {
+    display: flex;
+    width: max-content;
+}
+
+.ox-scroll .row input {
+    border: none;
+    border-top: 1px solid #ccc;
+    border-radius: 0px;
+    padding: 15px 8px;
+    outline: none;
+}
+
+.ox-scroll .row input.disabled {
+    background-color: #f5f5f5;
+    color: #000;
+    padding: 15px 8px;
+}
+
+.ox-scroll .row button {
+    box-sizing: border-box;
+    border-width: 2px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0.5rem 18px;
+    line-height: 1.75;
+    cursor: pointer;
+    background-color: #196c08;
+    border: 1px solid #fff;
+    color: #FFFFFF;
+    transition: all 150ms linear;
+}
+
+.ox-scroll .row button.delete {
+    background-color: #fc0000;
+    color: #fff;
+    border: 1px solid #fff;
+}
