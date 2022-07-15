@@ -8,10 +8,7 @@ import toast from "react-hot-toast";
 import { DeleteIcon, PlusUser } from "../icons";
 
 function Rows({ item, setElements, datas }) {
-  const {
-    register,
-    handleSubmit,
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -41,7 +38,11 @@ function Rows({ item, setElements, datas }) {
         .post(`${_URL}/insured-persons`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
-          setElements([...datas, res.data.message.insured_person]);
+          setElements(
+            [...datas, res.data.message.insured_person].filter(
+              (item) => !item.new
+            )
+          );
           toast.success("Данные загружены, Создано новых пользователей");
           setIsUpdated(false);
         })
