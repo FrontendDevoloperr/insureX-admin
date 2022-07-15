@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "@mantine/core";
 import axios from "axios";
-import { GetRegionName, InsuredPerson, _URL } from "../utils";
+import { _URL } from "../utils";
 
 export default function InsuredEvent() {
   const [insuredCompany, setInsuredCompany] = React.useState([]);
