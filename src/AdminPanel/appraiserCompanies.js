@@ -5,11 +5,21 @@ import { _URL } from "../utils";
 
 export default function AppraiserCompanies() {
   const [appraiserCompanies, setAppraiserCompanies] = React.useState([]);
+  const [insuredCompany, setInsuredCompany] = React.useState([]);
 
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`${_URL}/appraisal-companies`);
-        setAppraiserCompanies(result?.data?.message?.appraisal_companies);
+      console.log(result?.data?.message?.appraisal_companies, "appraiserCompanies");
+      setAppraiserCompanies(result?.data?.message?.appraisal_companies);
+    };
+    fetchData();
+  }, []);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get(`${_URL}/insurance-companies`);
+      setInsuredCompany(result?.data?.message?.insurance_companies);
     };
     fetchData();
   }, []);
@@ -17,7 +27,13 @@ export default function AppraiserCompanies() {
   //   const rows = [];
   const rows = appraiserCompanies.map((element) => (
     <tr key={element?.id}>
-      <td>{element?.insurance_company_ids}</td>
+      <td>
+        {insuredCompany.map((item) => {
+          if (item.id === element?.insurance_company_ids) {
+            return item.title;
+          }
+        })}
+      </td>
       <td>{element?.appraisal_company_name}</td>
       <td>{element?.oao_ie_number}</td>
       <td>{element?.phone}</td>
