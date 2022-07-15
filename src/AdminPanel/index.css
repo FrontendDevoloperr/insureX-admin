@@ -35,7 +35,8 @@
     padding: 15px 8px;
 }
 
-.ox-scroll .row button {
+.ox-scroll .row button,
+.adder {
     box-sizing: border-box;
     border-width: 2px;
     font-size: 12px;
