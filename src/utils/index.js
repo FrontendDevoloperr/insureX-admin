@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useState } from "react";
 
 export const _URL = "http://3.91.9.208:3002/api";
 
@@ -14,3 +15,10 @@ export const InsuredPerson = (insuredPersonId) => {
     return res?.data?.message?.insured_person;
   });
 };
+
+export const getFormData = (object) => {
+  const formData = new FormData();
+  Object.keys(object).forEach((key) => formData.append(key, object[key]));
+  return formData;
+};
+
