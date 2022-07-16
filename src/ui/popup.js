@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Popper,
-  Button,
-  Paper,
-  Group,
-  useMantineTheme,
-} from "@mantine/core";
+import { Popper, Button, Paper, Group, useMantineTheme } from "@mantine/core";
 import { Notification } from "../icons";
 import "../admin/index.css";
 
@@ -15,7 +9,7 @@ function Popup() {
   const theme = useMantineTheme();
 
   return (
-    <div position="end">
+    <div>
       <Button
         className="notification_icon"
         ref={setReferenceElement}

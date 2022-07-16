@@ -191,12 +191,12 @@ export default function AdminPanel() {
               <Popup />
               <p>Notifications</p>
             </div>
-            <div className="header_settings">
+            {/* <div className="header_settings">
               <ActionIcon>
                 <Adjustments />
               </ActionIcon>
               <p>Settings</p>
-            </div>
+            </div> */}
             <div
               title="Logout"
               className="header_logout"
