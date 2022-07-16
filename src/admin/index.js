@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Navbar, Text, createStyles, AppShell } from "@mantine/core";
+import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
 import { Link, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
@@ -10,6 +10,7 @@ import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
 import "./index.css";
+import { Logout } from "../icons";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -173,6 +174,11 @@ export default function AdminPanel() {
           </Navbar.Section>
           <Navbar.Section mt="xl">{links}</Navbar.Section>
         </Navbar>
+      }
+      header={
+        <Header height={60} p="xs">
+          <Logout />
+        </Header>
       }
     >
       <Routes>{RootRoutes}</Routes>
