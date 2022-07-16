@@ -8,13 +8,11 @@ export default function InsuredEvent() {
   const [insuredPerson, setInsuredPerson] = React.useState([]);
   const [appraiserCompany, setAppraiserCompany] = React.useState([]);
   const [regions, setRegions] = React.useState([]);
-  // const [appraiserPerson, setAppraiserPerson] = React.useState([]);
   const [agents, setAgents] = React.useState([]);
   const [events, setEvents] = React.useState([]);
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`${_URL}/insured-events`);
-      console.log(result?.data?.message?.insured_events, "events");
       setEvents(result?.data?.message?.insured_events);
     };
     fetchData();
@@ -31,8 +29,6 @@ export default function InsuredEvent() {
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`${_URL}/insured-persons`);
-      console.log(result?.data?.message?.insured_persons, "insuredPerson");
-
       setInsuredPerson(result?.data?.message?.insured_persons);
     };
     fetchData();
@@ -57,20 +53,11 @@ export default function InsuredEvent() {
   React.useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(`${_URL}/regions`);
-      console.log(result?.data?.message?.regions, "regions");
       setRegions(result?.data?.message?.regions);
     };
     fetchData();
   }, []);
 
-  // React.useEffect(() => {
-  //   const fetchData = async () => {
-  //     const result = await axios.get(`${_URL}/appraisers`);
-  //     console.log(result?.data?.message?.appraisers, "appraisers");
-  //     setAppraiserPerson(result?.data?.message?.appraiser_id);
-  //   };
-  //   fetchData();
-  // }, []);
 
   const rows = events.map((element) => (
     <tr key={element?.id}>
@@ -89,7 +76,6 @@ export default function InsuredEvent() {
           }
         })}
       </td>
-      {/* <td>{CaseTypeExtract(CASE_DATA)?.name}</td> */}
       <td>
         {regions.map((item) => {
           if (item.id === element?.region_id) {
