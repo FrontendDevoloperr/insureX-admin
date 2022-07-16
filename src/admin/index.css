@@ -1,181 +1,222 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 #root {
-    max-width: 100vw;
-    margin: 0 auto;
-    overflow-x: hidden;
+  max-width: 100vw;
+  margin: 0 auto;
+  overflow-x: hidden;
 }
 
 a.active {
-    background-color: #e7f5ff;
-    color: #1c7ed6;
+  background-color: #e7f5ff;
+  color: #1c7ed6;
 }
 
 .ox-scroll {
-    overflow: auto;
-    min-height: 80%;
-    max-width: calc(100vw - 350px);
-    max-height: calc(95vh - 50px);
-    position: relative;
+  overflow: auto;
+  min-height: 80%;
+  max-width: calc(100vw - 350px);
+  max-height: calc(95vh - 50px);
+  position: relative;
 }
 
 .ox-scroll::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-    background-color: #f1f1f1;
-    border-radius: 20px;
+  width: 10px;
+  height: 10px;
+  background-color: #f1f1f1;
+  border-radius: 20px;
 }
 
 .ox-scroll::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 20px;
+  background-color: #888;
+  border-radius: 20px;
 }
 
-
 .ox-scroll .row {
-    display: flex;
-    width: max-content;
-    position: relative;
+  display: flex;
+  width: max-content;
+  position: relative;
 }
 
 .ox-scroll .row select,
 .ox-scroll .row input,
 .ox-scroll .row .multiples-select {
-    border: none;
-    border-top: 1px solid #ccc;
-    border-bottom: .1px solid #ccc;
-    border-left: .1px solid rgba(204, 204, 204, 0.31);
-    border-radius: 0px;
-    padding: 15px 8px;
-    outline: none;
-    width: 110px;
+  border: none;
+  border-top: 1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
+  border-left: 0.1px solid rgba(204, 204, 204, 0.31);
+  border-radius: 0px;
+  padding: 15px 8px;
+  outline: none;
+  width: 110px;
 }
 
 .ox-scroll .row .multiples-select {
-    width: 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    position: relative;
-
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
 }
 
 .ox-scroll .row .multiples-select .body-select {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-    position: absolute;
-    z-index: 22;
-    background: #f5f5f5;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 5px;
-    top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: absolute;
+  z-index: 22;
+  background: #f5f5f5;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  top: 40px;
 }
 
 .ox-scroll .row .multiples-select label .label {
-    display: flex;
-    align-items: center;
-    width: 170px;
-    justify-content: space-between;
-    padding: 3px;
-    border-radius: 5px;
-    background: #1c7fd63a;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-bottom: 5px;
-    transition: 300ms ease;
+  display: flex;
+  align-items: center;
+  width: 170px;
+  justify-content: space-between;
+  padding: 3px;
+  border-radius: 5px;
+  background: #1c7fd63a;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 5px;
+  transition: 300ms ease;
 }
 
 .ox-scroll .row .multiples-select .select-wrap {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin: 0px 0 10px 0;
-    border-radius: 5px;
-    background: #fff;
-    font-size: 12px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 300ms ease;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0px 0 10px 0;
+  border-radius: 5px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 300ms ease;
 }
 
 .ox-scroll .row .multiples-select .select-wrap span {
-    transform: rotate(180deg);
-    font-size: 24px;
-    line-height: 0;
-    font-weight: bold;
-    transform-origin: top;
-    position: relative;
-    top: -5px;
+  transform: rotate(180deg);
+  font-size: 24px;
+  line-height: 0;
+  font-weight: bold;
+  transform-origin: top;
+  position: relative;
+  top: -5px;
 }
 
-.ox-scroll .row .multiples-select label input:checked~.label {
-    background: #1c7ed6;
-    color: #fff;
+.ox-scroll .row .multiples-select label input:checked ~ .label {
+  background: #1c7ed6;
+  color: #fff;
 }
 
 .ox-scroll .row .multiples-select label p {
-    margin: 0;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  margin: 0;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ox-scroll .row .multiples-select label input {
-    display: none;
-
+  display: none;
 }
 
 .ox-scroll .row input.fc {
-    width: max-content;
+  width: max-content;
 }
 
 .ox-scroll .row input.disabled {
-    background-color: #f5f5f5;
-    color: #000;
-    padding: 15px 8px;
+  background-color: #f5f5f5;
+  color: #000;
+  padding: 15px 8px;
 }
 
 .ox-scroll .row button,
 .adder {
-    box-sizing: border-box;
-    border-width: 2px;
-    font-size: 12px;
-    font-weight: 600;
-    padding: 0.5rem 18px;
-    line-height: 1.75;
-    cursor: pointer;
-    background-color: #196c08;
-    border: 1px solid #fff;
-    color: #FFFFFF;
-    transition: all 150ms linear;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+  box-sizing: border-box;
+  border-width: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.5rem 18px;
+  line-height: 1.75;
+  cursor: pointer;
+  background-color: #196c08;
+  border: 1px solid #fff;
+  color: #ffffff;
+  transition: all 150ms linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .ox-scroll .row button.delete {
-    background-color: transparent;
-    border-top: 1px solid #ccc;
-    border-bottom: .1px solid #ccc;
+  background-color: transparent;
+  border-top: 1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
 }
 
 .ox-scroll .row button.delete svg {
-    transition: cubic-bezier(0.075, 0.82, 0.165, 1) 150ms;
-    width: 30px;
-    height: 30px;
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1) 150ms;
+  width: 30px;
+  height: 30px;
 }
 
 .ox-scroll .row button.delete svg:active {
-    transform: scale(0.98) translateY(2px);
+  transform: scale(0.98) translateY(2px);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: center;
+  gap: 10px;
+}
+.header_icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header_logo img {
+  width: 50px;
+  height: 50px;
+}
+.notification_icon {
+  background: transparent;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.notification_icon:hover {
+  background: transparent;
+}
+.mantine-Button-filled {
+  padding: 0;
+}
+.notification_flex {
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+}
+.header_notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header_settings {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }

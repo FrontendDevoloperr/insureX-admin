@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
+import {
+  Navbar,
+  Text,
+  createStyles,
+  AppShell,
+  Header,
+  ActionIcon,
+} from "@mantine/core";
+import { Adjustments } from "tabler-icons-react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
@@ -10,6 +18,9 @@ import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
 import "./index.css";
+import { Logout, Notification } from "../icons";
+import Logo from "../icons/logo.svg";
+import Popup from "../ui/popup";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -164,7 +175,28 @@ export default function AdminPanel() {
           <Navbar.Section mt="xl">{links}</Navbar.Section>
         </Navbar>
       }
-      header={<Header height={60} p="xs"></Header>}
+      header={
+        <Header className="header" height={60} p="xs">
+          <div className="header_logo">
+            <img src={Logo} alt="..." />
+          </div>
+          <div className="header_icons">
+            <div className="header_notification">
+              <Popup />
+              <p>Notifications</p>
+            </div>
+            <div className="header_settings">
+              <ActionIcon>
+                <Adjustments />
+              </ActionIcon>
+              <p>Settings</p>
+            </div>
+            <div className="header_logout">
+              <Logout />
+            </div>
+          </div>
+        </Header>
+      }
     >
       <Routes>{RootRoutes}</Routes>
     </AppShell>
