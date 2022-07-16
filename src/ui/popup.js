@@ -3,7 +3,6 @@ import {
   Popper,
   Button,
   Paper,
-  Center,
   Group,
   useMantineTheme,
 } from "@mantine/core";
@@ -12,11 +11,11 @@ import "../admin/index.css";
 
 function Popup() {
   const [referenceElement, setReferenceElement] = useState(null);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const theme = useMantineTheme();
 
   return (
-    <Group position="end">
+    <div position="end">
       <Button
         className="notification_icon"
         ref={setReferenceElement}
@@ -31,7 +30,7 @@ function Popup() {
         withArrow
         mounted={visible}
         referenceElement={referenceElement}
-        transition="pop-top-left"
+        transition="pop-bottom-left"
         transitionDuration={200}
         arrowStyle={{
           backgroundColor:
@@ -48,15 +47,19 @@ function Popup() {
                 : theme.colors.gray[1],
           }}
         >
-          <Center className="notification_flex" style={{ height: 100, width: 200 }}>
-            <p>Notification</p>
-            <p>Notification</p>
-            <p>Notification</p>
-            <p>Notification</p>
-          </Center>
+          {[0, 1, 2, 3, 4, 5].map((item) => (
+            <p
+              style={{
+                padding: "0.5rem",
+              }}
+              key={item}
+            >
+              Notification
+            </p>
+          ))}
         </Paper>
       </Popper>
-    </Group>
+    </div>
   );
 }
 export default Popup;

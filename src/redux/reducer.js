@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 export const userSlice = createSlice({
   name: "user",
   initialState: {
-    auth: true,
-    role: 'superadmin',
+    auth: false,
+    role: null,
   },
   reducers: {
     login: (state, payload) => {

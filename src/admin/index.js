@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Navbar,
   Text,
@@ -18,9 +18,10 @@ import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
 import "./index.css";
-import { Logout, Notification } from "../icons";
+import { LogoutIcon } from "../icons";
 import Logo from "../icons/logo.svg";
 import Popup from "../ui/popup";
+import { logout } from "../redux/reducer";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -137,6 +138,7 @@ const tabs = {
 };
 
 export default function AdminPanel() {
+  const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
   const { classes, cx } = useStyles();
   const links = tabs[user?.role].map((item) => (
@@ -148,6 +150,10 @@ export default function AdminPanel() {
   const RootRoutes = tabs[user?.role].map((item, i) => (
     <Route key={i} path={item?.link} element={item?.element} />
   ));
+
+  function Logout() {
+    dispatch(logout());
+  }
 
   return (
     <AppShell
@@ -191,8 +197,14 @@ export default function AdminPanel() {
               </ActionIcon>
               <p>Settings</p>
             </div>
-            <div className="header_logout">
-              <Logout />
+            <div
+              title="Logout"
+              className="header_logout"
+              onClick={() => {
+                Logout();
+              }}
+            >
+              <LogoutIcon />
             </div>
           </div>
         </Header>
