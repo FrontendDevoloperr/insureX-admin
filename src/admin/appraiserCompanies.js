@@ -89,7 +89,13 @@ function Rows({
           defaultValue={item?.appraisal_company_name}
           {...register(`appraisal_company_name`)}
         />
-
+        <input
+          onInput={(e) => {
+            setIsUpdated(true);
+          }}
+          defaultValue={item?.oao_ie_number}
+          {...register(`oao_ie_number`)}
+        />
         <select
           className="multiples-select"
           onInput={(e) => {
@@ -255,6 +261,7 @@ export default function Persons() {
             readOnly={true}
             value={"appraisal_company_name"}
           />
+          <input className="disabled" readOnly={true} value={"oao_ie_number"} />
           <input
             className="disabled multiples-select"
             readOnly={true}
