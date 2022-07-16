@@ -6,7 +6,16 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { DeleteIcon, PlusUser } from "../icons";
 
-function Rows({ item, setElements, datas, loading }) {
+function Rows({
+  item,
+  setElements,
+  datas,
+  loading,
+  isCompanys,
+  isCitys,
+  isRegions,
+  appraiselCompanys,
+}) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -14,41 +23,50 @@ function Rows({ item, setElements, datas, loading }) {
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    if (data?.id) {
+    !data?.appraisal_company_id &&
+      (data.appraisal_company_id =
+        item?.appraisal_company_id ?? appraiselCompanys[0]?.id);
+    !data?.city_id && (data.city_id = item?.city_id ?? isCitys[0]?.id);
+    !data?.region_id && (data.region_id = item?.region_id ?? isRegions[0]?.id);
+    if (!data?.new && data?.id) {
+      const formData = data;
+      delete formData.id;
+      delete formData.city_id;
+
       setIsLoading(true);
       axios
-        .patch(`${_URL}/appraisers/${item.id}`, getFormData(data))
+        .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
-          toast.success("Обновлено");
+          toast.success("Updated");
           setIsUpdated(false);
         })
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error("Ошибка при обновлении данных");
+          toast.error("Error while updating data");
         });
     }
     if (!data?.id) {
+      console.log(data);
+      const formData = data;
       setIsLoading(true);
-      delete data?.new;
-      delete data?.id;
+      delete formData?.new;
+      delete formData?.id;
       axios
-        .post(`${_URL}/appraisers`, getFormData(data))
+        .post(`${_URL}/appraisers`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           setElements(
             [...datas, res.data.message.appraiser].filter((item) => !item.new)
           );
-          toast.success("Данные загружены, Создано новых пользователей");
+          toast.success("Data uploaded, new users created");
           setIsUpdated(false);
         })
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error(
-            "Ошибка при загрузке данных, пожалуйста повторите попытку"
-          );
+          toast.error("Error loading data, please try again");
         });
     }
   };
@@ -57,22 +75,51 @@ function Rows({ item, setElements, datas, loading }) {
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
-        <input
+        <select
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.insurance_company_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
+            item.insurance_company_id = e.target.value;
           }}
-          defaultValue={item?.insurance_company_id}
+          value={
+            isCompanys?.filter(
+              (options) => options.id === item?.insurance_company_id
+            )[0]?.id
+          }
           {...register(`insurance_company_id`)}
-        />
-        <input
+        >
+          {isCompanys?.map((options) => (
+            <option key={options.id} value={options.id}>
+              {options.title}
+            </option>
+          ))}
+        </select>
+        <select
           onInput={(e) => {
-            setIsUpdated(true);
+            e.target.value !== item?.appraisal_company_id
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
+            item.appraisal_company_id = e.target.value;
           }}
-          defaultValue={item?.appraisal_company_id}
+          value={
+            appraiselCompanys?.find(
+              (options) => options?.id === item?.appraisal_company_id
+            )?.id
+          }
           {...register(`appraisal_company_id`)}
-        />
+        >
+          {appraiselCompanys?.map((options) => (
+            <option
+              key={options?.id}
+              value={options?.id}
+              // selected={item?.city_id === options?.id}
+            >
+              {options?.appraisal_company_name}
+            </option>
+          ))}
+        </select>
         <input
           onInput={(e) => {
             e.target.value !== item?.first_name
@@ -119,15 +166,51 @@ function Rows({ item, setElements, datas, loading }) {
           defaultValue={item?.email}
           {...register(`email`)}
         />
-        <input
+        <select
           onInput={(e) => {
             e.target.value !== item?.region_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
+            item.region_id = e.target.value;
           }}
-          defaultValue={item?.region_id}
+          value={
+            isRegions?.find((options) => options.id === item?.region_id)?.id
+          }
           {...register(`region_id`)}
-        />
+        >
+          {isRegions?.map((options) => (
+            <option
+              key={options?.id}
+              value={options?.id}
+              // selected={item?.city_id === options?.id}
+            >
+              {options?.region_name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          onInput={(e) => {
+            e.target.value !== item?.city_id
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
+            item.city_id = e.target.value;
+          }}
+          value={
+            isCitys.filter((options) => options.id === item?.city_id)[0]?.id
+          }
+          {...register(`city_id`)}
+        >
+          {isCitys.map((options) => (
+            <option
+              key={options?.id}
+              value={options?.id}
+              // selected={item?.city_id === options?.id}
+            >
+              {options?.city_name}
+            </option>
+          ))}
+        </select>
         <input
           onInput={(e) => {
             e.target.value !== item?.address
@@ -138,9 +221,7 @@ function Rows({ item, setElements, datas, loading }) {
           {...register(`address`)}
         />
         {isUpdated ? (
-          <button type="submit" onClick={() => {}}>
-            {item?.id ? "IsUpdate" : "IsCreate"}
-          </button>
+          <button type="submit">{item?.id ? "Update" : "Create"}</button>
         ) : (
           <button
             title="Удалить"
@@ -159,7 +240,7 @@ function Rows({ item, setElements, datas, loading }) {
                     setElements(
                       datas.filter((__res) => __res?.id !== item?.id)
                     );
-                    toast.success("Удалено");
+                    toast.success("Removed");
                   })
                   .catch((err) => {
                     console.log(err);
@@ -180,6 +261,10 @@ function Rows({ item, setElements, datas, loading }) {
 export default function Persons() {
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [isCompanys, setIsCompanys] = React.useState([]);
+  const [isRegions, setIsRegions] = React.useState([]);
+  const [isCitys, setIsCitys] = React.useState([]);
+  const [appraiselCompanys, setAppraiselCompanys] = React.useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -199,6 +284,21 @@ export default function Persons() {
     fetchData();
   }, []);
 
+  React.useEffect(() => {
+    axios.get(`${_URL}/insurance-companies`).then((res) => {
+      setIsCompanys(res?.data?.message?.insurance_companies);
+    });
+    axios.get(`${_URL}/regions`).then((res) => {
+      setIsRegions(res?.data?.message?.regions);
+    });
+    axios.get(`${_URL}/city`).then((res) => {
+      setIsCitys(res?.data?.message?.cities);
+    });
+    axios.get(`${_URL}/appraisal-companies`).then((res) => {
+      setAppraiselCompanys(res?.data?.message?.appraisal_companies);
+    });
+  }, []);
+
   return (
     <>
       <Header height={60} p="xs">
@@ -207,15 +307,15 @@ export default function Persons() {
           onClick={() => {
             if (elements.filter((item) => item?.new)?.length) {
               toast.error(
-                "Нельзя добавлять новые записи пока не закончите предыдущую"
+                "You cannot add new entries until you finish the previous one."
               );
             } else {
               setElements(elements?.concat([{ new: true }])?.reverse());
-              toast.success("Можно заполнять новую запись");
+              toast.success("You can fill in a new entry");
             }
           }}
         >
-          <span>Добавить </span>
+          <span>Add </span>
           <PlusUser color={"#fff"} />
         </button>
       </Header>
@@ -223,9 +323,9 @@ export default function Persons() {
         <LoadingOverlay visible={loading} />
         <div className="row">
           <input
-            className="disabled"
+            className="disabled multiples-select"
             readOnly={true}
-            value={"insurance_company"}
+            value={"insurance_company "}
           />
           <input
             className="disabled"
@@ -238,6 +338,7 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"Login ID"} />
           <input className="disabled" readOnly={true} value={"email"} />
           <input className="disabled" readOnly={true} value={"region"} />
+          <input className="disabled" readOnly={true} value={"city"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
         {elements?.map((item, i) => (
@@ -247,6 +348,10 @@ export default function Persons() {
             setElements={setElements}
             datas={elements}
             loading={loading}
+            isCompanys={isCompanys}
+            isRegions={isRegions}
+            isCitys={isCitys}
+            appraiselCompanys={appraiselCompanys}
           />
         ))}
       </div>

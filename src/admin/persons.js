@@ -36,13 +36,13 @@ function Rows({
         .patch(`${_URL}/insured-persons/${item?.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
-          toast.success("Обновлено");
+          toast.success("Updated");
           setIsUpdated(false);
         })
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error("Ошибка при обновлении данных");
+          toast.error("Error while updating data");
         });
     }
     if (!item.id) {
@@ -58,14 +58,14 @@ function Rows({
               (item) => !item?.new
             )
           );
-          toast.success("Данные загружены, Создано новых пользователей");
+          toast.success("Data uploaded, new users created");
           setIsUpdated(false);
         })
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
           toast.error(
-            "Ошибка при загрузке данных, пожалуйста повторите попытку"
+            "Error loading data, please try again"
           );
         });
     }
@@ -221,7 +221,7 @@ function Rows({
         </select>
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
-            {item?.id ? "IsUpdate" : "IsCreate"}
+            {item?.id ? "Update" : "Create"}
           </button>
         ) : (
           <button
@@ -241,7 +241,7 @@ function Rows({
                     setElements(
                       datas.filter((__res) => __res?.id !== item?.id)
                     );
-                    toast.success("Удалено");
+                    toast.success("Removed");
                   })
                   .catch((err) => {
                     console.log(err);
@@ -304,15 +304,15 @@ export default function Persons() {
           onClick={() => {
             if (elements.filter((item) => item?.new)?.length) {
               toast.error(
-                "Нельзя добавлять новые записи пока не закончите предыдущую"
+                "You cannot add new entries until you finish the previous one."
               );
             } else {
               setElements(elements?.concat([{ new: true }])?.reverse());
-              toast.success("Можно заполнять новую запись");
+              toast.success("You can fill in a new entry");
             }
           }}
         >
-          <span>Добавить </span>
+          <span>Add </span>
           <PlusUser color={"#fff"} />
         </button>
       </Header>
