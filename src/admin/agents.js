@@ -1,20 +1,12 @@
 import React from "react";
-import { LoadingOverlay, Header } from "@mantine/core";
+import { LoadingOverlay, Header, MultiSelect } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { DeleteIcon, PlusUser } from "../icons";
 
-function Rows({
-  item,
-  setElements,
-  datas,
-  loading,
-  isCompanys,
-  isRegions,
-  isCitys,
-}) {
+function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -87,7 +79,25 @@ function Rows({
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
-        <div className="multiples-select">
+        <MultiSelect
+          className="input-multi-select"
+          style={{
+            width: "200px",
+          }}
+          defaultValue={item?.insurance_company_ids}
+          onChange={(e) => {
+            setIsUpdated(true);
+            item.insurance_company_ids = e;
+          }}
+          data={isCompanys.map((item) => ({
+            value: item?.id,
+            label: item?.title,
+          }))}
+          transition="pop-top-left"
+          transitionDuration={80}
+          transitionTimingFunction="ease"
+        />
+        {/* <div className="multiples-select">
           <div
             className="select-wrap"
             onClick={() => setOpenSelect(!openSelect)}
@@ -118,7 +128,7 @@ function Rows({
               ))}
             </div>
           )}
-        </div>
+        </div> */}
         <input
           onInput={(e) => {
             e.target.value !== item?.passport_id
