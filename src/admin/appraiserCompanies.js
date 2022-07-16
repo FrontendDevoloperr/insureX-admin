@@ -19,18 +19,24 @@ function Rows({
 
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
-  const [isAgents, setIsAgents] = React.useState([]);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.insurance_company_id &&
-      (data.insurance_company_id = item.insurance_company_id);
+    !data.insurance_company_ids &&
+      (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
     !data.region_id && (data.region_id = item.region_id);
-    !data.city_id && (data.city_id = item.city_id);
-    !data.agent_id && (data.agent_id = item.agent_id ?? isAgents[0].id);
+    !data.city_id &&
+      !data.city_id === "null" &&
+      !data.city_id === null &&
+      (data.city_id = item.city_id === "null" ? isCitys[0]?.id : item.city_id);
     if (data?.id) {
-      let formData = data;
+      let formData = {
+        ...data,
+        insurance_company_id: data.insurance_company_ids,
+      };
       delete formData.id;
+      delete formData.insurance_company_ids;
+      console.log(formData);
       setIsLoading(true);
       axios
         .patch(`${_URL}/appraisal-companies/${item?.id}`, getFormData(formData))
@@ -71,68 +77,40 @@ function Rows({
     }
   };
 
-  React.useEffect(() => {
-    axios
-      .get(
-        `${_URL}/agents?insurance_company_id=${
-          item?.insurance_company_id ?? isCompanys[0]?.id
-        }`
-      )
-      .then((res) => {
-        setIsAgents(res?.data?.message?.agents);
-      });
-  }, [item?.insurance_company_id, isCompanys]);
-
   return (
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
         <input
+          className="multiples-select"
           onInput={(e) => {
             setIsUpdated(true);
           }}
-          defaultValue={item?.first_name}
-          {...register(`first_name`)}
+          defaultValue={item?.appraisal_company_name}
+          {...register(`appraisal_company_name`)}
         />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.second_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.second_name}
-          {...register(`second_name`)}
-        />
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.insurance_company_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
 
-            item.insurance_company_id = e.target.value;
+        <select
+          className="multiples-select"
+          onInput={(e) => {
+            e.target.value !== item?.insurance_company_ids?.[0]
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
+            item.insurance_company_ids = e.target.value;
           }}
           value={
-            isCompanys.filter(
-              (options) => options.id === item?.insurance_company_id
+            isCompanys?.filter(
+              (options) => options.id === item?.insurance_company_ids?.[0]
             )[0]?.id
           }
-          {...register(`insurance_company_id`)}
+          {...register(`insurance_company_ids`)}
         >
-          {isCompanys.map((options) => (
+          {isCompanys?.map((options) => (
             <option key={options.id} value={options.id}>
               {options.title}
             </option>
           ))}
         </select>
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.passport_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.passport_id}
-          {...register(`passport_id`)}
-        />
         <input
           onInput={(e) => {
             e.target.value !== item?.phone
@@ -171,32 +149,13 @@ function Rows({
         </select>
         <input
           onInput={(e) => {
-            e.target.value !== item?.address
+            e.target.value !== item?.office_address
               ? setIsUpdated(true)
               : setIsUpdated(false);
           }}
-          defaultValue={item?.address}
-          {...register(`address`)}
+          defaultValue={item?.office_address}
+          {...register(`office_address`)}
         />
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.agent_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-
-            item.agent_id = e.target.value;
-          }}
-          value={
-            isAgents.filter((options) => options.id === item?.agent_id)[0]?.id
-          }
-          {...register(`agent_id`)}
-        >
-          {isAgents.map((options) => (
-            <option key={options?.id} value={options?.id}>
-              {options?.first_name}
-            </option>
-          ))}
-        </select>
         <select
           onInput={(e) => {
             e.target.value !== item?.city_id
@@ -224,35 +183,7 @@ function Rows({
             {item?.id ? "IsUpdate" : "IsCreate"}
           </button>
         ) : (
-          <button
-            title="Удалить"
-            type="button"
-            className="delete"
-            onClick={() => {
-              if (!item?.id) {
-                setElements(datas.filter((item) => item?.new !== true));
-              }
-              if (item?.id) {
-                setIsLoading(true);
-                axios
-                  .delete(`${_URL}/appraisal-companies/${item.id}`)
-                  .then((res) => {
-                    setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
-                    );
-                    toast.success("Удалено");
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    setIsLoading(false);
-                    toast.error("Ошибка при удалении данных");
-                  });
-              }
-            }}
-          >
-            <DeleteIcon />
-          </button>
+          ""
         )}
       </form>
     </>
@@ -272,7 +203,7 @@ export default function Persons() {
       await axios
         .get(`${_URL}/appraisal-companies`)
         .then((res) => {
-          setElements(res?.data?.message?.appraisal_companiess);
+          setElements(res?.data?.message?.appraisal_companies);
           setLoading(false);
         })
         .catch((err) => {
@@ -319,20 +250,25 @@ export default function Persons() {
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />
         <div className="row">
-          <input className="disabled" readOnly={true} value={"first_name"} />
-          <input className="disabled" readOnly={true} value={"last_name"} />
           <input
-            className="disabled"
+            className="disabled multiples-select"
             readOnly={true}
-            value={"insurance_company_id"}
+            value={"appraisal_company_name"}
           />
-          <input className="disabled" readOnly={true} value={"passport_id"} />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"insurance_company_ids"}
+          />
           <input className="disabled" readOnly={true} value={"phone"} />
           <input className="disabled" readOnly={true} value={"email"} />
           <input className="disabled" readOnly={true} value={"region"} />
-          <input className="disabled" readOnly={true} value={"address"} />
-          <input className="disabled" readOnly={true} value={"agent ID"} />
-          <input className="disabled" readOnly={true} value={"city ID"} />
+          <input
+            className="disabled"
+            readOnly={true}
+            value={"office_address"}
+          />
+          <input className="disabled" readOnly={true} value={"city"} />
         </div>
         {elements?.map((item, i) => (
           <Rows

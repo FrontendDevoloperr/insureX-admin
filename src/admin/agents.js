@@ -11,7 +11,6 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
 
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
-  const [openSelect, setOpenSelect] = React.useState(false);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -97,38 +96,6 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           transitionDuration={80}
           transitionTimingFunction="ease"
         />
-        {/* <div className="multiples-select">
-          <div
-            className="select-wrap"
-            onClick={() => setOpenSelect(!openSelect)}
-          >
-            INSURANCE COMPANIES {!openSelect && <span>^</span>}
-          </div>
-
-          {openSelect && (
-            <div className="body-select">
-              {isCompanys.map((options) => (
-                <label>
-                  <input
-                    onInput={(e) => {
-                      setIsUpdated(true);
-                    }}
-                    type={"checkbox"}
-                    defaultChecked={item?.insurance_company_ids?.includes(
-                      options.id
-                    )}
-                    key={options.id}
-                    {...register(`insurance_company_ids`)}
-                    value={options.id}
-                  />
-                  <div className="label">
-                    <p>{options?.title}</p>
-                  </div>
-                </label>
-              ))}
-            </div>
-          )}
-        </div> */}
         <input
           onInput={(e) => {
             e.target.value !== item?.passport_id
