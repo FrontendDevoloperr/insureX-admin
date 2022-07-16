@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
-import { Link, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
 import AppraiserCompanies from "./appraiserCompanies";
@@ -10,7 +10,6 @@ import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
 import "./index.css";
-import { Logout } from "../icons";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -129,20 +128,10 @@ const tabs = {
 export default function AdminPanel() {
   const user = useSelector(({ user }) => user);
   const { classes, cx } = useStyles();
-  const [active, setActive] = useState("INSURED PERSONS");
   const links = tabs[user?.role].map((item) => (
-    <Link
-      className={cx(classes.link, {
-        [classes.linkActive]: item.label === active,
-      })}
-      to={item.link}
-      key={item.label}
-      onClick={(event) => {
-        setActive(item.label);
-      }}
-    >
+    <NavLink className={cx(classes.link)} to={item.link} key={item.label}>
       <span>{item.label}</span>
-    </Link>
+    </NavLink>
   ));
 
   const RootRoutes = tabs[user?.role].map((item, i) => (
@@ -175,11 +164,7 @@ export default function AdminPanel() {
           <Navbar.Section mt="xl">{links}</Navbar.Section>
         </Navbar>
       }
-      header={
-        <Header height={60} p="xs">
-          <Logout />
-        </Header>
-      }
+      header={<Header height={60} p="xs"></Header>}
     >
       <Routes>{RootRoutes}</Routes>
     </AppShell>
