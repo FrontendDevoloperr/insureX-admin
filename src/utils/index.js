@@ -7,9 +7,10 @@ export const GetRegionName = async (regionId) => {
   return ".";
 };
 
-export const InsuredPerson = async (insuredPersonId) => {
-  return axios.get(`${_URL}/insured_person/${insuredPersonId}`).then((res) => {
-    return res?.data?.message?.insured_person;
+export const InsuranceCompanyName = (insuranceCompanyId) => {
+  axios.get(`${_URL}/insurance-companies/${insuranceCompanyId}`).then((res) => {
+    console.log(res?.data?.message?.insurance_company?.title);
+    return res?.data?.message?.insurance_company?.title;
   });
 };
 

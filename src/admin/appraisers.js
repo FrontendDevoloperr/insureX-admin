@@ -1,24 +1,23 @@
 import React from "react";
 import { LoadingOverlay, Header } from "@mantine/core";
 import axios from "axios";
-import { _URL } from "../utils";
+import { getFormData, _URL } from "../utils";
 import { useForm } from "react-hook-form";
-import { getFormData } from "./../utils/index";
 import toast from "react-hot-toast";
 import { DeleteIcon, PlusUser } from "../icons";
 
-function Rows({ item, setElements, datas }) {
+function Rows({ item, setElements, datas, loading }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(loading);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     if (data?.id) {
       setIsLoading(true);
       axios
-        .patch(`${_URL}/insured-persons/${item.id}`, getFormData(data))
+        .patch(`${_URL}/appraisers/${item.id}`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
           toast.success("Обновлено");
@@ -35,13 +34,11 @@ function Rows({ item, setElements, datas }) {
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/insured-persons`, getFormData(data))
+        .post(`${_URL}/appraisers`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res.data.message.insured_person].filter(
-              (item) => !item.new
-            )
+            [...datas, res.data.message.appraiser].filter((item) => !item.new)
           );
           toast.success("Данные загружены, Создано новых пользователей");
           setIsUpdated(false);
@@ -58,11 +55,29 @@ function Rows({ item, setElements, datas }) {
 
   return (
     <>
-      <LoadingOverlay visible={isLoading} />
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
+        <LoadingOverlay visible={isLoading} />
+        <input
+          onInput={(e) => {
+            e.target.value !== item?.insurance_company_id
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
+          }}
+          defaultValue={item?.insurance_company_id}
+          {...register(`insurance_company_id`)}
+        />
         <input
           onInput={(e) => {
             setIsUpdated(true);
+          }}
+          defaultValue={item?.appraisal_company_id}
+          {...register(`appraisal_company_id`)}
+        />
+        <input
+          onInput={(e) => {
+            e.target.value !== item?.first_name
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
           }}
           defaultValue={item?.first_name}
           {...register(`first_name`)}
@@ -76,14 +91,15 @@ function Rows({ item, setElements, datas }) {
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
+
         <input
           onInput={(e) => {
-            e.target.value !== item?.insurance_company_id
+            e.target.value !== item?.phone
               ? setIsUpdated(true)
               : setIsUpdated(false);
           }}
-          defaultValue={item?.insurance_company_id}
-          {...register(`insurance_company_id`)}
+          defaultValue={item?.phone}
+          {...register(`phone`)}
         />
         <input
           onInput={(e) => {
@@ -93,15 +109,6 @@ function Rows({ item, setElements, datas }) {
           }}
           defaultValue={item?.passport_id}
           {...register(`passport_id`)}
-        />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.phone
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.phone}
-          {...register(`phone`)}
         />
         <input
           onInput={(e) => {
@@ -130,24 +137,6 @@ function Rows({ item, setElements, datas }) {
           defaultValue={item?.address}
           {...register(`address`)}
         />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.agent_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.agent_id}
-          {...register(`agent_id`)}
-        />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.city_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.city_id}
-          {...register(`city_id`)}
-        />
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
             {item?.id ? "IsUpdate" : "IsCreate"}
@@ -164,7 +153,7 @@ function Rows({ item, setElements, datas }) {
               if (item?.id) {
                 setIsLoading(true);
                 axios
-                  .delete(`${_URL}/insured-persons/${item.id}`)
+                  .delete(`${_URL}/appraisers/${item.id}`)
                   .then((res) => {
                     setIsLoading(false);
                     setElements(
@@ -196,9 +185,9 @@ export default function Persons() {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/insured-persons`)
+        .get(`${_URL}/appraisers`)
         .then((res) => {
-          setElements(res?.data?.message?.insured_persons);
+          setElements(res?.data?.message?.appraisers);
           setLoading(false);
         })
         .catch((err) => {
@@ -230,37 +219,37 @@ export default function Persons() {
           <PlusUser color={"#fff"} />
         </button>
       </Header>
-      {loading ? (
+      <div className="ox-scroll">
         <LoadingOverlay visible={loading} />
-      ) : (
-        <div className="ox-scroll">
-          <div className="row">
-            <input className="disabled" readOnly={true} value={"first_name"} />
-            <input className="disabled" readOnly={true} value={"last_name"} />
-            <input
-              className="disabled"
-              readOnly={true}
-              value={"insurance_company_id"}
-            />
-            <input className="disabled" readOnly={true} value={"passport_id"} />
-            <input className="disabled" readOnly={true} value={"phone"} />
-            <input className="disabled" readOnly={true} value={"email"} />
-            <input className="disabled" readOnly={true} value={"region"} />
-            <input className="disabled" readOnly={true} value={"address"} />
-            <input className="disabled" readOnly={true} value={"agent ID"} />
-            <input className="disabled" readOnly={true} value={"city ID"} />
-            <input className="disabled fc" readOnly={true} value={"funtions"} />
-          </div>
-          {elements?.map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              setElements={setElements}
-              datas={elements}
-            />
-          ))}
+        <div className="row">
+          <input
+            className="disabled"
+            readOnly={true}
+            value={"insurance_company"}
+          />
+          <input
+            className="disabled"
+            readOnly={true}
+            value={"appraisal_company"}
+          />
+          <input className="disabled" readOnly={true} value={"fist_name"} />
+          <input className="disabled" readOnly={true} value={"last_name"} />
+          <input className="disabled" readOnly={true} value={"phone"} />
+          <input className="disabled" readOnly={true} value={"Login ID"} />
+          <input className="disabled" readOnly={true} value={"email"} />
+          <input className="disabled" readOnly={true} value={"region"} />
+          <input className="disabled" readOnly={true} value={"address"} />
         </div>
-      )}
+        {elements?.map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            setElements={setElements}
+            datas={elements}
+            loading={loading}
+          />
+        ))}
+      </div>
     </>
   );
 }

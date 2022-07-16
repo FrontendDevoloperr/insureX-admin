@@ -1,14 +1,15 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Navbar, Text, createStyles, AppShell } from "@mantine/core";
 import { Link, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
 import AppraiserCompanies from "./appraiserCompanies";
+import InsuredCompanies from "./insuranceCompanies";
 import Appraisers from "./appraisers";
 import Sdp from "./sdp";
 import InsuredEvent from "./insuredEvents";
 import "./index.css";
-import { LoginAuntification } from "./login";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -91,33 +92,44 @@ const useStyles = createStyles((theme, _params, getRef) => {
 });
 
 const tabs = {
-  account: [
-    { link: "/persons", label: "INSURED PERSONS", icon: null },
-    { link: "/agents", label: "AGENTS", icon: null },
-    { link: "/appraiser-company", label: "Appraisal companies", icon: null },
-    { link: "/appraisers", label: "Appraisers", icon: null },
-    { link: "/sdp", label: "SDP", icon: null },
-    { link: "/events", label: "Insured events", icon: null },
+  superadmin: [
+    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+    { link: "/agents", label: "AGENTS", element: <Agents /> },
+    {
+      link: "/appraiser-company",
+      label: "APPRAISER COMPANIES",
+      element: <AppraiserCompanies />,
+    },
+    { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
+    { link: "/sdp", label: "SDP", element: <Sdp /> },
+    { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
+    {
+      link: "/insurance-company",
+      label: "INSURANCE COMPANIES",
+      element: <InsuredCompanies />,
+    },
   ],
-  general: [
-    { link: "/persons", label: "INSURED PERSONS", icon: null },
-    { link: "/agents", label: "AGENTS", icon: null },
-    { link: "/appraiser-company", label: "Appraisal companies", icon: null },
-    { link: "/appraisers", label: "Appraisers", icon: null },
-    { link: "/sdp", label: "SDP", icon: null },
-    { link: "/events", label: "Insured events", icon: null },
+  insurance_company: [
+    {
+      link: "/insurance-company",
+      label: "INSURANCE COMPANIES",
+      element: <InsuredCompanies />,
+    },
+  ],
+  appraisal_company: [
+    {
+      link: "/appraiser-company",
+      label: "APPRAISER COMPANIES",
+      element: <AppraiserCompanies />,
+    },
   ],
 };
 
 export default function AdminPanel() {
+  const user = useSelector(({ user }) => user);
   const { classes, cx } = useStyles();
-  const [
-    section,
-    //  setSection
-  ] = useState("account");
-  const [active, setActive] = useState("Billing");
-
-  const links = tabs[section].map((item) => (
+  const [active, setActive] = useState("INSURED PERSONS");
+  const links = tabs[user?.role].map((item) => (
     <Link
       className={cx(classes.link, {
         [classes.linkActive]: item.label === active,
@@ -130,6 +142,10 @@ export default function AdminPanel() {
     >
       <span>{item.label}</span>
     </Link>
+  ));
+
+  const RootRoutes = tabs[user?.role].map((item, i) => (
+    <Route key={i} path={item?.link} element={item?.element} />
   ));
 
   return (
@@ -145,11 +161,12 @@ export default function AdminPanel() {
         >
           <Navbar.Section>
             <Text
-              weight={500}
+              weight={600}
               size="sm"
               className={classes.title}
               color="dimmed"
               mb="xs"
+              style={{ marginBottom: "-10px", padding: " 0 10px" }}
             >
               InsureX Admin Panel
             </Text>
@@ -158,15 +175,7 @@ export default function AdminPanel() {
         </Navbar>
       }
     >
-      <Routes>
-        <Route path="/persons" element={<Persons />} />
-        <Route path="/agents" element={<Agents />} />
-        <Route path="/appraiser-company" element={<AppraiserCompanies />} />
-        <Route path="/appraisers" element={<Appraisers />} />
-        <Route path="/sdp" element={<Sdp />} />
-        <Route path="/events" element={<InsuredEvent />} />
-        <Route path="/login" element={<LoginAuntification />} />
-      </Routes>
+      <Routes>{RootRoutes}</Routes>
     </AppShell>
   );
 }
