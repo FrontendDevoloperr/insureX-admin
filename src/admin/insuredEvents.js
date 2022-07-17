@@ -446,6 +446,7 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"document_date"} />
           <input className="disabled" readOnly={true} value={"address"} />
           <input className="disabled" readOnly={true} value={"city"} />
+          <input className="disabled" readOnly={true} value={"event type"} />
         </div>
         {elements?.map((item, i) => (
           <Rows
