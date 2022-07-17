@@ -50,7 +50,7 @@ function Rows({
           toast.error("Error while updating data");
         });
     }
-    if (data?.new) {
+    if (item?.new) {
       const formData = data;
       setIsLoading(true);
       delete formData?.new;

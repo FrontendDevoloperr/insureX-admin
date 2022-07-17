@@ -1,10 +1,11 @@
 import React from "react";
 import { LoadingOverlay, Header } from "@mantine/core";
 import axios from "axios";
-import { _URL, getFormData } from "../utils";
+import { _URL, getFormData, CaseTypeExtract, typeCase } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { GoogDriveIcon, PlusUser } from "../icons";
+import { useNavigate } from "react-router-dom";
 
 function Rows({
   item,
@@ -21,22 +22,36 @@ function Rows({
   appComp,
 }) {
   const { register, handleSubmit } = useForm();
-
+  const navigate = useNavigate();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.city_id &&
-      !data.city_id === "null" &&
-      !data.city_id === null &&
-      (data.city_id = item.city_id === "null" ? isCitys[0]?.id : item.city_id);
+    !data.city_id && item.city_id
+      ? (data.city_id = item.city_id)
+      : (data.city_id = isCitys[0]?.id);
+    !data.appraiser_id && item.appraiser_id
+      ? (data.appraiser_id = item.appraiser_id)
+      : (data.appraiser_id = appraisers[0]?.id);
+
     if (data?.id) {
       let formData = {
-        ...data,
+        insured_person_id: item.insured_person_id,
+        address: data.address,
+        document_date: item.document_date,
+        insured_number: data.insured_number,
+        city_id: item.city_id,
+        agent_id: item.agent_id,
+        appraiser_id: item.appraiser_id,
+        sdp_id: item.sdp_id,
+        // insurance_company_id: item.item?.insurance_company_id?.[0],
+        event_type_id: item.event_type_id,
+        property_type_id: item.property_type_id,
       };
       delete formData.id;
-      console.log(formData);
+      // console.log(formData, "formData");
+      // console.log(data, "data");
       setIsLoading(true);
       axios
         .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData))
@@ -75,22 +90,6 @@ function Rows({
     }
   };
 
-  React.useEffect(() => {
-    if (
-      events?.filter((eve) => eve.id === item?.insured_event_id)[0]
-        ?.appraisal_company_id
-    ) {
-      console.log(
-        appComp?.filter(
-          (app) =>
-            app?.id ===
-            events?.filter((eve) => eve.id === item?.insured_event_id)[0]
-              ?.appraisal_company_id
-        )
-      );
-    }
-  }, []);
-
   return (
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
@@ -105,9 +104,12 @@ function Rows({
             item.appraisal_company_name = e.target.value;
           }}
           value={
-            appComp?.find(
-              (_app) => _app?.appraisal_company_name === item?.appraisal_company_name
-            )?.id
+            appComp?.filter(
+              (app) =>
+                app?.id ===
+                events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+                  ?.appraisal_company_id
+            )[0]?.appraisal_company_name
           }
           {...register(`appraisal_company_name`)}
         >
@@ -181,28 +183,39 @@ function Rows({
               </option>
             ))}
         </select>
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.insured_person_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
 
-            item.insured_person_id = e.target.value;
-          }}
-          value={
-            person.filter(
-              (options) =>
-                options?.id === (item?.insured_person_id ?? person[0]?.id)
-            )[0]?.id
-          }
-          {...register(`insured_person_id`)}
-        >
-          {person?.map((options) => (
-            <option key={options?.id} value={options?.id}>
-              {options?.first_name}
-            </option>
-          ))}
-        </select>
+        {!item?.new ? (
+          <input
+            onFocus={() => {
+              if (item?.insured_person_id) {
+                navigate("/persons#" + item?.insured_person_id);
+              }
+            }}
+            defaultValue={
+              person.find((_person) => _person?.id === item?.insured_person_id)
+                ?.first_name
+            }
+            {...register(`insured_person_id`)}
+          />
+        ) : (
+          <select
+            onInput={(e) => {
+              e.target.value !== item?.insured_person_id
+                ? setIsUpdated(true)
+                : setIsUpdated(false);
+
+              item.insured_person_id = e.target.value;
+            }}
+            value={person.find((_person) => _person?.id === "344")?.id}
+            {...register(`insured_person_id`)}
+          >
+            {person?.map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.first_name}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           onInput={(e) => {
             e.target.value !== item?.insurance_company_id?.[0]
@@ -269,6 +282,29 @@ function Rows({
               // selected={item?.city_id === options?.id}
             >
               {options?.city_name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          onInput={(e) => {
+            setIsUpdated(true);
+            let value = JSON.parse(e.target.value ?? "{}");
+            item.event_type_id = value.event_type_id;
+            item.property_type_id = value.property_type_id;
+            console.log(item);
+          }}
+          defaultValue={CaseTypeExtract(item)?.name}
+        >
+          {typeCase?.map((options) => (
+            <option
+              key={options?.link}
+              value={JSON.stringify({
+                event_type_id: options?.event_type_id,
+                property_type_id: options?.property_type_id,
+              })}
+            >
+              {CaseTypeExtract(options)?.name}
             </option>
           ))}
         </select>
