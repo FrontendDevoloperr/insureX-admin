@@ -286,8 +286,8 @@ function Rows({
           }}
           defaultValue={
             JSON.stringify({
-              event_type_id: CaseTypeExtract(item)?.event_type_id,
-              property_type_id: CaseTypeExtract(item)?.property_type_id,
+              event_type_id: item?.event_type_id,
+              property_type_id: item?.property_type_id,
             })
           }
         >
