@@ -1,14 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  Navbar,
-  Text,
-  createStyles,
-  AppShell,
-  Header,
-  ActionIcon,
-} from "@mantine/core";
-import { Adjustments } from "tabler-icons-react";
+import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
 import { NavLink, Route, Routes } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
@@ -122,6 +114,16 @@ const tabs = {
     },
   ],
   insurance_company: [
+    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+    { link: "/agents", label: "AGENTS", element: <Agents /> },
+    {
+      link: "/appraiser-company",
+      label: "APPRAISER COMPANIES",
+      element: <AppraiserCompanies />,
+    },
+    { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
+    { link: "/sdp", label: "SDP", element: <Sdp /> },
+    { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
     {
       link: "/insurance-company",
       label: "INSURANCE COMPANIES",
@@ -129,11 +131,14 @@ const tabs = {
     },
   ],
   appraisal_company: [
+    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     {
       link: "/appraiser-company",
       label: "APPRAISER COMPANIES",
       element: <AppraiserCompanies />,
     },
+    { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
+    { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
   ],
 };
 
