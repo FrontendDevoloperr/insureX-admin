@@ -252,7 +252,7 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+          toast.error("Error loading data, looks like a server error");
         });
     };
     fetchData();

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 
-function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
+function Rows({ item, setElements, datas, loading }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -72,7 +72,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
           {...register(`title`)}
         />
         <input
-         className="multiples-select"
+          className="multiples-select"
           onInput={(e) => {
             setIsUpdated(true);
           }}
@@ -81,7 +81,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
         />
 
         <input
-         className="multiples-select"
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.email
               ? setIsUpdated(true)
@@ -91,7 +91,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
           {...register(`email`)}
         />
         <input
-         className="multiples-select"
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.phone
               ? setIsUpdated(true)
@@ -101,7 +101,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
           {...register(`phone`)}
         />
         <input
-        className="multiples-select"
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.address
               ? setIsUpdated(true)
@@ -125,8 +125,6 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
 export default function Persons() {
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [isRegions, setIsRegions] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -140,19 +138,10 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+          toast.error("Error loading data, looks like a server error");
         });
     };
     fetchData();
-  }, []);
-
-  React.useEffect(() => {
-    axios.get(`${_URL}/regions`).then((res) => {
-      setIsRegions(res?.data?.message?.regions);
-    });
-    axios.get(`${_URL}/city`).then((res) => {
-      setIsCitys(res?.data?.message?.cities);
-    });
   }, []);
 
   return (
@@ -183,10 +172,26 @@ export default function Persons() {
             readOnly={true}
             value={"title"}
           />
-          <input className="disabled multiples-select" readOnly={true} value={"ie_number"} />
-          <input className="disabled multiples-select" readOnly={true} value={"email"} />
-          <input className="disabled multiples-select" readOnly={true} value={"phone"} />
-          <input className="disabled multiples-select" readOnly={true} value={"address"} />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"ie_number"}
+          />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"email"}
+          />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"phone"}
+          />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"address"}
+          />
         </div>
         {elements?.map((item, i) => (
           <Rows
@@ -195,8 +200,6 @@ export default function Persons() {
             setElements={setElements}
             datas={elements}
             loading={loading}
-            isRegions={isRegions}
-            isCitys={isCitys}
           />
         ))}
       </div>
