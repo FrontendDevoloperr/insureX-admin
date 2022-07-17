@@ -43,7 +43,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.agents].filter((item) => !item?.new)
+            [...datas, res?.data?.message?.agent].filter((item) => !item?.new)
           );
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);

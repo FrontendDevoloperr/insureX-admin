@@ -12,7 +12,6 @@ function Rows({
   datas,
   loading,
   isCompanys,
-  isCitys,
   isRegions,
   appraiselCompanys,
 }) {
@@ -26,7 +25,6 @@ function Rows({
     !data?.appraisal_company_id &&
       (data.appraisal_company_id =
         item?.appraisal_company_id ?? appraiselCompanys[0]?.id);
-    !data?.city_id && (data.city_id = item?.city_id ?? isCitys[0]?.id);
     !data?.insurance_company_id &&
       (data.insurance_company_id =
         item?.insurance_company_id ?? isCompanys[0]?.id);
@@ -34,7 +32,6 @@ function Rows({
     if (data?.id) {
       const formData = data;
       delete formData.id;
-      delete formData.city_id;
 
       setIsLoading(true);
       axios
@@ -116,7 +113,6 @@ function Rows({
             <option
               key={options?.id}
               value={options?.id}
-              // selected={item?.city_id === options?.id}
             >
               {options?.appraisal_company_name}
             </option>
@@ -184,35 +180,12 @@ function Rows({
             <option
               key={options?.id}
               value={options?.id}
-              // selected={item?.city_id === options?.id}
             >
               {options?.region_name}
             </option>
           ))}
         </select>
 
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.city_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.city_id = e.target.value;
-          }}
-          value={
-            isCitys.filter((options) => options.id === item?.city_id)[0]?.id
-          }
-          {...register(`city_id`)}
-        >
-          {isCitys.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-              // selected={item?.city_id === options?.id}
-            >
-              {options?.city_name}
-            </option>
-          ))}
-        </select>
         <input
           onInput={(e) => {
             e.target.value !== item?.address
@@ -265,7 +238,6 @@ export default function Persons() {
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isRegions, setIsRegions] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
   const [appraiselCompanys, setAppraiselCompanys] = React.useState([]);
 
   React.useEffect(() => {
@@ -292,9 +264,6 @@ export default function Persons() {
     });
     axios.get(`${_URL}/regions`).then((res) => {
       setIsRegions(res?.data?.message?.regions);
-    });
-    axios.get(`${_URL}/city`).then((res) => {
-      setIsCitys(res?.data?.message?.cities);
     });
     axios.get(`${_URL}/appraisal-companies`).then((res) => {
       setAppraiselCompanys(res?.data?.message?.appraisal_companies);
@@ -340,7 +309,6 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"Login ID"} />
           <input className="disabled" readOnly={true} value={"email"} />
           <input className="disabled" readOnly={true} value={"region"} />
-          <input className="disabled error" readOnly={true} value={"city"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
         {elements?.map((item, i) => (
@@ -352,7 +320,6 @@ export default function Persons() {
             loading={loading}
             isCompanys={isCompanys}
             isRegions={isRegions}
-            isCitys={isCitys}
             appraiselCompanys={appraiselCompanys}
           />
         ))}

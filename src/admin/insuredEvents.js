@@ -44,7 +44,7 @@ function Rows({
       appraiser_id: item.appraiser_id ?? appraisers[0].id,
       sdp_id: item.sdp_id ?? sdp[0].id,
       event_type_id: item.event_type_id ?? 1,
-      property_type_id: item.property_type_id ??1,
+      property_type_id: item.property_type_id ?? 1,
     };
     if (data?.id) {
       delete formData.id;
@@ -167,17 +167,11 @@ function Rows({
           }
           {...register(`agent_id`)}
         >
-          {agents
-            ?.filter(
-              (agent) =>
-                agent?.insurance_company_ids[0] ===
-                (item?.insurance_company_id ?? isCompanys[0]?.id)
-            )
-            .map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.first_name}
-              </option>
-            ))}
+          {agents.map((options) => (
+            <option key={options?.id} value={options?.id}>
+              {options?.first_name}
+            </option>
+          ))}
         </select>
 
         {!item?.new ? (

@@ -4,7 +4,7 @@ import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { DeleteIcon, PlusUser } from "../icons";
+import { PlusUser } from "../icons";
 
 function Rows({
   item,
@@ -60,7 +60,7 @@ function Rows({
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.appraisal_companies].filter(
+            [...datas, res?.data?.message?.appraisal_company].filter(
               (item) => !item?.new
             )
           );
@@ -70,9 +70,7 @@ function Rows({
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error(
-            "Error loading data, please try again"
-          );
+          toast.error("Error loading data, please try again");
         });
     }
   };
