@@ -284,7 +284,12 @@ function Rows({
             item.property_type_id = value.property_type_id;
             console.log(item);
           }}
-          defaultValue={CaseTypeExtract(item)?.name}
+          defaultValue={
+            JSON.stringify({
+              event_type_id: CaseTypeExtract(item)?.event_type_id,
+              property_type_id: CaseTypeExtract(item)?.property_type_id,
+            })
+          }
         >
           {typeCase?.map((options) => (
             <option
