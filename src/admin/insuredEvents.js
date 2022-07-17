@@ -18,12 +18,12 @@ function Rows({
   sdp,
   appraisers,
   events,
+  appComp,
 }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
-  const [isEvent, setIsEvent] = React.useState({});
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -76,8 +76,18 @@ function Rows({
   };
 
   React.useEffect(() => {
-    if (item?.insured_event_id) {
-      setIsEvent(events?.filter((eve) => eve.id === item?.insured_event_id)[0]);
+    if (
+      events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+        ?.appraisal_company_id
+    ) {
+      console.log(
+        appComp?.filter(
+          (app) =>
+            app?.id ===
+            events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+              ?.appraisal_company_id
+        )
+      );
     }
   }, []);
 
@@ -85,14 +95,28 @@ function Rows({
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
-        <input
-          className=""
+
+        <select
           onInput={(e) => {
-            setIsUpdated(true);
+            e.target.value !== item?.appraisal_company_name
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
+
+            item.appraisal_company_name = e.target.value;
           }}
-          defaultValue={item?.appraisal_company_name}
+          value={
+            appComp?.find(
+              (_app) => _app?.appraisal_company_name === item?.appraisal_company_name
+            )?.id
+          }
           {...register(`appraisal_company_name`)}
-        />
+        >
+          {appComp?.map((options) => (
+            <option key={options?.id} value={options?.appraisal_company_name}>
+              {options?.appraisal_company_name}
+            </option>
+          ))}
+        </select>
 
         <select
           onInput={(e) => {
@@ -248,13 +272,17 @@ function Rows({
             </option>
           ))}
         </select>
-        {isEvent?.folder_google_drive_link && (
+        {events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+          ?.folder_google_drive_link && (
           <button
             className="btn-drive-link"
             type="button"
             onClick={() => {
               window.open(
-                `${isEvent?.folder_google_drive_link}`,
+                `${
+                  events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+                    ?.folder_google_drive_link
+                }`,
                 "_blank",
                 "noopener",
                 "noreferrer"
@@ -286,6 +314,7 @@ export default function Persons() {
   const [sdp, setSdp] = React.useState([]);
   const [appraiser, setAppraiser] = React.useState([]);
   const [events, setEvents] = React.useState([]);
+  const [appComp, setAppComp] = React.useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -326,6 +355,9 @@ export default function Persons() {
     });
     axios.get(`${_URL}/insured-events`).then((res) => {
       setEvents(res?.data?.message?.insured_events);
+    });
+    axios.get(`${_URL}/appraisal-companies`).then((res) => {
+      setAppComp(res?.data?.message?.appraisal_companies);
     });
   }, []);
 
@@ -393,6 +425,7 @@ export default function Persons() {
             sdp={sdp}
             appraisers={appraiser}
             events={events}
+            appComp={appComp}
           />
         ))}
       </div>
