@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 
-function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
+function Rows({ item, setElements, datas, loading }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -14,11 +14,6 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.region_id && (data.region_id = item.region_id);
-    !data.city_id &&
-      !data.city_id === "null" &&
-      !data.city_id === null &&
-      (data.city_id = item.city_id === "null" ? isCitys[0]?.id : item.city_id);
     if (data?.id) {
       let formData = {
         ...data,
@@ -26,8 +21,6 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
       };
       delete formData.id;
       delete formData.insurance_company_ids;
-      delete formData.city_id;
-      delete formData.region_id;
       setIsLoading(true);
       axios
         .patch(`${_URL}/insurance-companies/${item?.id}`, getFormData(formData))
@@ -51,7 +44,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.insurance_companies].filter(
+            [...datas, res?.data?.message?.insurance_company].filter(
               (item) => !item?.new
             )
           );
@@ -79,6 +72,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
           {...register(`title`)}
         />
         <input
+          className="multiples-select"
           onInput={(e) => {
             setIsUpdated(true);
           }}
@@ -87,6 +81,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
         />
 
         <input
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.email
               ? setIsUpdated(true)
@@ -96,6 +91,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
           {...register(`email`)}
         />
         <input
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.phone
               ? setIsUpdated(true)
@@ -104,47 +100,8 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
           defaultValue={item?.phone}
           {...register(`phone`)}
         />
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.region_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.region_id = e.target.value;
-          }}
-          value={
-            isRegions.filter((options) => options.id === item?.region_id)[0]?.id
-          }
-          {...register(`region_id`)}
-        >
-          {isRegions.map((options) => (
-            <option key={options?.id} value={options?.id}>
-              {options?.region_name}
-            </option>
-          ))}
-        </select>
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.city_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.city_id = e.target.value;
-          }}
-          value={
-            isCitys.filter((options) => options.id === item?.city_id)[0]?.id
-          }
-          {...register(`city_id`)}
-        >
-          {isCitys.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-              // selected={item?.city_id === options?.id}
-            >
-              {options?.city_name}
-            </option>
-          ))}
-        </select>
         <input
+          className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.address
               ? setIsUpdated(true)
@@ -168,8 +125,6 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
 export default function Persons() {
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [isRegions, setIsRegions] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -183,19 +138,10 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+          toast.error("Error loading data, looks like a server error");
         });
     };
     fetchData();
-  }, []);
-
-  React.useEffect(() => {
-    axios.get(`${_URL}/regions`).then((res) => {
-      setIsRegions(res?.data?.message?.regions);
-    });
-    axios.get(`${_URL}/city`).then((res) => {
-      setIsCitys(res?.data?.message?.cities);
-    });
   }, []);
 
   return (
@@ -226,14 +172,26 @@ export default function Persons() {
             readOnly={true}
             value={"title"}
           />
-          <input className="disabled" readOnly={true} value={"ie_number"} />
-          <input className="disabled" readOnly={true} value={"email"} />
-          <input className="disabled" readOnly={true} value={"phone"} />
-
-          <input className="disabled error" readOnly={true} value={"region"} />
-
-          <input className="disabled error" readOnly={true} value={"city"} />
-          <input className="disabled" readOnly={true} value={"address"} />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"ie_number"}
+          />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"email"}
+          />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"phone"}
+          />
+          <input
+            className="disabled multiples-select"
+            readOnly={true}
+            value={"address"}
+          />
         </div>
         {elements?.map((item, i) => (
           <Rows
@@ -242,8 +200,6 @@ export default function Persons() {
             setElements={setElements}
             datas={elements}
             loading={loading}
-            isRegions={isRegions}
-            isCitys={isCitys}
           />
         ))}
       </div>

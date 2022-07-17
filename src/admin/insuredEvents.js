@@ -1,10 +1,11 @@
 import React from "react";
 import { LoadingOverlay, Header } from "@mantine/core";
 import axios from "axios";
-import { _URL, getFormData } from "../utils";
+import { _URL, getFormData, CaseTypeExtract, typeCase } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { GoogDriveIcon, PlusUser } from "../icons";
+import { useNavigate } from "react-router-dom";
 
 function Rows({
   item,
@@ -21,22 +22,32 @@ function Rows({
   appComp,
 }) {
   const { register, handleSubmit } = useForm();
-
+  const navigate = useNavigate();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.city_id &&
-      !data.city_id === "null" &&
-      !data.city_id === null &&
-      (data.city_id = item.city_id === "null" ? isCitys[0]?.id : item.city_id);
+    !data.city_id && item.city_id
+      ? (data.city_id = item.city_id)
+      : (data.city_id = isCitys[0]?.id);
+    !data.appraiser_id && item.appraiser_id
+      ? (data.appraiser_id = item.appraiser_id)
+      : (data.appraiser_id = appraisers[0]?.id);
+    let formData = {
+      insured_person_id: item.insured_person_id ?? person[0].id,
+      address: data.address,
+      document_date: item.document_date ?? data.document_date,
+      insured_number: data.insured_number,
+      city_id: item.city_id ?? isCitys[0]?.id,
+      agent_id: item.agent_id ?? agents[0].id,
+      appraiser_id: item.appraiser_id ?? appraisers[0].id,
+      sdp_id: item.sdp_id ?? sdp[0].id,
+      event_type_id: item.event_type_id ?? 1,
+      property_type_id: item.property_type_id ?? 1,
+    };
     if (data?.id) {
-      let formData = {
-        ...data,
-      };
       delete formData.id;
-      console.log(formData);
       setIsLoading(true);
       axios
         .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData))
@@ -56,11 +67,11 @@ function Rows({
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/insurance-case`, getFormData(data))
+        .post(`${_URL}/insurance-case`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.insurance_cases].filter(
+            [...datas, res?.data?.message?.insurance_case].filter(
               (item) => !item?.new
             )
           );
@@ -74,22 +85,6 @@ function Rows({
         });
     }
   };
-
-  React.useEffect(() => {
-    if (
-      events?.filter((eve) => eve.id === item?.insured_event_id)[0]
-        ?.appraisal_company_id
-    ) {
-      console.log(
-        appComp?.filter(
-          (app) =>
-            app?.id ===
-            events?.filter((eve) => eve.id === item?.insured_event_id)[0]
-              ?.appraisal_company_id
-        )
-      );
-    }
-  }, []);
 
   return (
     <>
@@ -105,9 +100,12 @@ function Rows({
             item.appraisal_company_name = e.target.value;
           }}
           value={
-            appComp?.find(
-              (_app) => _app?.appraisal_company_name === item?.appraisal_company_name
-            )?.id
+            appComp?.filter(
+              (app) =>
+                app?.id ===
+                events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+                  ?.appraisal_company_id
+            )[0]?.appraisal_company_name
           }
           {...register(`appraisal_company_name`)}
         >
@@ -169,40 +167,45 @@ function Rows({
           }
           {...register(`agent_id`)}
         >
-          {agents
-            ?.filter(
-              (agent) =>
-                agent?.insurance_company_ids[0] ===
-                (item?.insurance_company_id ?? isCompanys[0]?.id)
-            )
-            .map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.first_name}
-              </option>
-            ))}
-        </select>
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.insured_person_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-
-            item.insured_person_id = e.target.value;
-          }}
-          value={
-            person.filter(
-              (options) =>
-                options?.id === (item?.insured_person_id ?? person[0]?.id)
-            )[0]?.id
-          }
-          {...register(`insured_person_id`)}
-        >
-          {person?.map((options) => (
+          {agents.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.first_name}
             </option>
           ))}
         </select>
+
+        {!item?.new ? (
+          <input
+            onFocus={() => {
+              if (item?.insured_person_id) {
+                navigate("/persons#" + item?.insured_person_id);
+              }
+            }}
+            defaultValue={
+              person.find((_person) => _person?.id === item?.insured_person_id)
+                ?.first_name
+            }
+            {...register(`insured_person_id`)}
+          />
+        ) : (
+          <select
+            onInput={(e) => {
+              e.target.value !== item?.insured_person_id
+                ? setIsUpdated(true)
+                : setIsUpdated(false);
+
+              item.insured_person_id = e.target.value;
+            }}
+            value={person.find((_person) => _person?.id === "344")?.id}
+            {...register(`insured_person_id`)}
+          >
+            {person?.map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.first_name}
+              </option>
+            ))}
+          </select>
+        )}
         <select
           onInput={(e) => {
             e.target.value !== item?.insurance_company_id?.[0]
@@ -272,6 +275,34 @@ function Rows({
             </option>
           ))}
         </select>
+
+        <select
+          onInput={(e) => {
+            setIsUpdated(true);
+            let value = JSON.parse(e.target.value ?? "{}");
+            item.event_type_id = value.event_type_id;
+            item.property_type_id = value.property_type_id;
+            console.log(item);
+          }}
+          defaultValue={
+            JSON.stringify({
+              event_type_id: CaseTypeExtract(item)?.event_type_id,
+              property_type_id: CaseTypeExtract(item)?.property_type_id,
+            })
+          }
+        >
+          {typeCase?.map((options) => (
+            <option
+              key={options?.link}
+              value={JSON.stringify({
+                event_type_id: options?.event_type_id,
+                property_type_id: options?.property_type_id,
+              })}
+            >
+              {CaseTypeExtract(options)?.name}
+            </option>
+          ))}
+        </select>
         {events?.filter((eve) => eve.id === item?.insured_event_id)[0]
           ?.folder_google_drive_link && (
           <button
@@ -328,7 +359,7 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+          toast.error("Error loading data, looks like a server error");
         });
     };
     fetchData();
@@ -410,6 +441,7 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"document_date"} />
           <input className="disabled" readOnly={true} value={"address"} />
           <input className="disabled" readOnly={true} value={"city"} />
+          <input className="disabled" readOnly={true} value={"event type"} />
         </div>
         {elements?.map((item, i) => (
           <Rows

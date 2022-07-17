@@ -43,7 +43,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.agents].filter((item) => !item?.new)
+            [...datas, res?.data?.message?.agent].filter((item) => !item?.new)
           );
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
@@ -217,7 +217,7 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+          toast.error("Error loading data, looks like a server error");
         });
     };
     fetchData();

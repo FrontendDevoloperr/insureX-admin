@@ -57,142 +57,138 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
   };
 
   return (
-    <>
-      <form className="row" onSubmit={handleSubmit(onSubmit)}>
-        <LoadingOverlay visible={isLoading} />
-        <select
-          className="multiples-select"
-          onInput={(e) => {
-            e.target.value !== item?.insurance_company_ids?.[0]
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.insurance_company_ids = e.target.value;
-          }}
-          value={
-            isCompanys?.filter(
-              (options) => options.id === item?.insurance_company_ids?.[0]
-            )[0]?.id
-          }
-          {...register(`insurance_company_ids`)}
-        >
-          {isCompanys?.map((options) => (
-            <option key={options.id} value={options.id}>
-              {options.title}
-            </option>
-          ))}
-        </select>
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.first_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.first_name}
-          {...register(`first_name`)}
-        />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.second_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.second_name}
-          {...register(`second_name`)}
-        />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.phone
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.phone}
-          {...register(`phone`)}
-        />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.email
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.email}
-          {...register(`email`)}
-        />
+    <form className="row" onSubmit={handleSubmit(onSubmit)}>
+      <LoadingOverlay visible={isLoading} />
+      <select
+        className="multiples-select"
+        onInput={(e) => {
+          e.target.value !== item?.insurance_company_ids?.[0]
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+          item.insurance_company_ids = e.target.value;
+        }}
+        value={
+          isCompanys?.filter(
+            (options) => options.id === item?.insurance_company_ids?.[0]
+          )[0]?.id
+        }
+        {...register(`insurance_company_ids`)}
+      >
+        {isCompanys?.map((options) => (
+          <option key={options.id} value={options.id}>
+            {options.title}
+          </option>
+        ))}
+      </select>
+      <input
+        onInput={(e) => {
+          e.target.value !== item?.first_name
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+        }}
+        defaultValue={item?.first_name}
+        {...register(`first_name`)}
+      />
+      <input
+        onInput={(e) => {
+          e.target.value !== item?.second_name
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+        }}
+        defaultValue={item?.second_name}
+        {...register(`second_name`)}
+      />
+      <input
+        onInput={(e) => {
+          e.target.value !== item?.phone
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+        }}
+        defaultValue={item?.phone}
+        {...register(`phone`)}
+      />
+      <input
+        onInput={(e) => {
+          e.target.value !== item?.email
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+        }}
+        defaultValue={item?.email}
+        {...register(`email`)}
+      />
 
-        <select
-          onInput={(e) => {
-            setIsUpdated(true);
+      <select
+        onInput={(e) => {
+          setIsUpdated(true);
 
-            item.city_id = e.target.value;
-          }}
-          value={isCitys.find((options) => options.id === item?.city_id)?.id}
-          {...register(`city_id`)}
-        >
-          {isCitys.map((options) => (
-            <option
-              // selected={options.id === item?.city_id}
-              key={options?.id}
-              value={options?.id}
-            >
-              {options?.city_name}
-            </option>
-          ))}
-        </select>
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.address
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.address}
-          {...register(`address`)}
-          className="multiples-select"
-        />
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.passport_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.passport_id}
-          {...register(`passport_id`)}
-        />
-        {isUpdated ? (
-          <button type="submit" onClick={() => {}}>
-            {item?.id ? "Update" : "Create"}
-          </button>
-        ) : (
-          <button
-            title="Удалить"
-            type="button"
-            className="delete"
-            onClick={() => {
-              if (!item?.id) {
-                setElements(datas.filter((item) => item?.new !== true));
-              }
-              if (item?.id) {
-                setIsLoading(true);
-                axios
-                  .delete(`${_URL}/sdp/${item.id}`)
-                  .then((res) => {
-                    setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
-                    );
-                    toast.success("Deleted");
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    setIsLoading(false);
-                    toast.error("Ошибка при удалении данных");
-                  });
-              }
-            }}
+          item.city_id = e.target.value;
+        }}
+        value={isCitys.find((options) => options.id === item?.city_id)?.id}
+        {...register(`city_id`)}
+      >
+        {isCitys.map((options) => (
+          <option
+            // selected={options.id === item?.city_id}
+            key={options?.id}
+            value={options?.id}
           >
-            <DeleteIcon />
-          </button>
-        )}
-      </form>
-    </>
+            {options?.city_name}
+          </option>
+        ))}
+      </select>
+      <input
+        onInput={(e) => {
+          e.target.value !== item?.address
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+        }}
+        defaultValue={item?.address}
+        {...register(`address`)}
+        className="multiples-select"
+      />
+      <input
+        onInput={(e) => {
+          e.target.value !== item?.passport_id
+            ? setIsUpdated(true)
+            : setIsUpdated(false);
+        }}
+        defaultValue={item?.passport_id}
+        {...register(`passport_id`)}
+      />
+      {isUpdated ? (
+        <button type="submit" onClick={() => {}}>
+          {item?.id ? "Update" : "Create"}
+        </button>
+      ) : (
+        <button
+          title="Удалить"
+          type="button"
+          className="delete"
+          onClick={() => {
+            if (!item?.id) {
+              setElements(datas.filter((item) => item?.new !== true));
+            }
+            if (item?.id) {
+              setIsLoading(true);
+              axios
+                .delete(`${_URL}/sdp/${item.id}`)
+                .then((res) => {
+                  setIsLoading(false);
+                  setElements(datas.filter((__res) => __res?.id !== item?.id));
+                  toast.success("Deleted");
+                })
+                .catch((err) => {
+                  console.log(err);
+                  setIsLoading(false);
+                  toast.error("Ошибка при удалении данных");
+                });
+            }
+          }}
+        >
+          <DeleteIcon />
+        </button>
+      )}
+    </form>
   );
 }
 
@@ -214,7 +210,7 @@ export default function Sdp() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Ошибка при загрузке данных, похоже на серверную ошибку");
+          toast.error("Error loading data, looks like a server error");
         });
     };
     fetchData();
@@ -224,7 +220,6 @@ export default function Sdp() {
     axios.get(`${_URL}/insurance-companies`).then((res) => {
       setIsCompanys(res?.data?.message?.insurance_companies);
     });
-
     axios.get(`${_URL}/city`).then((res) => {
       setIsCitys(res?.data?.message?.cities);
     });
