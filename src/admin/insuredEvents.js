@@ -34,24 +34,20 @@ function Rows({
     !data.appraiser_id && item.appraiser_id
       ? (data.appraiser_id = item.appraiser_id)
       : (data.appraiser_id = appraisers[0]?.id);
-
+    let formData = {
+      insured_person_id: item.insured_person_id ?? person[0].id,
+      address: data.address,
+      document_date: item.document_date ?? data.document_date,
+      insured_number: data.insured_number,
+      city_id: item.city_id ?? isCitys[0]?.id,
+      agent_id: item.agent_id ?? agents[0].id,
+      appraiser_id: item.appraiser_id ?? appraisers[0].id,
+      sdp_id: item.sdp_id ?? sdp[0].id,
+      event_type_id: item.event_type_id ?? 1,
+      property_type_id: item.property_type_id ??1,
+    };
     if (data?.id) {
-      let formData = {
-        insured_person_id: item.insured_person_id,
-        address: data.address,
-        document_date: item.document_date,
-        insured_number: data.insured_number,
-        city_id: item.city_id,
-        agent_id: item.agent_id,
-        appraiser_id: item.appraiser_id,
-        sdp_id: item.sdp_id,
-        // insurance_company_id: item.item?.insurance_company_id?.[0],
-        event_type_id: item.event_type_id,
-        property_type_id: item.property_type_id,
-      };
       delete formData.id;
-      // console.log(formData, "formData");
-      // console.log(data, "data");
       setIsLoading(true);
       axios
         .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData))
@@ -71,11 +67,11 @@ function Rows({
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/insurance-case`, getFormData(data))
+        .post(`${_URL}/insurance-case`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.insurance_cases].filter(
+            [...datas, res?.data?.message?.insurance_case].filter(
               (item) => !item?.new
             )
           );
