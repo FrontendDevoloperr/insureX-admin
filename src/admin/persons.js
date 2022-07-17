@@ -24,10 +24,10 @@ function Rows({
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     !data.insurance_company_id &&
-      (data.insurance_company_id = item.insurance_company_id);
-    !data.region_id && (data.region_id = item.region_id);
-    !data.city_id && (data.city_id = item.city_id);
-    !data.agent_id && (data.agent_id = item.agent_id ?? isAgents[0].id);
+      (data.insurance_company_id = (item.insurance_company_id ?? isCompanys[0]?.id));
+    !data.region_id && (data.region_id = (item.region_id ?? isRegions[0]?.id));
+    !data.city_id && (data.city_id = (item.city_id ?? isCitys[0]?.id));
+    !data.agent_id && (data.agent_id = (item.agent_id ?? isAgents[0].id));
     if (data?.id) {
       let formData = data;
       delete formData.id;

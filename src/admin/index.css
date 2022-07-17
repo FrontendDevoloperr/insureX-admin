@@ -14,12 +14,14 @@ a.active {
   background-color: #e7f5ff;
   color: #1c7ed6;
 }
-
+input.error {
+  border: 1px solid #ff0000 !important;
+}
 .ox-scroll {
   overflow: auto;
   min-height: 80%;
   max-width: calc(100vw - 350px);
-  max-height: calc(95vh - 50px);
+  max-height: calc(95vh - 110px);
   position: relative;
 }
 
@@ -33,6 +35,18 @@ a.active {
 .ox-scroll::-webkit-scrollbar-thumb {
   background-color: #888;
   border-radius: 20px;
+}
+
+.btn-drive-link {
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  overflow: none;
+  padding: 5px;
+  background: transparent;
 }
 
 .ox-scroll .row {

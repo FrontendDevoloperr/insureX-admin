@@ -27,8 +27,11 @@ function Rows({
       (data.appraisal_company_id =
         item?.appraisal_company_id ?? appraiselCompanys[0]?.id);
     !data?.city_id && (data.city_id = item?.city_id ?? isCitys[0]?.id);
+    !data?.insurance_company_id &&
+      (data.insurance_company_id =
+        item?.insurance_company_id ?? isCompanys[0]?.id);
     !data?.region_id && (data.region_id = item?.region_id ?? isRegions[0]?.id);
-    if (!data?.new && data?.id) {
+    if (data?.id) {
       const formData = data;
       delete formData.id;
       delete formData.city_id;
@@ -48,7 +51,6 @@ function Rows({
         });
     }
     if (!data?.id) {
-      console.log(data);
       const formData = data;
       setIsLoading(true);
       delete formData?.new;
@@ -338,7 +340,7 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"Login ID"} />
           <input className="disabled" readOnly={true} value={"email"} />
           <input className="disabled" readOnly={true} value={"region"} />
-          <input className="disabled" readOnly={true} value={"city"} />
+          <input className="disabled error" readOnly={true} value={"city"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
         {elements?.map((item, i) => (

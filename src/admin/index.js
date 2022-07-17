@@ -161,7 +161,7 @@ export default function AdminPanel() {
       asideOffsetBreakpoint="sm"
       navbar={
         <Navbar
-          height={"100vh"}
+          height={"calc(100vh - 75px)"}
           width={{ sm: 300 }}
           p="md"
           className={classes.navbar}
@@ -191,12 +191,6 @@ export default function AdminPanel() {
               <Popup />
               <p>Notifications</p>
             </div>
-            {/* <div className="header_settings">
-              <ActionIcon>
-                <Adjustments />
-              </ActionIcon>
-              <p>Settings</p>
-            </div> */}
             <div
               title="Logout"
               className="header_logout"

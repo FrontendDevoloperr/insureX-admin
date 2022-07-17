@@ -26,6 +26,8 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
       };
       delete formData.id;
       delete formData.insurance_company_ids;
+      delete formData.city_id;
+      delete formData.region_id;
       setIsLoading(true);
       axios
         .patch(`${_URL}/insurance-companies/${item?.id}`, getFormData(formData))
@@ -59,9 +61,7 @@ function Rows({ item, setElements, datas, loading, isRegions, isCitys }) {
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error(
-            "Error loading data, please try again"
-          );
+          toast.error("Error loading data, please try again");
         });
     }
   };
@@ -230,9 +230,9 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"email"} />
           <input className="disabled" readOnly={true} value={"phone"} />
 
-          <input className="disabled" readOnly={true} value={"region"} />
+          <input className="disabled error" readOnly={true} value={"region"} />
 
-          <input className="disabled" readOnly={true} value={"city"} />
+          <input className="disabled error" readOnly={true} value={"city"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
         {elements?.map((item, i) => (
