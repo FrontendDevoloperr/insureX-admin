@@ -5,6 +5,7 @@ import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
+import { useSelector } from "react-redux";
 
 function Rows({ item, setElements, datas, loading }) {
   const { register, handleSubmit } = useForm();
@@ -123,6 +124,7 @@ function Rows({ item, setElements, datas, loading }) {
 }
 
 export default function Persons() {
+  const user = useSelector(({ user }) => user);
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -130,7 +132,11 @@ export default function Persons() {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/insurance-companies`)
+        .get(
+          `${_URL}/insurance-companies${
+            user.insurance_company ? `?id=${user.insurance_company.id}` : ""
+          }`
+        )
         .then((res) => {
           setElements(res?.data?.message?.insurance_companies);
           setLoading(false);

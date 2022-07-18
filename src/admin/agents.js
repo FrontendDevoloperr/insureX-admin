@@ -38,8 +38,18 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
       setIsLoading(true);
       delete data?.new;
       delete data?.id;
+      console.log(
+        JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+      , "token");
       axios
-        .post(`${_URL}/agents`, getFormData(data))
+        .post(`${_URL}/agents`, getFormData(data), {
+          headers: {
+            Authorization:
+              "Bearer " +
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token || "",
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -51,9 +61,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error(
-            "Error loading data, please try again"
-          );
+          toast.error("Error loading data, please try again");
         });
     }
   };

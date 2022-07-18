@@ -97,6 +97,11 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 const tabs = {
   superadmin: [
+    {
+      link: "/insurance-company",
+      label: "INSURANCE COMPANIES",
+      element: <InsuredCompanies />,
+    },
     { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/agents", label: "AGENTS", element: <Agents /> },
     {
@@ -107,13 +112,13 @@ const tabs = {
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
     { link: "/sdp", label: "SDP", element: <Sdp /> },
     { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
-    {
-      link: "/insurance-company",
-      label: "INSURANCE COMPANIES",
-      element: <InsuredCompanies />,
-    },
   ],
   insurance_company: [
+    {
+      link: "/insurance-company",
+      label: "INSURANCE COMPANIES",
+      element: <InsuredCompanies />,
+    },
     { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/agents", label: "AGENTS", element: <Agents /> },
     {
@@ -124,11 +129,6 @@ const tabs = {
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
     { link: "/sdp", label: "SDP", element: <Sdp /> },
     { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
-    {
-      link: "/insurance-company",
-      label: "INSURANCE COMPANIES",
-      element: <InsuredCompanies />,
-    },
   ],
   appraisal_company: [
     { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },

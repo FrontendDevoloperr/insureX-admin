@@ -43,6 +43,7 @@ export default function Login() {
             JSON.stringify({
               auth: true,
               role: res?.data?.message?.user?.role,
+              token: res?.data?.message?.token,
             })
           );
           navigate("/persons");

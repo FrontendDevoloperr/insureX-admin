@@ -6,6 +6,8 @@ export const userSlice = createSlice({
     auth: false,
     role: null,
     messages: [],
+    insurance_company: null,
+    appraisal_company: null,
   },
   reducers: {
     login: (state, data) => {
