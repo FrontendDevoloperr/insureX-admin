@@ -51,6 +51,7 @@ function Rows({
       setIsLoading(true);
       delete data?.new;
       delete data?.id;
+      data.role = "insured_person";
       axios
         .post(`${_URL}/insured-persons`, getFormData(data))
         .then((res) => {
@@ -79,7 +80,7 @@ function Rows({
       >
         <LoadingOverlay visible={isLoading} />
         <input
-        autoFocus={isNowEdit}
+          autoFocus={isNowEdit}
           onInput={(e) => {
             setIsUpdated(true);
           }}
