@@ -29,14 +29,17 @@ function App() {
         message(
           res?.data?.messages?.filter(
             (_message) =>
-              _message.first_name && _message.second_name && _message.role
+              _message.first_name ||
+              _message.second_name ||
+              _message.role ||
+              _message.appraiser_company_name ||
+              _message.ie_number ||
+              _message.oao_ie_number
           )
         )
       );
     });
   }, [isUpdateMessage]);
-
-  console.log(user.messages);
 
   React.useEffect(() => {
     if (!user?.auth) {
