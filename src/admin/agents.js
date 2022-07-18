@@ -39,8 +39,9 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
       delete data?.new;
       delete data?.id;
       console.log(
-        JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-      , "token");
+        JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token,
+        "token"
+      );
       axios
         .post(`${_URL}/agents`, getFormData(data), {
           headers: {
