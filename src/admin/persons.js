@@ -5,6 +5,7 @@ import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { DeleteIcon, PlusUser } from "../icons";
+import { useLocation } from "react-router-dom";
 
 function Rows({
   item,
@@ -14,20 +15,21 @@ function Rows({
   isCompanys,
   isRegions,
   isCitys,
+  agents,
+  isNowEdit,
 }) {
   const { register, handleSubmit } = useForm();
-
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
-  const [isAgents, setIsAgents] = React.useState([]);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     !data.insurance_company_id &&
-      (data.insurance_company_id = (item.insurance_company_id ?? isCompanys[0]?.id));
-    !data.region_id && (data.region_id = (item.region_id ?? isRegions[0]?.id));
-    !data.city_id && (data.city_id = (item.city_id ?? isCitys[0]?.id));
-    !data.agent_id && (data.agent_id = (item.agent_id ?? isAgents[0].id));
+      (data.insurance_company_id =
+        item.insurance_company_id ?? isCompanys[0]?.id);
+    !data.region_id && (data.region_id = item.region_id ?? isRegions[0]?.id);
+    !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id);
+    !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id);
     if (data?.id) {
       let formData = data;
       delete formData.id;
@@ -64,30 +66,20 @@ function Rows({
         .catch((err) => {
           console.log(err);
           setIsLoading(false);
-          toast.error(
-            "Error loading data, please try again"
-          );
+          toast.error("Error loading data, please try again");
         });
     }
   };
 
-  React.useEffect(() => {
-    axios
-      .get(
-        `${_URL}/agents?insurance_company_id=${
-          item?.insurance_company_id ?? isCompanys[0]?.id
-        }`
-      )
-      .then((res) => {
-        setIsAgents(res?.data?.message?.agents);
-      });
-  }, [item?.insurance_company_id, isCompanys]);
-
   return (
     <>
-      <form className="row" onSubmit={handleSubmit(onSubmit)}>
+      <form
+        className={`row ${isNowEdit ? "now-edit" : ""}`}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <LoadingOverlay visible={isLoading} />
         <input
+        autoFocus={isNowEdit}
           onInput={(e) => {
             setIsUpdated(true);
           }}
@@ -159,7 +151,7 @@ function Rows({
             item.region_id = e.target.value;
           }}
           value={
-            isRegions.filter((options) => options.id === item?.region_id)[0]?.id
+            isRegions.find((options) => options.id === item?.region_id)?.id
           }
           {...register(`region_id`)}
         >
@@ -187,11 +179,11 @@ function Rows({
             item.agent_id = e.target.value;
           }}
           value={
-            isAgents.filter((options) => options.id === item?.agent_id)[0]?.id
+            agents?.filter((options) => options.id === item?.agent_id)[0]?.id
           }
           {...register(`agent_id`)}
         >
-          {isAgents.map((options) => (
+          {agents?.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.first_name}
             </option>
@@ -265,6 +257,8 @@ export default function Persons() {
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isRegions, setIsRegions] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
+  const [agents, setAgent] = React.useState([]);
+  const location = useLocation();
 
   React.useEffect(() => {
     setLoading(true);
@@ -293,6 +287,9 @@ export default function Persons() {
     });
     axios.get(`${_URL}/city`).then((res) => {
       setIsCitys(res?.data?.message?.cities);
+    });
+    axios.get(`${_URL}/agents`).then((res) => {
+      setAgent(res?.data?.message?.agents);
     });
   }, []);
 
@@ -344,6 +341,8 @@ export default function Persons() {
             isCompanys={isCompanys}
             isRegions={isRegions}
             isCitys={isCitys}
+            agents={agents}
+            isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
           />
         ))}
       </div>

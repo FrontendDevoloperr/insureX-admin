@@ -158,6 +158,7 @@ export default function AdminPanel() {
 
   function Logout() {
     dispatch(logout());
+    localStorage.removeItem("admin-panel-token-insure-x");
   }
 
   return (

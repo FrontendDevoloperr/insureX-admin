@@ -18,15 +18,18 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = React.useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const onSubmit = (data) => {
+    setLoading(true);
     axios
       .post(`${_URL}/account/login`, getFormData(data))
       .then((res) => {
+        setLoading(false);
         if (
           res?.data?.message?.user?.role === "superadmin" ||
           res?.data?.message?.user?.role === "insurance_company" ||
@@ -35,10 +38,18 @@ export default function Login() {
           toast.success("Login Successful");
           dispatch(login(true));
           dispatch(setRole(res?.data?.message?.user?.role));
+          localStorage.setItem(
+            "admin-panel-token-insure-x",
+            JSON.stringify({
+              auth: true,
+              role: res?.data?.message?.user?.role,
+            })
+          );
           navigate("/persons");
         } else toast.error("Role Failed");
       })
       .catch((err) => {
+        setLoading(false);
         console.log(err);
         toast.error("Login Failed");
       });
@@ -63,7 +74,7 @@ export default function Login() {
               {...register("password", { required: true })}
               mt="md"
             />
-            <Button fullWidth mt="xl" type="submit">
+            <Button fullWidth mt="xl" type="submit" loading={loading}>
               Войти
             </Button>
           </Paper>

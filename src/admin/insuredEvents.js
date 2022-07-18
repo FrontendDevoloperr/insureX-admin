@@ -20,24 +20,56 @@ function Rows({
   appraisers,
   events,
   appComp,
+  region,
 }) {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
+  const [isSelect, setIsSelect] = React.useState(true);
+  const [appCom, setAppCom] = React.useState(
+    appComp?.find(
+      (app) =>
+        app?.id ===
+        events?.find((eve) => eve?.id === item?.insured_event_id)
+          ?.appraisal_company_id
+    )?.id
+  );
+  const [appraiser, setAppraiser] = React.useState(
+    appraisers?.find((_app) => _app?.id === item?.appraiser_id)?.id
+  );
+  const [sdpId, setSdpId] = React.useState(
+    sdp?.filter((options) => options.id === item?.sdp_id)[0]?.id
+  );
+  const [agent, setAgent] = React.useState(
+    agents.find((options) => options.id === item?.agent_id)?.id
+  );
+  const [personId, setPersonId] = React.useState(
+    person.find((_person) => _person?.id === item?.insured_person_id)?.id
+  );
+  const [insComp, setiInsComp] = React.useState(
+    isCompanys?.filter(
+      (options) => options.id === item?.insurance_company_id?.[0]
+    )[0]?.id ?? isCompanys[0]?.id
+  );
+  const [isCity, setIsCity] = React.useState(
+    isCitys.find((options) => options.id === item?.city_id)?.id
+  );
+  const [regionId, setRegionId] = React.useState(
+    region.find((options) => options.id === item?.region_id)?.id
+  );
+  const [typeCaseIds, setTypeCaseIds] = React.useState(
+    JSON.stringify({
+      event_type_id: item?.event_type_id,
+      property_type_id: item?.property_type_id,
+    })
+  );
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.city_id && item.city_id
-      ? (data.city_id = item.city_id)
-      : (data.city_id = isCitys[0]?.id);
-    !data.appraiser_id && item.appraiser_id
-      ? (data.appraiser_id = item.appraiser_id)
-      : (data.appraiser_id = appraisers[0]?.id);
     let formData = {
       insured_person_id: item.insured_person_id ?? person[0].id,
       address: data.address,
-      document_date: item.document_date ?? data.document_date,
       insured_number: data.insured_number,
       city_id: item.city_id ?? isCitys[0]?.id,
       agent_id: item.agent_id ?? agents[0].id,
@@ -46,6 +78,22 @@ function Rows({
       event_type_id: item.event_type_id ?? 1,
       property_type_id: item.property_type_id ?? 1,
     };
+
+    let eventFormData = {
+      insurance_company_id: item.insurance_company_id ?? isCompanys[0].id,
+      insured_person_id: item.insured_person_id ?? person[0].id,
+      region_id: item.region_id ?? region[0].id,
+      address: item.address,
+      date: item.document_date ?? data.document_date,
+      agent_id: item.agent_id ?? agents[0].id,
+      appraisal_company_id:
+        data?.appraisal_company_id ??
+        events.find((eve) => eve?.id === item?.insured_event_id)
+          ?.appraisal_company_id ??
+        appComp[0].id,
+      appraiser_id: item.appraiser_id ?? appraisers[0].id,
+    };
+
     if (data?.id) {
       delete formData.id;
       setIsLoading(true);
@@ -55,6 +103,18 @@ function Rows({
           setIsLoading(false);
           toast.success("Updated");
           setIsUpdated(false);
+          axios
+            .patch(
+              `/insured-events/${item?.insured_event_id}`,
+              getFormData(eventFormData)
+            )
+            .then((res) => {
+              console.log("success");
+            })
+            .catch((err) => {
+              console.log(err);
+              toast.error("Error updating event");
+            });
         })
         .catch((err) => {
           console.log(err);
@@ -93,24 +153,23 @@ function Rows({
 
         <select
           onInput={(e) => {
-            e.target.value !== item?.appraisal_company_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-
-            item.appraisal_company_name = e.target.value;
+            setIsUpdated(true);
+            item.appraisal_company_id = e.target.value;
+            setAppCom(e.target.value);
           }}
           value={
-            appComp?.filter(
+            appCom ??
+            appComp?.find(
               (app) =>
                 app?.id ===
-                events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+                events?.find((eve) => eve?.id === item?.insured_event_id)
                   ?.appraisal_company_id
-            )[0]?.appraisal_company_name
+            )?.id
           }
-          {...register(`appraisal_company_name`)}
+          {...register(`appraisal_company_id`)}
         >
           {appComp?.map((options) => (
-            <option key={options?.id} value={options?.appraisal_company_name}>
+            <option key={options?.id} value={options?.id}>
               {options?.appraisal_company_name}
             </option>
           ))}
@@ -118,13 +177,12 @@ function Rows({
 
         <select
           onInput={(e) => {
-            e.target.value !== item?.appraiser_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-
+            setIsUpdated(true);
             item.appraiser_id = e.target.value;
+            setAppraiser(e.target.value);
           }}
           value={
+            appraiser ??
             appraisers?.find((_app) => _app?.id === item?.appraiser_id)?.id
           }
           {...register(`appraiser_id`)}
@@ -138,13 +196,14 @@ function Rows({
 
         <select
           onInput={(e) => {
-            e.target.value !== item?.sdp_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-
+            setIsUpdated(true);
             item.sdp_id = e.target.value;
+            setSdpId(e.target.value);
           }}
-          value={sdp?.filter((options) => options.id === item?.sdp_id)[0]?.id}
+          value={
+            sdpId ??
+            sdp?.filter((options) => options.id === item?.sdp_id)[0]?.id
+          }
           {...register(`sdp_id`)}
         >
           {sdp?.map((options) => (
@@ -156,14 +215,12 @@ function Rows({
 
         <select
           onInput={(e) => {
-            e.target.value !== item?.agent_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-
+            setIsUpdated(true);
             item.agent_id = e.target.value;
+            setAgent(e.target.value);
           }}
           value={
-            agents.filter((options) => options.id === item?.agent_id)[0]?.id
+            agent ?? agents.find((options) => options.id === item?.agent_id)?.id
           }
           {...register(`agent_id`)}
         >
@@ -174,7 +231,7 @@ function Rows({
           ))}
         </select>
 
-        {!item?.new ? (
+        {!item?.new && !isUpdated ? (
           <input
             onFocus={() => {
               if (item?.insured_person_id) {
@@ -188,35 +245,41 @@ function Rows({
             {...register(`insured_person_id`)}
           />
         ) : (
-          <select
-            onInput={(e) => {
-              e.target.value !== item?.insured_person_id
-                ? setIsUpdated(true)
-                : setIsUpdated(false);
-
-              item.insured_person_id = e.target.value;
-            }}
-            value={person.find((_person) => _person?.id === "344")?.id}
-            {...register(`insured_person_id`)}
-          >
-            {person?.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.first_name}
-              </option>
-            ))}
-          </select>
+          isUpdated && (
+            <select
+              onInput={(e) => {
+                setIsUpdated(true);
+                item.insured_person_id = e.target.value;
+                setPersonId(e.target.value);
+              }}
+              value={
+                personId ??
+                person.find(
+                  (_person) => _person?.id === item?.insured_person_id
+                )?.id
+              }
+              {...register(`insured_person_id`)}
+            >
+              {person?.map((options) => (
+                <option key={options?.id} value={options?.id}>
+                  {options?.first_name}
+                </option>
+              ))}
+            </select>
+          )
         )}
         <select
           onInput={(e) => {
-            e.target.value !== item?.insurance_company_id?.[0]
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
+            setIsUpdated(true);
             item.insurance_company_id = e.target.value;
+            setiInsComp(e.target.value);
           }}
           value={
+            insComp ??
             isCompanys?.filter(
               (options) => options.id === item?.insurance_company_id?.[0]
-            )[0]?.id ?? isCompanys[0]?.id
+            )[0]?.id ??
+            isCompanys[0]?.id
           }
           {...register(`insurance_company_id`)}
         >
@@ -228,63 +291,89 @@ function Rows({
         </select>
         <input
           onInput={(e) => {
-            e.target.value !== item?.insured_number
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
+            setIsUpdated(true);
+            item.insured_number = e.target.value;
           }}
           defaultValue={item?.insured_number}
           {...register(`insured_number`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.document_date
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
+          style={{
+            width: "140px",
+            maxHeight: "48.6px",
           }}
-          defaultValue={item?.document_date}
+          onFocus={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            e.target.type = "date";
+          }}
+          onInput={(e) => {
+            setIsUpdated(true);
+            item.document_date = e.target.value;
+          }}
+          onMouseMove={(e) => {
+            e.target.type = "date";
+          }}
+          onMouseLeave={(e) => {
+            e.target.type = "text";
+          }}
+          defaultValue={events?.find((eve) => eve?.id === item?.insured_event_id)?.date}
           {...register(`document_date`)}
         />
         <input
           onInput={(e) => {
-            e.target.value !== item?.address
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
+            setIsUpdated(true);
+            item.address = e.target.value;
           }}
           defaultValue={item?.address}
           {...register(`address`)}
         />
         <select
           onInput={(e) => {
-            e.target.value !== item?.city_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
+            setIsUpdated(true);
             item.city_id = e.target.value;
+            setIsCity(e.target.value);
           }}
           value={
-            isCitys.filter((options) => options.id === item?.city_id)[0]?.id
+            isCity ??
+            isCitys.find((options) => options.id === item?.city_id)?.id
           }
           {...register(`city_id`)}
         >
           {isCitys.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-              // selected={item?.city_id === options?.id}
-            >
+            <option key={options?.id} value={options?.id}>
               {options?.city_name}
             </option>
           ))}
         </select>
-
+        <select
+          onInput={(e) => {
+            setIsUpdated(true);
+            item.region_id = e.target.value;
+            setRegionId(e.target.value);
+          }}
+          value={
+            regionId ??
+            region.find((options) => options.id === item?.region_id)?.id
+          }
+          {...register(`region_id`)}
+        >
+          {region?.map((options) => (
+            <option key={options?.id} value={options?.id}>
+              {options?.region_name}
+            </option>
+          ))}
+        </select>
         <select
           onInput={(e) => {
             setIsUpdated(true);
             let value = JSON.parse(e.target.value ?? "{}");
+            setTypeCaseIds(e.target.value);
             item.event_type_id = value.event_type_id;
             item.property_type_id = value.property_type_id;
-            console.log(item);
           }}
-          defaultValue={
+          value={
+            typeCaseIds ??
             JSON.stringify({
               event_type_id: item?.event_type_id,
               property_type_id: item?.property_type_id,
@@ -303,7 +392,7 @@ function Rows({
             </option>
           ))}
         </select>
-        {events?.filter((eve) => eve.id === item?.insured_event_id)[0]
+        {events?.find((eve) => eve.id === item?.insured_event_id)
           ?.folder_google_drive_link && (
           <button
             className="btn-drive-link"
@@ -346,6 +435,7 @@ export default function Persons() {
   const [appraiser, setAppraiser] = React.useState([]);
   const [events, setEvents] = React.useState([]);
   const [appComp, setAppComp] = React.useState([]);
+  const [region, setRegion] = React.useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -371,6 +461,9 @@ export default function Persons() {
     });
     axios.get(`${_URL}/city`).then((res) => {
       setIsCitys(res?.data?.message?.cities);
+    });
+    axios.get(`${_URL}/regions`).then((res) => {
+      setRegion(res?.data?.message?.regions);
     });
     axios.get(`${_URL}/agents`).then((res) => {
       setAgents(res?.data?.message?.agents);
@@ -438,9 +531,17 @@ export default function Persons() {
             readOnly={true}
             value={"insured_number"}
           />
-          <input className="disabled" readOnly={true} value={"document_date"} />
+          <input
+            className="disabled"
+            style={{
+              width: "140px",
+            }}
+            readOnly={true}
+            value={"document_date"}
+          />
           <input className="disabled" readOnly={true} value={"address"} />
           <input className="disabled" readOnly={true} value={"city"} />
+          <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"event type"} />
         </div>
         {elements?.map((item, i) => (
@@ -458,6 +559,7 @@ export default function Persons() {
             appraisers={appraiser}
             events={events}
             appComp={appComp}
+            region={region}
           />
         ))}
       </div>
