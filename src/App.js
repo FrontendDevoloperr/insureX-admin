@@ -4,24 +4,39 @@ import io from "socket.io-client";
 import AdminPanel from "./admin";
 import Login from "./login";
 import { useSelector, useDispatch } from "react-redux";
-import { login, setRole } from "./redux/reducer";
+import { login, message, setRole } from "./redux/reducer";
+import axios from "axios";
+import { _URL } from "./utils";
 
 function App() {
   const socket = io("https://api.insurextest.link", { reconnect: true });
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isUpdateMessage, setIsUpdateMessage] = React.useState(0);
   const user = useSelector((state) => state.user);
-
   let token = JSON.parse(
     localStorage.getItem("admin-panel-token-insure-x") ?? "{}"
   );
 
   React.useEffect(() => {
     socket.on("message-send", (msg) => {
-      console.log(msg, "msg");
+      if (msg?.first_name && msg?.second_name && msg?.role) {
+        setIsUpdateMessage(isUpdateMessage + 1);
+      }
     });
-  }, []);
+    axios.get(`${_URL}/push/messages`).then((res) => {
+      dispatch(
+        message(
+          res?.data?.messages?.filter(
+            (_message) =>
+              _message.first_name && _message.second_name && _message.role
+          )
+        )
+      );
+    });
+  }, [isUpdateMessage]);
+
+  console.log(user.messages);
 
   React.useEffect(() => {
     if (!user?.auth) {
