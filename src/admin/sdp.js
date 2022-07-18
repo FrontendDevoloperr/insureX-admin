@@ -22,7 +22,14 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
       delete formData.id;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
+        .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -39,7 +46,14 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/sdp`, getFormData(data))
+        .post(`${_URL}/sdp`, getFormData(data), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -202,7 +216,14 @@ export default function Sdp() {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/sdp`)
+        .get(`${_URL}/sdp`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setElements(res?.data?.message?.sdp);
           setLoading(false);
@@ -217,12 +238,28 @@ export default function Sdp() {
   }, []);
 
   React.useEffect(() => {
-    axios.get(`${_URL}/insurance-companies`).then((res) => {
-      setIsCompanys(res?.data?.message?.insurance_companies);
-    });
-    axios.get(`${_URL}/city`).then((res) => {
-      setIsCitys(res?.data?.message?.cities);
-    });
+    axios
+      .get(`${_URL}/insurance-companies`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCompanys(res?.data?.message?.insurance_companies);
+      });
+    axios
+      .get(`${_URL}/city`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCitys(res?.data?.message?.cities);
+      });
   }, []);
 
   return (

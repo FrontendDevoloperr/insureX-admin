@@ -35,7 +35,14 @@ function Rows({
       delete formData.id;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/insured-persons/${item?.id}`, getFormData(formData))
+        .patch(`${_URL}/insured-persons/${item?.id}`, getFormData(formData), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -53,7 +60,14 @@ function Rows({
       delete data?.id;
       data.role = "insured_person";
       axios
-        .post(`${_URL}/insured-persons`, getFormData(data))
+        .post(`${_URL}/insured-persons`, getFormData(data), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -265,7 +279,14 @@ export default function Persons() {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/insured-persons`)
+        .get(`${_URL}/insured-persons`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setElements(res?.data?.message?.insured_persons);
           setLoading(false);
@@ -280,18 +301,50 @@ export default function Persons() {
   }, []);
 
   React.useEffect(() => {
-    axios.get(`${_URL}/insurance-companies`).then((res) => {
-      setIsCompanys(res?.data?.message?.insurance_companies);
-    });
-    axios.get(`${_URL}/regions`).then((res) => {
-      setIsRegions(res?.data?.message?.regions);
-    });
-    axios.get(`${_URL}/city`).then((res) => {
-      setIsCitys(res?.data?.message?.cities);
-    });
-    axios.get(`${_URL}/agents`).then((res) => {
-      setAgent(res?.data?.message?.agents);
-    });
+    axios
+      .get(`${_URL}/insurance-companies`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCompanys(res?.data?.message?.insurance_companies);
+      });
+    axios
+      .get(`${_URL}/regions`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsRegions(res?.data?.message?.regions);
+      });
+    axios
+      .get(`${_URL}/city`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCitys(res?.data?.message?.cities);
+      });
+    axios
+      .get(`${_URL}/agents`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setAgent(res?.data?.message?.agents);
+      });
   }, []);
 
   return (

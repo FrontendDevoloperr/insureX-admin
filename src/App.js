@@ -7,9 +7,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { login, message, setRole } from "./redux/reducer";
 import axios from "axios";
 import { _URL } from "./utils";
+const socket = io("wss://api.insurextest.link", { reconnect: true });
 
 function App() {
-  const socket = io("https://api.insurextest.link", { reconnect: true });
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isUpdateMessage, setIsUpdateMessage] = React.useState(0);
@@ -20,25 +20,34 @@ function App() {
 
   React.useEffect(() => {
     socket.on("message-send", (msg) => {
+      console.log(msg);
       if (msg?.first_name && msg?.second_name && msg?.role) {
         setIsUpdateMessage(isUpdateMessage + 1);
       }
     });
-    axios.get(`${_URL}/push/messages`).then((res) => {
-      dispatch(
-        message(
-          res?.data?.messages?.filter(
-            (_message) =>
-              _message.first_name ||
-              _message.second_name ||
-              _message.role ||
-              _message.appraiser_company_name ||
-              _message.ie_number ||
-              _message.oao_ie_number
+    axios
+      .get(`${_URL}/push/messages`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        dispatch(
+          message(
+            res?.data?.messages?.filter(
+              (_message) =>
+                _message.first_name ||
+                _message.second_name ||
+                _message.role ||
+                _message.appraiser_company_name ||
+                _message.ie_number ||
+                _message.oao_ie_number
+            )
           )
-        )
-      );
-    });
+        );
+      });
   }, [isUpdateMessage]);
 
   React.useEffect(() => {

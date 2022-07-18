@@ -35,7 +35,14 @@ function Rows({
 
       setIsLoading(true);
       axios
-        .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData))
+        .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -53,7 +60,14 @@ function Rows({
       delete formData?.new;
       delete formData?.id;
       axios
-        .post(`${_URL}/appraisers`, getFormData(formData))
+        .post(`${_URL}/appraisers`, getFormData(formData), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -110,10 +124,7 @@ function Rows({
           {...register(`appraisal_company_id`)}
         >
           {appraiselCompanys?.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-            >
+            <option key={options?.id} value={options?.id}>
               {options?.appraisal_company_name}
             </option>
           ))}
@@ -177,10 +188,7 @@ function Rows({
           {...register(`region_id`)}
         >
           {isRegions?.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-            >
+            <option key={options?.id} value={options?.id}>
               {options?.region_name}
             </option>
           ))}
@@ -244,7 +252,14 @@ export default function Persons() {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/appraisers`)
+        .get(`${_URL}/appraisers`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setElements(res?.data?.message?.appraisers);
           setLoading(false);
@@ -259,15 +274,39 @@ export default function Persons() {
   }, []);
 
   React.useEffect(() => {
-    axios.get(`${_URL}/insurance-companies`).then((res) => {
-      setIsCompanys(res?.data?.message?.insurance_companies);
-    });
-    axios.get(`${_URL}/regions`).then((res) => {
-      setIsRegions(res?.data?.message?.regions);
-    });
-    axios.get(`${_URL}/appraisal-companies`).then((res) => {
-      setAppraiselCompanys(res?.data?.message?.appraisal_companies);
-    });
+    axios
+      .get(`${_URL}/insurance-companies`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCompanys(res?.data?.message?.insurance_companies);
+      });
+    axios
+      .get(`${_URL}/regions`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsRegions(res?.data?.message?.regions);
+      });
+    axios
+      .get(`${_URL}/appraisal-companies`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setAppraiselCompanys(res?.data?.message?.appraisal_companies);
+      });
   }, []);
 
   return (

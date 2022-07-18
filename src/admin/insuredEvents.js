@@ -97,7 +97,14 @@ function Rows({
       delete formData.id;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData))
+        .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -105,7 +112,16 @@ function Rows({
           axios
             .patch(
               `${_URL}/insured-events/${item?.insured_event_id}`,
-              getFormData(eventFormData)
+              getFormData(eventFormData),
+              {
+                headers: {
+                  Authorization: `"Bearer ${
+                    JSON.parse(
+                      localStorage.getItem("admin-panel-token-insure-x")
+                    ).token
+                  } `,
+                },
+              }
             )
             .then((res) => {
               console.log("success");
@@ -126,7 +142,14 @@ function Rows({
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/insurance-case`, getFormData(formData))
+        .post(`${_URL}/insurance-case`, getFormData(formData), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -440,7 +463,14 @@ export default function Persons() {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/insurance-case`)
+        .get(`${_URL}/insurance-case`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setElements(res?.data?.message?.insurance_cases);
           setLoading(false);
@@ -455,33 +485,105 @@ export default function Persons() {
   }, []);
 
   React.useEffect(() => {
-    axios.get(`${_URL}/insurance-companies`).then((res) => {
-      setIsCompanys(res?.data?.message?.insurance_companies);
-    });
-    axios.get(`${_URL}/city`).then((res) => {
-      setIsCitys(res?.data?.message?.cities);
-    });
-    axios.get(`${_URL}/regions`).then((res) => {
-      setRegion(res?.data?.message?.regions);
-    });
-    axios.get(`${_URL}/agents`).then((res) => {
-      setAgents(res?.data?.message?.agents);
-    });
-    axios.get(`${_URL}/insured-persons`).then((res) => {
-      setPerson(res?.data?.message?.insured_persons);
-    });
-    axios.get(`${_URL}/sdp`).then((res) => {
-      setSdp(res?.data?.message?.sdp);
-    });
-    axios.get(`${_URL}/appraisers`).then((res) => {
-      setAppraiser(res?.data?.message?.appraisers);
-    });
-    axios.get(`${_URL}/insured-events`).then((res) => {
-      setEvents(res?.data?.message?.insured_events);
-    });
-    axios.get(`${_URL}/appraisal-companies`).then((res) => {
-      setAppComp(res?.data?.message?.appraisal_companies);
-    });
+    axios
+      .get(`${_URL}/insurance-companies`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCompanys(res?.data?.message?.insurance_companies);
+      });
+    axios
+      .get(`${_URL}/city`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setIsCitys(res?.data?.message?.cities);
+      });
+    axios
+      .get(`${_URL}/regions`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setRegion(res?.data?.message?.regions);
+      });
+    axios
+      .get(`${_URL}/agents`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setAgents(res?.data?.message?.agents);
+      });
+    axios
+      .get(`${_URL}/insured-persons`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setPerson(res?.data?.message?.insured_persons);
+      });
+    axios
+      .get(`${_URL}/sdp`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setSdp(res?.data?.message?.sdp);
+      });
+    axios
+      .get(`${_URL}/appraisers`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setAppraiser(res?.data?.message?.appraisers);
+      });
+    axios
+      .get(`${_URL}/insured-events`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setEvents(res?.data?.message?.insured_events);
+      });
+    axios
+      .get(`${_URL}/appraisal-companies`, {
+        headers: {
+          Authorization: `"Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        setAppComp(res?.data?.message?.appraisal_companies);
+      });
   }, []);
 
   return (

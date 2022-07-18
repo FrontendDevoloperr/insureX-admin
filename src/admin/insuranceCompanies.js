@@ -24,7 +24,18 @@ function Rows({ item, setElements, datas, loading }) {
       delete formData.insurance_company_ids;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/insurance-companies/${item?.id}`, getFormData(formData))
+        .patch(
+          `${_URL}/insurance-companies/${item?.id}`,
+          getFormData(formData),
+          {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          }
+        )
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -41,7 +52,14 @@ function Rows({ item, setElements, datas, loading }) {
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/insurance-companies`, getFormData(data))
+        .post(`${_URL}/insurance-companies`, getFormData(data), {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -135,7 +153,15 @@ export default function Persons() {
         .get(
           `${_URL}/insurance-companies${
             user.insurance_company ? `?id=${user.insurance_company.id}` : ""
-          }`
+          }`,
+          {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          }
         )
         .then((res) => {
           setElements(res?.data?.message?.insurance_companies);
