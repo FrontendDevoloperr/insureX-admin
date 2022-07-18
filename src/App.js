@@ -1,17 +1,27 @@
 import React from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
+import io from "socket.io-client";
 import AdminPanel from "./admin";
 import Login from "./login";
 import { useSelector, useDispatch } from "react-redux";
 import { login, setRole } from "./redux/reducer";
 
 function App() {
+  const socket = io("https://api.insurextest.link", { reconnect: true });
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+
   let token = JSON.parse(
     localStorage.getItem("admin-panel-token-insure-x") ?? "{}"
   );
+
+  React.useEffect(() => {
+    socket.on("message-send", (msg) => {
+      console.log(msg, "msg");
+    });
+  }, []);
 
   React.useEffect(() => {
     if (!user?.auth) {
