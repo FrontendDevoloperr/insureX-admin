@@ -83,7 +83,7 @@ function Rows({
       insured_person_id: item.insured_person_id ?? person[0].id,
       region_id: item.region_id ?? region[0].id,
       address: item.address,
-      date: item.document_date ?? data.document_date,
+      date: item?.document_date ?? new Date().toISOString(),
       agent_id: item.agent_id ?? agents[0].id,
       appraisal_company_id:
         data?.appraisal_company_id ??
@@ -104,7 +104,7 @@ function Rows({
           setIsUpdated(false);
           axios
             .patch(
-              `/insured-events/${item?.insured_event_id}`,
+              `${_URL}/insured-events/${item?.insured_event_id}`,
               getFormData(eventFormData)
             )
             .then((res) => {
