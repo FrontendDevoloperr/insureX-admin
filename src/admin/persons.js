@@ -242,7 +242,15 @@ function Rows({
               if (item?.id) {
                 setIsLoading(true);
                 axios
-                  .delete(`${_URL}/insured-persons/${item.id}`)
+                  .delete(`${_URL}/insured-persons/${item.id}`, {
+                    headers: {
+                      Authorization: `"Bearer ${
+                        JSON.parse(
+                          localStorage.getItem("admin-panel-token-insure-x")
+                        ).token
+                      } `,
+                    },
+                  })
                   .then((res) => {
                     setIsLoading(false);
                     setElements(
@@ -335,7 +343,7 @@ export default function Persons() {
         setIsCitys(res?.data?.message?.cities);
       });
     axios
-      .get(`${_URL}/agents`, {
+      .get(`${_URL}/agents/select`, {
         headers: {
           Authorization: `"Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token

@@ -102,8 +102,9 @@ const tabs = {
       label: "INSURANCE COMPANIES",
       element: <InsuredCompanies />,
     },
-    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/agents", label: "AGENTS", element: <Agents /> },
+    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+
     {
       link: "/appraiser-company",
       label: "APPRAISER COMPANIES",
@@ -119,8 +120,9 @@ const tabs = {
       label: "INSURANCE COMPANIES",
       element: <InsuredCompanies />,
     },
-    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/agents", label: "AGENTS", element: <Agents /> },
+    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+
     {
       link: "/appraiser-company",
       label: "APPRAISER COMPANIES",
@@ -131,13 +133,13 @@ const tabs = {
     { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
   ],
   appraisal_company: [
-    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     {
       link: "/appraiser-company",
       label: "APPRAISER COMPANIES",
       element: <AppraiserCompanies />,
     },
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
+    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
   ],
 };

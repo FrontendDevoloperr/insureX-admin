@@ -44,7 +44,7 @@ function Rows({
     agents.find((options) => options.id === item?.agent_id)?.id
   );
   const [personId, setPersonId] = React.useState(
-    person.find((_person) => _person?.id === item?.insured_person_id)?.id
+    person.find((_person) => _person?.id === item?.insured_person_id)?.first_name
   );
   const [insComp, setiInsComp] = React.useState(
     isCompanys?.filter(
@@ -279,7 +279,7 @@ function Rows({
           value={
             personId ??
             person.find((_person) => _person?.id === item?.insured_person_id)
-              ?.id
+              ?.first_name
           }
         >
           {person?.map((options) => (
@@ -519,7 +519,7 @@ export default function Persons() {
         setRegion(res?.data?.message?.regions);
       });
     axios
-      .get(`${_URL}/agents`, {
+      .get(`${_URL}/agents/select`, {
         headers: {
           Authorization: `"Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
