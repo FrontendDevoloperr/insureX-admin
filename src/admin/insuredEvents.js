@@ -26,7 +26,6 @@ function Rows({
   const navigate = useNavigate();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
-  const [isSelect, setIsSelect] = React.useState(true);
   const [appCom, setAppCom] = React.useState(
     appComp?.find(
       (app) =>
@@ -113,7 +112,7 @@ function Rows({
             })
             .catch((err) => {
               console.log(err);
-              toast.error("Error updating event");
+              // toast.error("Error updating event");
             });
         })
         .catch((err) => {
@@ -231,43 +230,41 @@ function Rows({
           ))}
         </select>
 
-        {!item?.new && !isUpdated ? (
-          <input
-            onFocus={() => {
-              if (item?.insured_person_id) {
-                navigate("/persons#" + item?.insured_person_id);
-              }
-            }}
-            defaultValue={
-              person.find((_person) => _person?.id === item?.insured_person_id)
-                ?.first_name
+        <input
+          style={!item?.new && !isUpdated ? {} : { display: "none" }}
+          readOnly={true}
+          onFocus={() => {
+            if (item?.insured_person_id) {
+              navigate("/persons#" + item?.insured_person_id);
             }
-            {...register(`insured_person_id`)}
-          />
-        ) : (
-          isUpdated && (
-            <select
-              onInput={(e) => {
-                setIsUpdated(true);
-                item.insured_person_id = e.target.value;
-                setPersonId(e.target.value);
-              }}
-              value={
-                personId ??
-                person.find(
-                  (_person) => _person?.id === item?.insured_person_id
-                )?.id
-              }
-              {...register(`insured_person_id`)}
-            >
-              {person?.map((options) => (
-                <option key={options?.id} value={options?.id}>
-                  {options?.first_name}
-                </option>
-              ))}
-            </select>
-          )
-        )}
+          }}
+          defaultValue={
+            personId ??
+            person.find((_person) => _person?.id === item?.insured_person_id)
+              ?.first_name
+          }
+          {...register(`insured_person_id`)}
+        />
+
+        <select
+          style={!item?.new && !isUpdated ? { display: "none" } : {}}
+          onInput={(e) => {
+            setIsUpdated(true);
+            item.insured_person_id = e.target.value;
+            setPersonId(e.target.value);
+          }}
+          value={
+            personId ??
+            person.find((_person) => _person?.id === item?.insured_person_id)
+              ?.id
+          }
+        >
+          {person?.map((options) => (
+            <option key={options?.id} value={options?.id}>
+              {options?.first_name}
+            </option>
+          ))}
+        </select>
         <select
           onInput={(e) => {
             setIsUpdated(true);
@@ -317,7 +314,9 @@ function Rows({
           onMouseLeave={(e) => {
             e.target.type = "text";
           }}
-          defaultValue={events?.find((eve) => eve?.id === item?.insured_event_id)?.date}
+          defaultValue={
+            events?.find((eve) => eve?.id === item?.insured_event_id)?.date
+          }
           {...register(`document_date`)}
         />
         <input
