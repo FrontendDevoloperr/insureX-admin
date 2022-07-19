@@ -480,7 +480,7 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Error loading data, looks like a server error");
+          
         });
     };
     fetchData();

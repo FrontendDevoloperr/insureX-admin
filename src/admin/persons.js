@@ -15,7 +15,6 @@ function Rows({
   datas,
   loading,
   isCompanys,
-  isRegions,
   isCitys,
   agents,
   isNowEdit,
@@ -29,7 +28,6 @@ function Rows({
     !data.insurance_company_id &&
       (data.insurance_company_id =
         item.insurance_company_id ?? isCompanys[0]?.id);
-    !data.region_id && (data.region_id = item.region_id ?? isRegions[0]?.id);
     !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id);
     !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id);
     if (data?.id) {
@@ -162,24 +160,6 @@ function Rows({
           type="email"
           {...register(`email`)}
         />
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.region_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.region_id = e.target.value;
-          }}
-          value={
-            isRegions.find((options) => options.id === item?.region_id)?.id
-          }
-          {...register(`region_id`)}
-        >
-          {isRegions.map((options) => (
-            <option key={options?.id} value={options?.id}>
-              {options?.region_name}
-            </option>
-          ))}
-        </select>
         <input
           onInput={(e) => {
             e.target.value !== item?.address
@@ -265,7 +245,7 @@ function Rows({
                   .catch((err) => {
                     console.log(err);
                     setIsLoading(false);
-                    toast.error("Ошибка при удалении данных");
+                    toast.error("Error when deleting data");
                   });
               }
             }}
@@ -284,7 +264,6 @@ export default function Persons() {
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isRegions, setIsRegions] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
   const [agents, setAgent] = React.useState([]);
   const location = useLocation();
@@ -310,7 +289,7 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            toast.error("Error loading data, looks like a server error");
+            
           });
       };
       fetchData();
@@ -337,7 +316,7 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            toast.error("Error loading data, looks like a server error");
+            
           });
       };
       fetchData();
@@ -363,17 +342,6 @@ export default function Persons() {
         });
     }
 
-    axios
-      .get(`${_URL}/regions`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsRegions(res?.data?.message?.regions);
-      });
     axios
       .get(`${_URL}/city`, {
         headers: {
@@ -431,7 +399,6 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"passport_id"} />
           <input className="disabled" readOnly={true} value={"phone"} />
           <input className="disabled" readOnly={true} value={"email"} />
-          <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
           <input className="disabled" readOnly={true} value={"agent ID"} />
           <input className="disabled" readOnly={true} value={"city ID"} />
@@ -444,7 +411,6 @@ export default function Persons() {
             datas={elements}
             loading={loading}
             isCompanys={isCompanys}
-            isRegions={isRegions}
             isCitys={isCitys}
             agents={agents}
             isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}

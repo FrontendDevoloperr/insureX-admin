@@ -208,7 +208,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
                   .catch((err) => {
                     console.log(err);
                     setIsLoading(false);
-                    toast.error("Ошибка при удалении данных");
+                    toast.error("Error when deleting data");
                   });
               }
             }}
@@ -252,13 +252,21 @@ export default function Persons() {
           }
         )
         .then((res) => {
-          setElements(res?.data?.message?.agents);
+          setElements(
+            res?.data?.message?.agents?.filter((item) =>
+              user.role === "insurance_company"
+                ? item?.insurance_company_ids.find(
+                    (_res) => _res === user.insurance_company.id
+                  )
+                : item
+            )
+          );
           setLoading(false);
         })
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          toast.error("Error loading data, looks like a server error");
+          
         });
     };
     fetchData();

@@ -232,7 +232,7 @@ function Rows({
                   .catch((err) => {
                     console.log(err);
                     setIsLoading(false);
-                    toast.error("Ошибка при удалении данных");
+                    toast.error("Error when deleting data");
                   });
               }
             }}
@@ -276,7 +276,7 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            toast.error("Error loading data, looks like a server error");
+            
           });
       };
       fetchData();
@@ -303,7 +303,7 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            toast.error("Error loading data, looks like a server error");
+            
           });
       };
       fetchData();
@@ -330,7 +330,7 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            toast.error("Error loading data, looks like a server error");
+            
           });
       };
       fetchData();
