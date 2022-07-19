@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import AdminPanel from "./admin";
 import Login from "./login";
 import { useSelector, useDispatch } from "react-redux";
-import { login, message, setRole, newMessage } from "./redux/reducer";
+import { login, message, setRole, newMessage, isInsuranceCompany, isAppraisalCompany } from "./redux/reducer";
 import axios from "axios";
 import { _URL } from "./utils";
 const socket = io("wss://api.insurextest.link", { reconnect: true });
@@ -131,7 +131,9 @@ function App() {
     if (!user?.auth) {
       if (token?.auth) {
         dispatch(login(token?.auth));
-        dispatch(setRole(token.role));
+        dispatch(setRole(token?.role));
+        dispatch(isInsuranceCompany(token?.insurance_company));
+        dispatch(isAppraisalCompany(token?.appraisal_company))
       } else navigate("/login");
     }
   }, [user?.auth]);

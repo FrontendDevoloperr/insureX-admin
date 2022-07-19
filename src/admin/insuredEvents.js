@@ -480,7 +480,6 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          
         });
     };
     fetchData();
@@ -657,30 +656,25 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"event type"} />
         </div>
-        {events.map((eve) => {
-          return (
-            <React.Fragment key={eve?.id}>
-              {elements?.map((item, i) => (
-                <Rows
-                  key={item?.id ?? i}
-                  item={item}
-                  setElements={setElements}
-                  datas={elements}
-                  loading={loading}
-                  isCompanys={isCompanys}
-                  isCitys={isCitys}
-                  agents={agents}
-                  person={person}
-                  sdp={sdp}
-                  appraisers={appraiser}
-                  events={[eve]}
-                  appComp={appComp}
-                  region={region}
-                />
-              ))}
-            </React.Fragment>
-          );
-        })}
+
+        {elements?.map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            setElements={setElements}
+            datas={elements}
+            loading={loading}
+            isCompanys={isCompanys}
+            isCitys={isCitys}
+            agents={agents}
+            person={person}
+            sdp={sdp}
+            appraisers={appraiser}
+            events={events}
+            appComp={appComp}
+            region={region}
+          />
+        ))}
       </div>
     </>
   );

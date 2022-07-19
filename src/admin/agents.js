@@ -237,9 +237,9 @@ export default function Persons() {
         .get(
           `${_URL}${
             user.role === "superadmin"
-              ? "/agents"
+              ? "/agents/select"
               : user.role === "insurance_company"
-              ? `/agents?=insurance_company_id=${user.insurance_company.id}`
+              ? `/agents/select?insurance_company_id=${user.insurance_company.id}`
               : ""
           }`,
           {

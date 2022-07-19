@@ -68,6 +68,7 @@ function Rows({
       delete data?.new;
       delete data?.id;
       data.passport_id = data?.oao_ie_number;
+      data.role = "appraisal_company";
       axios
         .post(`${_URL}/appraisal-companies`, getFormData(data), {
           headers: {
@@ -80,7 +81,7 @@ function Rows({
         .then((res) => {
           setIsLoading(false);
           setElements(
-            [...datas, res?.data?.message?.appraisal_company].filter(
+            [...datas, res?.data?.message?.appraiser].filter(
               (item) => !item?.new
             )
           );
@@ -244,7 +245,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();
@@ -272,7 +272,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();
@@ -290,7 +289,7 @@ export default function Persons() {
     }
     if (user.role === "superadmin" || user.role === "appraisal_company") {
       axios
-        .get(`${_URL}/insurance-companies/${user.insurance_company.id}`, {
+        .get(`${_URL}/insurance-companies`, {
           headers: {
             Authorization: `"Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
@@ -330,25 +329,24 @@ export default function Persons() {
   return (
     <>
       <Header height={60} p="xs">
-        {user.role === "superadmin" ||
-          (user.role === "insurance_company" && (
-            <button
-              className="adder"
-              onClick={() => {
-                if (elements.filter((item) => item?.new)?.length) {
-                  toast.error(
-                    "You cannot add new entries until you finish the previous one."
-                  );
-                } else {
-                  setElements(elements?.concat([{ new: true }])?.reverse());
-                  toast.success("You can fill in a new entry");
-                }
-              }}
-            >
-              <span>Add </span>
-              <PlusUser color={"#fff"} />
-            </button>
-          ))}
+        {user.role !== "appraisal_company" && (
+          <button
+            className="adder"
+            onClick={() => {
+              if (elements.filter((item) => item?.new)?.length) {
+                toast.error(
+                  "You cannot add new entries until you finish the previous one."
+                );
+              } else {
+                setElements(elements?.concat([{ new: true }])?.reverse());
+                toast.success("You can fill in a new entry");
+              }
+            }}
+          >
+            <span>Add </span>
+            <PlusUser color={"#fff"} />
+          </button>
+        )}
       </Header>
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />

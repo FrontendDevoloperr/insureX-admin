@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { getFormData, _URL } from "../utils";
-import { login, setRole } from "../redux/reducer";
+import { isAppraisalCompany, isInsuranceCompany, login, setRole } from "../redux/reducer";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -44,9 +44,19 @@ export default function Login() {
               auth: true,
               role: res?.data?.message?.user?.role,
               token: res?.data?.message?.token,
+              insurance_company: res?.data?.message?.user?.insurance_company,
+              appraisal_company: res?.data?.message?.user?.appraisal_company,
             })
           );
-          navigate("/persons");
+          if(typeof res?.data?.message?.user?.insurance_company === "object"){
+            dispatch(isInsuranceCompany(res?.data?.message?.user?.insurance_company));
+            navigate("/");
+          }
+          if(typeof res?.data?.message?.user?.appraisal_company === "object"){
+            dispatch(isAppraisalCompany(res?.data?.message?.user?.appraisal_company))
+            navigate("/");
+          }
+          
         } else toast.error("Role Failed");
       })
       .catch((err) => {
