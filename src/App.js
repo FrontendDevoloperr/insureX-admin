@@ -19,36 +19,39 @@ function App() {
   );
 
   React.useEffect(() => {
-    socket.on("message-send", (msg) => {
-      console.log(msg);
-      if (msg?.first_name && msg?.second_name && msg?.role) {
-        setIsUpdateMessage(isUpdateMessage + 1);
-      }
-    });
-    axios
-      .get(`${_URL}/push/messages`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        dispatch(
-          message(
-            res?.data?.messages?.filter(
-              (_message) =>
-                _message.first_name ||
-                _message.second_name ||
-                _message.role ||
-                _message.appraiser_company_name ||
-                _message.ie_number ||
-                _message.oao_ie_number
-            )
-          )
-        );
+    if (user?.auth) {
+      socket.on("message-send", (msg) => {
+        console.log(msg);
+        if (msg?.first_name && msg?.second_name && msg?.role) {
+          setIsUpdateMessage(isUpdateMessage + 1);
+        }
       });
-  }, [isUpdateMessage]);
+      axios
+        .get(`${_URL}/push/messages`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
+        .then((res) => {
+          dispatch(
+            message(
+              res?.data?.messages?.filter(
+                (_message) =>
+                  _message.first_name ||
+                  _message.second_name ||
+                  _message.role ||
+                  _message.appraiser_company_name ||
+                  _message.ie_number ||
+                  _message.oao_ie_number
+              )
+            )
+          );
+        });
+    }
+  }, [isUpdateMessage, user?.auth]);
 
   React.useEffect(() => {
     if (!user?.auth) {
