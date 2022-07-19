@@ -31,9 +31,14 @@ function Popup() {
         }}
       >
         <ScrollArea
-          style={{ height: 250, width: "max-content" }}
+          style={{ maxHeight: 250, width: "max-content" }}
           offsetScrollbars
         >
+          {/* {console.log(
+            user?.messages?.filter((_items) => _items.oao_ie_number).length,
+            "user"
+          )} */}
+          {!user?.messages?.length && <Box>No message</Box>}
           {(user.role === "superadmin" || user.role === "insurance_company") &&
             user?.messages
               ?.filter(
