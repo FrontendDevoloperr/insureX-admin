@@ -142,6 +142,10 @@ input.error {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  border-radius: 5px;
+}
+.mantine-Header-root {
+  padding: 0px;
 }
 
 .ox-scroll .row button.delete {
