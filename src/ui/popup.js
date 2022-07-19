@@ -50,7 +50,7 @@ function Popup() {
         }}
       >
         <ScrollArea
-          style={{ maxHeight: 250, width: "max-content" }}
+          style={{ height: 250, width: "max-content" }}
           offsetScrollbars
         >
           {!user?.messages?.length && <Box>No message</Box>}

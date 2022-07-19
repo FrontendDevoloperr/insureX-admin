@@ -66,6 +66,7 @@ function Rows({
       setIsLoading(true);
       delete data?.new;
       delete data?.id;
+      data.passport_id = data?.oao_ie_number;
       axios
         .post(`${_URL}/appraisal-companies`, getFormData(data), {
           headers: {
