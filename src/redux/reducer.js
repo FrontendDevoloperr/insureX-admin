@@ -8,6 +8,7 @@ export const userSlice = createSlice({
     messages: [],
     insurance_company: null,
     appraisal_company: null,
+    read_messages: false,
   },
   reducers: {
     login: (state, data) => {
@@ -23,10 +24,17 @@ export const userSlice = createSlice({
     message: (state, data) => {
       state.messages = data.payload;
     },
+    newMessage: (state) => {
+      state.read_messages = true;
+    },
+    oldMessage: (state) => {
+      state.read_messages = false;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { login, logout, setRole, message } = userSlice.actions;
+export const { login, logout, setRole, message, newMessage, oldMessage } =
+  userSlice.actions;
 
 export default userSlice.reducer;

@@ -144,6 +144,7 @@ input.error {
   gap: 10px;
   border-radius: 5px;
 }
+
 .mantine-Header-root {
   padding: 0px;
 }
@@ -223,4 +224,15 @@ input.error {
   border-radius: 50%;
   align-items: center;
   cursor: pointer;
+}
+
+.popup-notification:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: red;
 }

@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import AdminPanel from "./admin";
 import Login from "./login";
 import { useSelector, useDispatch } from "react-redux";
-import { login, message, setRole } from "./redux/reducer";
+import { login, message, setRole, newMessage } from "./redux/reducer";
 import axios from "axios";
 import { _URL } from "./utils";
 const socket = io("wss://api.insurextest.link", { reconnect: true });
@@ -22,36 +22,108 @@ function App() {
     if (user?.auth) {
       socket.on("message-send", (msg) => {
         console.log(msg);
-        if (msg?.first_name && msg?.second_name && msg?.role) {
-          setIsUpdateMessage(isUpdateMessage + 1);
+        if (
+          user?.role === "superadmin" &&
+          msg?.first_name &&
+          msg?.second_name &&
+          msg?.role &&
+          msg?.oao_ie_number &&
+          msg?.ie_number
+        ) {
+          dispatch(newMessage());
+          axios
+            .get(`${_URL}/push/messages`, {
+              headers: {
+                Authorization: `Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            })
+            .then((res) => {
+              dispatch(
+                message(
+                  res?.data?.messages?.filter(
+                    (_message) =>
+                      _message.first_name ||
+                      _message.second_name ||
+                      _message.role ||
+                      _message.appraiser_company_name ||
+                      _message.ie_number ||
+                      _message.oao_ie_number
+                  )
+                )
+              );
+            });
+        }
+        if (user?.role === "insurance_company" && msg?.ie_number) {
+          dispatch(newMessage());
+          axios
+            .get(`${_URL}/push/messages`, {
+              headers: {
+                Authorization: `Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            })
+            .then((res) => {
+              dispatch(
+                message(
+                  res?.data?.messages?.filter((_message) => _message.ie_number)
+                )
+              );
+            });
+        }
+        if (user?.role === "appraisal_company" && msg?.oao_ie_number) {
+          dispatch(newMessage());
+          axios
+            .get(`${_URL}/push/messages`, {
+              headers: {
+                Authorization: `Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            })
+            .then((res) => {
+              dispatch(
+                message(
+                  res?.data?.messages?.filter(
+                    (_message) => _message.oao_ie_number
+                  )
+                )
+              );
+            });
         }
       });
-      axios
-        .get(`${_URL}/push/messages`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          dispatch(
-            message(
-              res?.data?.messages?.filter(
-                (_message) =>
-                  _message.first_name ||
-                  _message.second_name ||
-                  _message.role ||
-                  _message.appraiser_company_name ||
-                  _message.ie_number ||
-                  _message.oao_ie_number
-              )
-            )
-          );
-        });
     }
-  }, [isUpdateMessage, user?.auth]);
+  }, [user?.auth]);
+  React.useEffect(() => {
+    axios
+      .get(`${_URL}/push/messages`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then((res) => {
+        dispatch(
+          message(
+            res?.data?.messages?.filter(
+              (_message) =>
+                _message.first_name ||
+                _message.second_name ||
+                _message.role ||
+                _message.appraiser_company_name ||
+                _message.ie_number ||
+                _message.oao_ie_number
+            )
+          )
+        );
+      });
+  }, []);
 
   React.useEffect(() => {
     if (!user?.auth) {
