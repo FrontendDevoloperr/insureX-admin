@@ -12,7 +12,6 @@ const socket = io("wss://api.insurextest.link", { reconnect: true });
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isUpdateMessage, setIsUpdateMessage] = React.useState(0);
   const user = useSelector((state) => state.user);
   let token = JSON.parse(
     localStorage.getItem("admin-panel-token-insure-x") ?? "{}"
@@ -100,29 +99,32 @@ function App() {
     }
   }, [user?.auth]);
   React.useEffect(() => {
-    axios
-      .get(`${_URL}/push/messages`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        dispatch(
-          message(
-            res?.data?.messages?.filter(
-              (_message) =>
-                _message.first_name ||
-                _message.second_name ||
-                _message.role ||
-                _message.appraiser_company_name ||
-                _message.ie_number ||
-                _message.oao_ie_number
+    if (user?.auth) {
+      axios
+        .get(`${_URL}/push/messages`, {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
+        .then((res) => {
+          dispatch(
+            message(
+              res?.data?.messages?.filter(
+                (_message) =>
+                  _message.first_name ||
+                  _message.second_name ||
+                  _message.role ||
+                  _message.appraiser_company_name ||
+                  _message.ie_number ||
+                  _message.oao_ie_number
+              )
             )
-          )
-        );
-      });
+          );
+        });
+    }
   }, []);
 
   React.useEffect(() => {
