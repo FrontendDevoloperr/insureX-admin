@@ -51,6 +51,7 @@ function Rows({ item, setElements, datas, loading }) {
       setIsLoading(true);
       delete data?.new;
       delete data?.id;
+      data.passport_id = data.ie_number;
       axios
         .post(`${_URL}/insurance-companies`, getFormData(data), {
           headers: {

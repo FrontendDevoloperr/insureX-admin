@@ -125,7 +125,7 @@ function App() {
           );
         });
     }
-  }, []);
+  }, [user?.auth]);
 
   React.useEffect(() => {
     if (!user?.auth) {
