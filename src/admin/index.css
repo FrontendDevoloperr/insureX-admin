@@ -67,7 +67,6 @@ input.error {
     opacity: 0;
     border-top: #1c7ed6 1px solid;
     border-bottom: .1px solid #1c7ed6;
-    border-left: .1px solid #1c7ed6;
     background-color: #1c7fd649;
   }
 
@@ -82,7 +81,6 @@ input.error {
 .input-multi-select {
   border-top: 1px solid #ccc;
   border-bottom: .1px solid #ccc;
-  border-left: .1px solid rgba(204, 204, 204, 0.31);
   height: 100%;
   padding: 15px 8px;
 }
@@ -92,12 +90,26 @@ input.error {
   border: none;
   border-top: 1px solid #ccc;
   border-bottom: .1px solid #ccc;
-  border-left: .1px solid rgba(204, 204, 204, 0.31);
   border-radius: 0px;
   padding: 15px 8px;
   outline: none;
   width: 110px;
 }
+
+.ox-scroll .row>input[type="email"] {
+  color: #1c7ed6;
+}
+
+.ox-scroll .row>input[type="tel"] {
+  color: rgb(16, 152, 173);
+}
+
+.ox-scroll .row>input[name="address"] {
+  color: #e91e63;
+}
+
+
+
 
 .ox-scroll .row .multiples-select {
   width: 200px;

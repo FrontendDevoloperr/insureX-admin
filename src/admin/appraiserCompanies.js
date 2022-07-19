@@ -141,6 +141,7 @@ function Rows({
               : setIsUpdated(false);
           }}
           defaultValue={item?.phone}
+          type="tel"
           {...register(`phone`)}
         />
         <input
@@ -150,6 +151,7 @@ function Rows({
               : setIsUpdated(false);
           }}
           defaultValue={item?.email}
+          type="email"
           {...register(`email`)}
         />
         <select

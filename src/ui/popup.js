@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Box, Popover, ScrollArea, Text } from "@mantine/core";
-import { Notification } from "../icons";
+import { Box, Center, Popover, ScrollArea, Text } from "@mantine/core";
+import { NoMessage, Notification } from "../icons";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { oldMessage } from "../redux/reducer";
@@ -49,75 +49,108 @@ function Popup() {
           textAlign: "center",
         }}
       >
-        <ScrollArea
-          style={{
-            height: user?.messages?.length > 0 ? 250 : 60,
-            width: "max-content",
-          }}
-          offsetScrollbars
-        >
-          {!user?.messages?.length && <Box>No message</Box>}
-
-          {__message?.reverse()?.map((message) => (
-            <Box
-              title={message?.role}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (message?.role === "insured_person") {
-                  navigate(`/persons`);
-                  setOpened(false);
-                }
-                if (message?.role === "sdp") {
-                  navigate(`/sdp`);
-                  setOpened(false);
-                }
-                if (message?.role === "agent") {
-                  navigate(`/agent`);
-                  setOpened(false);
-                }
-                if (message?.role === "appraiser") {
-                  navigate(`/appraisers`);
-                  setOpened(false);
-                }
-                if (message?.oao_ie_number) {
-                  navigate(`/appraiser-company`);
-                  setOpened(false);
-                }
-                if (message?.ie_number) {
-                  navigate(`/insurance-company`);
-                  setOpened(false);
-                }
-              }}
-              sx={(theme) => ({
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.dark[6]
-                    : theme.colors.gray[0],
-                textAlign: "center",
-                padding: theme.spacing.sm,
-                borderRadius: theme.radius.md,
-                marginBottom: theme.spacing.sm,
-                cursor: "pointer",
-
-                "&:hover": {
+        {user?.messages?.length > 0 ? (
+          <ScrollArea
+            style={{
+              height: 250,
+              width: "max-content",
+            }}
+            offsetScrollbars
+          >
+            {!user?.messages?.length && (
+              <Box
+                sx={(theme) => ({
                   backgroundColor:
                     theme.colorScheme === "dark"
-                      ? theme.colors.dark[5]
-                      : theme.colors.gray[1],
-                },
-              })}
-              key={message?.id}
-            >
-              <Text size="lg">
-                {message?.oao_ie_number && message?.appraisal_company_name}
-                {message?.ie_number && message?.title}
-                {message?.first_name && message?.first_name}
-                {message?.second_name && message?.second_name}
-              </Text>
-            </Box>
-          ))}
-        </ScrollArea>
+                      ? theme.colors.dark[6]
+                      : theme.colors.gray[0],
+                  textAlign: "center",
+                  padding: theme.spacing.sm,
+                  borderRadius: theme.radius.md,
+                  marginBottom: theme.spacing.sm,
+                  cursor: "pointer",
+
+                  "&:hover": {
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[5]
+                        : theme.colors.gray[1],
+                  },
+                })}
+              >
+                <Center>
+                  <NoMessage />
+                  <Text> No message</Text>
+                </Center>
+              </Box>
+            )}
+
+            {__message?.reverse()?.map((message) => (
+              <Box
+                title={message?.role}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (message?.role === "insured_person") {
+                    navigate(`/persons`);
+                    setOpened(false);
+                  }
+                  if (message?.role === "sdp") {
+                    navigate(`/sdp`);
+                    setOpened(false);
+                  }
+                  if (message?.role === "agent") {
+                    navigate(`/agent`);
+                    setOpened(false);
+                  }
+                  if (message?.role === "appraiser") {
+                    navigate(`/appraisers`);
+                    setOpened(false);
+                  }
+                  if (message?.oao_ie_number) {
+                    navigate(`/appraiser-company`);
+                    setOpened(false);
+                  }
+                  if (message?.ie_number) {
+                    navigate(`/insurance-company`);
+                    setOpened(false);
+                  }
+                }}
+                sx={(theme) => ({
+                  backgroundColor:
+                    theme.colorScheme === "dark"
+                      ? theme.colors.dark[6]
+                      : theme.colors.gray[0],
+                  textAlign: "center",
+                  padding: theme.spacing.sm,
+                  borderRadius: theme.radius.md,
+                  marginBottom: theme.spacing.sm,
+                  cursor: "pointer",
+
+                  "&:hover": {
+                    backgroundColor:
+                      theme.colorScheme === "dark"
+                        ? theme.colors.dark[5]
+                        : theme.colors.gray[1],
+                  },
+                })}
+                key={message?.id}
+              >
+                <Text size="lg">
+                  {message?.oao_ie_number && message?.appraisal_company_name}
+                  {message?.ie_number && message?.title}
+                  {message?.first_name && message?.first_name}
+                  {message?.second_name && message?.second_name}
+                </Text>
+              </Box>
+            ))}
+          </ScrollArea>
+        ) : (
+          <Center>
+            <NoMessage />
+            <Text> No message</Text>
+          </Center>
+        )}
       </div>
     </Popover>
   );

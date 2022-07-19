@@ -1,10 +1,11 @@
 import React from "react";
-import { LoadingOverlay, Header } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { DeleteIcon, PlusUser } from "../icons";
+import { PlusUser } from "../icons";
+import { Trash } from "tabler-icons-react";
 
 function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
   const { register, handleSubmit } = useForm();
@@ -119,6 +120,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
             : setIsUpdated(false);
         }}
         defaultValue={item?.phone}
+        type="tel"
         {...register(`phone`)}
       />
       <input
@@ -128,6 +130,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
             : setIsUpdated(false);
         }}
         defaultValue={item?.email}
+        type="email"
         {...register(`email`)}
       />
 
@@ -199,7 +202,9 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
             }
           }}
         >
-          <DeleteIcon />
+          <ActionIcon color="red">
+            <Trash size={16} />
+          </ActionIcon>
         </button>
       )}
     </form>

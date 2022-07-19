@@ -108,6 +108,7 @@ function Rows({ item, setElements, datas, loading }) {
               : setIsUpdated(false);
           }}
           defaultValue={item?.email}
+          type="email"
           {...register(`email`)}
         />
         <input
@@ -118,6 +119,7 @@ function Rows({ item, setElements, datas, loading }) {
               : setIsUpdated(false);
           }}
           defaultValue={item?.phone}
+          type="tel"
           {...register(`phone`)}
         />
         <input

@@ -44,7 +44,8 @@ function Rows({
     agents.find((options) => options.id === item?.agent_id)?.id
   );
   const [personId, setPersonId] = React.useState(
-    person.find((_person) => _person?.id === item?.insured_person_id)?.first_name
+    person.find((_person) => _person?.id === item?.insured_person_id)
+      ?.first_name
   );
   const [insComp, setiInsComp] = React.useState(
     isCompanys?.filter(
@@ -76,6 +77,7 @@ function Rows({
       sdp_id: item.sdp_id ?? sdp[0].id,
       event_type_id: item.event_type_id ?? 1,
       property_type_id: item.property_type_id ?? 1,
+      document_date: item?.document_date ?? new Date().toISOString(),
     };
 
     let eventFormData = {
@@ -337,9 +339,7 @@ function Rows({
           onMouseLeave={(e) => {
             e.target.type = "text";
           }}
-          defaultValue={
-            events?.find((eve) => eve?.id === item?.insured_event_id)?.date
-          }
+          defaultValue={item?.document_date}
           {...register(`document_date`)}
         />
         <input
