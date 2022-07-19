@@ -150,54 +150,56 @@ export default function Persons() {
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(
-          `${_URL}/insurance-companies${
-            user.insurance_company ? `?id=${user.insurance_company.id}` : ""
-          }`,
-          {
+    if (user.role === "superadmin") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(`${_URL}/insurance-companies`, {
             headers: {
               Authorization: `"Bearer ${
                 JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
                   .token
               } `,
             },
-          }
-        )
-        .then((res) => {
-          setElements(res?.data?.message?.insurance_companies);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          toast.error("Error loading data, looks like a server error");
-        });
-    };
-    fetchData();
+          })
+          .then((res) => {
+            setElements(res?.data?.message?.insurance_companies);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+    if(user.role === "insurance_company") {
+      setElements([user.insurance_company])
+    }
   }, []);
 
   return (
     <>
       <Header height={60} p="xs">
-        <button
-          className="adder"
-          onClick={() => {
-            if (elements.filter((item) => item?.new)?.length) {
-              toast.error(
-                "You cannot add new entries until you finish the previous one."
-              );
-            } else {
-              setElements(elements?.concat([{ new: true }])?.reverse());
-              toast.success("You can fill in a new entry");
-            }
-          }}
-        >
-          <span>Add</span>
-          <PlusUser color={"#fff"} />
-        </button>
+        {user.role === "superadmin" && (
+          <button
+            className="adder"
+            onClick={() => {
+              if (elements.filter((item) => item?.new)?.length) {
+                toast.error(
+                  "You cannot add new entries until you finish the previous one."
+                );
+              } else {
+                setElements(elements?.concat([{ new: true }])?.reverse());
+                toast.success("You can fill in a new entry");
+              }
+            }}
+          >
+            <span>Add</span>
+            <PlusUser color={"#fff"} />
+          </button>
+        )}
       </Header>
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />

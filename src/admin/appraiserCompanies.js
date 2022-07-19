@@ -5,6 +5,7 @@ import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
+import { useSelector } from "react-redux";
 
 function Rows({
   item,
@@ -221,12 +222,75 @@ export default function Persons() {
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isRegions, setIsRegions] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
+  const user = useSelector((state) => state.user);
 
   React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(`${_URL}/appraisal-companies`, {
+    if (user.role === "superadmin") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(`${_URL}/appraisal-companies`, {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          })
+          .then((res) => {
+            setElements(res?.data?.message?.appraisal_companies);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+
+    if (user.role === "insurance_company") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(
+            `${_URL}/appraisal-companies?insurance_company_id=${user.insurance_company.id}`,
+            {
+              headers: {
+                Authorization: `"Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            }
+          )
+          .then((res) => {
+            setElements(res?.data?.message?.appraisal_companies);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+    if (user.role === "appraisal_company") {
+      setElements([user.appraisal_company]);
+    }
+  }, [user.role]);
+
+  React.useEffect(() => {
+    if (user.role === "insurance_company") {
+      setIsCompanys(
+        [user.insurance_company] // res?.data?.message?.insurance_companies
+      );
+    }
+    if (user.role === "superadmin" || user.role === "appraisal_company") {
+      axios
+        .get(`${_URL}/insurance-companies/${user.insurance_company.id}`, {
           headers: {
             Authorization: `"Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
@@ -235,30 +299,10 @@ export default function Persons() {
           },
         })
         .then((res) => {
-          setElements(res?.data?.message?.appraisal_companies);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          toast.error("Error loading data, looks like a server error");
+          setIsCompanys(res?.data?.message?.insurance_companies);
         });
-    };
-    fetchData();
-  }, []);
+    }
 
-  React.useEffect(() => {
-    axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCompanys(res?.data?.message?.insurance_companies);
-      });
     axios
       .get(`${_URL}/regions`, {
         headers: {
@@ -286,22 +330,25 @@ export default function Persons() {
   return (
     <>
       <Header height={60} p="xs">
-        <button
-          className="adder"
-          onClick={() => {
-            if (elements.filter((item) => item?.new)?.length) {
-              toast.error(
-                "You cannot add new entries until you finish the previous one."
-              );
-            } else {
-              setElements(elements?.concat([{ new: true }])?.reverse());
-              toast.success("You can fill in a new entry");
-            }
-          }}
-        >
-          <span>Add </span>
-          <PlusUser color={"#fff"} />
-        </button>
+        {user.role === "superadmin" ||
+          (user.role === "insurance_company" && (
+            <button
+              className="adder"
+              onClick={() => {
+                if (elements.filter((item) => item?.new)?.length) {
+                  toast.error(
+                    "You cannot add new entries until you finish the previous one."
+                  );
+                } else {
+                  setElements(elements?.concat([{ new: true }])?.reverse());
+                  toast.success("You can fill in a new entry");
+                }
+              }}
+            >
+              <span>Add </span>
+              <PlusUser color={"#fff"} />
+            </button>
+          ))}
       </Header>
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />

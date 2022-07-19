@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { useLocation } from "react-router-dom";
 import { Trash } from "tabler-icons-react";
+import { useSelector } from "react-redux";
 
 function Rows({
   item,
@@ -234,7 +235,7 @@ function Rows({
             {item?.id ? "Update" : "Create"}
           </button>
         ) : (
-          <button
+          <div
             title="Удалить"
             type="button"
             className="delete"
@@ -272,7 +273,7 @@ function Rows({
             <ActionIcon color="red">
               <Trash size={16} />
             </ActionIcon>
-          </button>
+          </div>
         )}
       </form>
     </>
@@ -287,12 +288,69 @@ export default function Persons() {
   const [isCitys, setIsCitys] = React.useState([]);
   const [agents, setAgent] = React.useState([]);
   const location = useLocation();
+  const user = useSelector((state) => state.user);
 
   React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(`${_URL}/insured-persons`, {
+    if (user.role === "superadmin") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(`${_URL}/insured-persons`, {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          })
+          .then((res) => {
+            setElements(res?.data?.message?.insured_persons);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+    if (user.role === "insurance_company") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(
+            `${_URL}/insured-persons?insurance_company_id=${user.insurance_company.id}`,
+            {
+              headers: {
+                Authorization: `"Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            }
+          )
+          .then((res) => {
+            setElements(res?.data?.message?.insured_persons);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+  }, [user.role]);
+
+  React.useEffect(() => {
+    if (user.role === "insurance_company") {
+      setIsCompanys([user.insurance_company]);
+    }
+    if (user.role === "superadmin" || user.role === "appraisal_company") {
+      axios
+        .get(`${_URL}/insurance-companies`, {
           headers: {
             Authorization: `"Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
@@ -301,30 +359,10 @@ export default function Persons() {
           },
         })
         .then((res) => {
-          setElements(res?.data?.message?.insured_persons);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          toast.error("Error loading data, looks like a server error");
+          setIsCompanys(res?.data?.message?.insurance_companies);
         });
-    };
-    fetchData();
-  }, []);
+    }
 
-  React.useEffect(() => {
-    axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCompanys(res?.data?.message?.insurance_companies);
-      });
     axios
       .get(`${_URL}/regions`, {
         headers: {

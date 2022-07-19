@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
+import { useSelector } from "react-redux";
 
 function Rows({
   item,
@@ -209,7 +210,7 @@ function Rows({
         {isUpdated ? (
           <button type="submit">{item?.id ? "Update" : "Create"}</button>
         ) : (
-          <button
+          <div
             title="Удалить"
             type="button"
             className="delete"
@@ -239,7 +240,7 @@ function Rows({
             <ActionIcon color="red">
               <Trash size={16} />
             </ActionIcon>
-          </button>
+          </div>
         )}
       </form>
     </>
@@ -252,12 +253,94 @@ export default function Persons() {
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isRegions, setIsRegions] = React.useState([]);
   const [appraiselCompanys, setAppraiselCompanys] = React.useState([]);
+  const user = useSelector((state) => state.user);
 
   React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(`${_URL}/appraisers`, {
+    if (user.role === "superadmin") {
+      // || user.role === "appraisal_company"
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(`${_URL}/appraisers`, {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          })
+          .then((res) => {
+            setElements(res?.data?.message?.appraisers);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+    if (user.role === "insurance_company") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(
+            `${_URL}/appraisers?insurance_company_id=${user.insurance_company.id}`,
+            {
+              headers: {
+                Authorization: `"Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            }
+          )
+          .then((res) => {
+            setElements(res?.data?.message?.appraisers);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+    if (user.role === "appraisal_company") {
+      setLoading(true);
+      const fetchData = async () => {
+        await axios
+          .get(
+            `${_URL}/appraisers?appraisal_company_id=${user.appraisal_company.id}`,
+            {
+              headers: {
+                Authorization: `"Bearer ${
+                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                    .token
+                } `,
+              },
+            }
+          )
+          .then((res) => {
+            setElements(res?.data?.message?.appraisers);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            setLoading(false);
+            toast.error("Error loading data, looks like a server error");
+          });
+      };
+      fetchData();
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (user.role === "superadmin" || user.role === "appraisal_company") {
+      axios
+        .get(`${_URL}/insurance-companies`, {
           headers: {
             Authorization: `"Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
@@ -266,30 +349,28 @@ export default function Persons() {
           },
         })
         .then((res) => {
-          setElements(res?.data?.message?.appraisers);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-          toast.error("Error loading data, looks like a server error");
+          setIsCompanys(res?.data?.message?.insurance_companies);
         });
-    };
-    fetchData();
-  }, []);
-
-  React.useEffect(() => {
-    axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCompanys(res?.data?.message?.insurance_companies);
-      });
+    }
+    if (user.role === "insurance_company") {
+      setIsCompanys(
+        [user.insurance_company] // res?.data?.message?.insurance_companies
+      );
+    }
+    if (user.role === "superadmin" || user.role === "insurance_company") {
+      axios
+        .get(`${_URL}/appraisal-companies`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
+        .then((res) => {
+          setAppraiselCompanys(res?.data?.message?.appraisal_companies);
+        });
+    } else setAppraiselCompanys([user.appraisal_company]);
     axios
       .get(`${_URL}/regions`, {
         headers: {
@@ -300,17 +381,6 @@ export default function Persons() {
       })
       .then((res) => {
         setIsRegions(res?.data?.message?.regions);
-      });
-    axios
-      .get(`${_URL}/appraisal-companies`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setAppraiselCompanys(res?.data?.message?.appraisal_companies);
       });
   }, []);
 

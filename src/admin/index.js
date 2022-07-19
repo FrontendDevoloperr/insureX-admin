@@ -139,7 +139,7 @@ const tabs = {
       element: <AppraiserCompanies />,
     },
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
-    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+    // { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
   ],
 };
@@ -183,7 +183,7 @@ export default function AdminPanel() {
               mb="xs"
               style={{ marginBottom: "-10px", padding: " 0 10px" }}
             >
-              InsureX Admin Panel
+              InsureX Admin Panel <br /> this : {user.role}
             </Text>
           </Navbar.Section>
           <Navbar.Section mt="xl">{links}</Navbar.Section>

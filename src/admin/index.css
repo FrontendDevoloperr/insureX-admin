@@ -109,7 +109,9 @@ input.error {
 }
 
 
-
+[custome_disabled="true"] {
+  opacity: 0.5;
+}
 
 .ox-scroll .row .multiples-select {
   width: 200px;
@@ -137,7 +139,7 @@ input.error {
 }
 
 .ox-scroll .row button[type="submit"],
-.ox-scroll .row button.delete,
+.ox-scroll .row div.delete,
 .adder {
   box-sizing: border-box;
   border-width: 2px;
@@ -161,20 +163,20 @@ input.error {
   padding: 0px;
 }
 
-.ox-scroll .row button.delete {
+.ox-scroll .row div.delete {
   background-color: transparent;
   border-top: 1px solid #ccc;
   border-bottom: 0.1px solid #ccc;
   border-radius: 0;
 }
 
-.ox-scroll .row button.delete svg {
+.ox-scroll .row div.delete svg {
   transition: cubic-bezier(0.075, 0.82, 0.165, 1) 150ms;
   width: 30px;
   height: 30px;
 }
 
-.ox-scroll .row button.delete svg:active {
+.ox-scroll .row div.delete svg:active {
   transform: scale(0.98) translateY(2px);
 }
 

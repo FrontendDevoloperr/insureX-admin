@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { GoogDriveIcon, PlusUser } from "../icons";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Rows({
   item,
@@ -458,6 +459,7 @@ export default function Persons() {
   const [events, setEvents] = React.useState([]);
   const [appComp, setAppComp] = React.useState([]);
   const [region, setRegion] = React.useState([]);
+  const user = useSelector((state) => state.user);
 
   React.useEffect(() => {
     setLoading(true);
@@ -563,13 +565,23 @@ export default function Persons() {
         setAppraiser(res?.data?.message?.appraisers);
       });
     axios
-      .get(`${_URL}/insured-events`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(
+        `${_URL}/insured-events${
+          user.role === "insurance_company"
+            ? `?insurance_company_id=${user.insurance_company.id}`
+            : user.role === "appraisal_company"
+            ? `?appraisal_company_id=${user.appraisal_company.id}`
+            : user.role === "superadmin" && ""
+        }`,
+        {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        }
+      )
       .then((res) => {
         setEvents(res?.data?.message?.insured_events);
       });
@@ -645,24 +657,30 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"event type"} />
         </div>
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isCitys={isCitys}
-            agents={agents}
-            person={person}
-            sdp={sdp}
-            appraisers={appraiser}
-            events={events}
-            appComp={appComp}
-            region={region}
-          />
-        ))}
+        {events.map((eve) => {
+          return (
+            <React.Fragment key={eve?.id}>
+              {elements?.map((item, i) => (
+                <Rows
+                  key={item?.id ?? i}
+                  item={item}
+                  setElements={setElements}
+                  datas={elements}
+                  loading={loading}
+                  isCompanys={isCompanys}
+                  isCitys={isCitys}
+                  agents={agents}
+                  person={person}
+                  sdp={sdp}
+                  appraisers={appraiser}
+                  events={[eve]}
+                  appComp={appComp}
+                  region={region}
+                />
+              ))}
+            </React.Fragment>
+          );
+        })}
       </div>
     </>
   );

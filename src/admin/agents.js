@@ -6,10 +6,11 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
+import { useSelector } from "react-redux";
 
 function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
+  const user = useSelector((state) => state.user);
   const { register, handleSubmit } = useForm();
-
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
 
@@ -104,6 +105,12 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           data={isCompanys.map((item) => ({
             value: item?.id,
             label: item?.title,
+            custome_disabled:
+              user.role === "insurance_company"
+                ? item?.id !== user.insurance_company.id
+                  ? "true"
+                  : "false"
+                : "",
           }))}
           transition="pop-top-left"
           transitionDuration={80}
@@ -179,7 +186,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
             {item?.id ? "Update" : "Create"}
           </button>
         ) : (
-          <button
+          <div
             title="Удалить"
             type="button"
             className="delete"
@@ -207,9 +214,9 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
             }}
           >
             <ActionIcon color="red">
-            <Trash size={16} />
-          </ActionIcon>
-          </button>
+              <Trash size={16} />
+            </ActionIcon>
+          </div>
         )}
       </form>
     </>
@@ -221,19 +228,29 @@ export default function Persons() {
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isRegions, setIsRegions] = React.useState([]);
+  const user = useSelector((state) => state.user);
 
   React.useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/agents`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .get(
+          `${_URL}${
+            user.role === "superadmin"
+              ? "/agents"
+              : user.role === "insurance_company"
+              ? `/agents?=insurance_company_id=${user.insurance_company.id}`
+              : ""
+          }`,
+          {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          }
+        )
         .then((res) => {
           setElements(res?.data?.message?.agents);
           setLoading(false);

@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
+import { useSelector } from "react-redux";
 
 function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
   const { register, handleSubmit } = useForm();
@@ -177,7 +178,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
           {item?.id ? "Update" : "Create"}
         </button>
       ) : (
-        <button
+        <div
           title="Удалить"
           type="button"
           className="delete"
@@ -205,7 +206,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
           <ActionIcon color="red">
             <Trash size={16} />
           </ActionIcon>
-        </button>
+        </div>
       )}
     </form>
   );
@@ -216,19 +217,28 @@ export default function Sdp() {
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
+  const user = useSelector((state) => state.user);
 
   React.useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
       await axios
-        .get(`${_URL}/sdp`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .get(
+          `${_URL}${
+            user.role === "superadmin"
+              ? "/sdp"
+              : user.role === "insurance_company" &&
+                `/sdp?insurance_company_id=${user.insurance_company.id}`
+          }`,
+          {
+            headers: {
+              Authorization: `"Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          }
+        )
         .then((res) => {
           setElements(res?.data?.message?.sdp);
           setLoading(false);
@@ -243,17 +253,23 @@ export default function Sdp() {
   }, []);
 
   React.useEffect(() => {
-    axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCompanys(res?.data?.message?.insurance_companies);
-      });
+    if (user.role === "insurance_company") {
+      setIsCompanys([user.insurance_company]);
+    }
+    if (user.role === "superadmin") {
+      axios
+        .get(`${_URL}/insurance-companies`, {
+          headers: {
+            Authorization: `"Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
+        .then((res) => {
+          setIsCompanys(res?.data?.message?.insurance_companies);
+        });
+    }
     axios
       .get(`${_URL}/city`, {
         headers: {
