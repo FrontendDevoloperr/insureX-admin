@@ -50,7 +50,10 @@ function Popup() {
         }}
       >
         <ScrollArea
-          style={{ height: 250, width: "max-content" }}
+          style={{
+            height: user?.messages?.length > 0 ? 250 : 60,
+            width: "max-content",
+          }}
           offsetScrollbars
         >
           {!user?.messages?.length && <Box>No message</Box>}
@@ -79,6 +82,10 @@ function Popup() {
                 }
                 if (message?.oao_ie_number) {
                   navigate(`/appraiser-company`);
+                  setOpened(false);
+                }
+                if (message?.ie_number) {
+                  navigate(`/insurance-company`);
                   setOpened(false);
                 }
               }}
