@@ -94,7 +94,7 @@ function Popup() {
 
             {__message?.reverse()?.map((message, i) => (
               <Box
-                style={i >= 10 ? { display: "none" } : {}}
+                style={i >= 5 ? { display: "none" } : {}}
                 title={message?.role}
                 onClick={(e) => {
                   e.preventDefault();
