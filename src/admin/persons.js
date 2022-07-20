@@ -31,7 +31,7 @@ function Rows({
     !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id);
     !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id);
     if (data?.id) {
-      let formData = data;
+      let formData = { ...data, role: "insured_person" };
       delete formData.id;
       setIsLoading(true);
       axios
@@ -289,7 +289,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();
@@ -316,7 +315,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();

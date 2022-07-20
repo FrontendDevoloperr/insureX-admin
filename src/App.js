@@ -4,7 +4,14 @@ import io from "socket.io-client";
 import AdminPanel from "./admin";
 import Login from "./login";
 import { useSelector, useDispatch } from "react-redux";
-import { login, message, setRole, newMessage, isInsuranceCompany, isAppraisalCompany } from "./redux/reducer";
+import {
+  login,
+  message,
+  setRole,
+  newMessage,
+  isInsuranceCompany,
+  isAppraisalCompany,
+} from "./redux/reducer";
 import axios from "axios";
 import { _URL } from "./utils";
 const socket = io("wss://api.insurextest.link", { reconnect: true });
@@ -74,7 +81,11 @@ function App() {
               );
             });
         }
-        if (user?.role === "appraisal_company" && msg?.oao_ie_number) {
+        if (
+          (user?.role === "appraisal_company" && msg?.oao_ie_number) ||
+          Number(msg.appraisal_company_id) ===
+            Number(user?.appraisal_company?.id)
+        ) {
           dispatch(newMessage());
           axios
             .get(`${_URL}/push/messages`, {
@@ -89,7 +100,10 @@ function App() {
               dispatch(
                 message(
                   res?.data?.messages?.filter(
-                    (_message) => _message.oao_ie_number
+                    (_message) =>
+                      _message.oao_ie_number ||
+                      Number(_message.appraisal_company_id) ===
+                        Number(user?.appraisal_company?.id)
                   )
                 )
               );
@@ -119,7 +133,8 @@ function App() {
                   _message.role ||
                   _message.appraiser_company_name ||
                   _message.ie_number ||
-                  _message.oao_ie_number
+                  _message.oao_ie_number ||
+                  _message.appraisal_company_id
               )
             )
           );
@@ -133,7 +148,7 @@ function App() {
         dispatch(login(token?.auth));
         dispatch(setRole(token?.role));
         dispatch(isInsuranceCompany(token?.insurance_company));
-        dispatch(isAppraisalCompany(token?.appraisal_company))
+        dispatch(isAppraisalCompany(token?.appraisal_company));
       } else navigate("/login");
     }
   }, [user?.auth]);

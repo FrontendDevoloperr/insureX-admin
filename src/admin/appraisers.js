@@ -31,8 +31,9 @@ function Rows({
       (data.insurance_company_id =
         item?.insurance_company_id ?? isCompanys[0]?.id);
     !data?.region_id && (data.region_id = item?.region_id ?? isRegions[0]?.id);
+
     if (data?.id) {
-      const formData = data;
+      const formData = { ...data, role: "appraiser" };
       delete formData.id;
 
       setIsLoading(true);
@@ -276,7 +277,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();
@@ -303,7 +303,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();
@@ -330,7 +329,6 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();

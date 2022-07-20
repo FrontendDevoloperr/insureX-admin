@@ -17,14 +17,21 @@ function Popup() {
             _items?.role === "sdp" ||
             _items?.role === "agent" ||
             _items?.role === "appraiser" ||
-            _items?.role === "insured_person"
+            _items?.role === "insured_person" ||
+            _items?.ie_number ||
+            _items?.oao_ie_number
         )
       : user.role === "insurance_company"
       ? user?.messages?.filter((_items) => _items?.ie_number)
       : user.role === "appraisal_company"
-      ? user?.messages?.filter((_items) => _items?.oao_ie_number)
+      ? user?.messages?.filter(
+          (_items) =>
+            `${_items?.oao_ie_number}` ===
+              `${user.appraisal_company.oao_ie_number}` ||
+            Number(_items?.appraisal_company_id) ===
+              Number(user.appraisal_company.id)
+        )
       : [];
-
   return (
     <Popover
       onClick={() => dispatch(oldMessage())}
@@ -49,7 +56,7 @@ function Popup() {
           textAlign: "center",
         }}
       >
-        {user?.messages?.length > 0 ? (
+        {__message?.length > 0 ? (
           <ScrollArea
             style={{
               height: 250,
@@ -57,7 +64,7 @@ function Popup() {
             }}
             offsetScrollbars
           >
-            {!user?.messages?.length && (
+            {!__message?.length && (
               <Box
                 sx={(theme) => ({
                   backgroundColor:
@@ -115,6 +122,10 @@ function Popup() {
                     navigate(`/insurance-company`);
                     setOpened(false);
                   }
+                  if (message?.appraisal_company_id && !message?.first_name) {
+                    navigate(`/events`);
+                    setOpened(false);
+                  }
                 }}
                 sx={(theme) => ({
                   backgroundColor:
@@ -134,14 +145,27 @@ function Popup() {
                         : theme.colors.gray[1],
                   },
                 })}
-                key={message?.id}
+                key={message?.id + Math.random()}
               >
-                <Text size="lg">
-                  {message?.oao_ie_number && message?.appraisal_company_name}
-                  {message?.ie_number && message?.title}
-                  {message?.first_name && message?.first_name}
-                  {message?.second_name && message?.second_name}
-                </Text>
+                <div>
+                  <Text>
+                    {message?.oao_ie_number && message?.appraisal_company_name}
+                    {message?.ie_number && message?.title}
+                    {message?.first_name && message?.first_name + " "}
+                    {message?.second_name && message?.second_name}
+                    {message?.appraisal_company_id &&
+                      !message?.first_name &&
+                      "Insured Event"}
+                  </Text>
+                  <Text size="xs" color="dimmed">
+                    {message.role ||
+                      (message?.ie_number && "insurance_company") ||
+                      (message?.oao_ie_number && "appraisal_company")}
+                    {message?.appraisal_company_id &&
+                      !message?.first_name &&
+                      "New Created"}
+                  </Text>
+                </div>
               </Box>
             ))}
           </ScrollArea>

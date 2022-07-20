@@ -20,7 +20,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
       (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
     !data.city_id && (data.city_id = item.city_id);
     if (data?.id) {
-      let formData = data;
+      let formData = { ...data, role: "sdp" };
       delete formData.id;
       setIsLoading(true);
       axios
@@ -246,7 +246,6 @@ export default function Sdp() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          
         });
     };
     fetchData();

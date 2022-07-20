@@ -49,9 +49,8 @@ function Rows({
       ?.first_name
   );
   const [insComp, setiInsComp] = React.useState(
-    isCompanys?.filter(
-      (options) => options.id === item?.insurance_company_id?.[0]
-    )[0]?.id ?? isCompanys[0]?.id
+    events?.find((eve) => eve?.id === item?.insured_event_id)
+      ?.insurance_company_id
   );
   const [isCity, setIsCity] = React.useState(
     isCitys.find((options) => options.id === item?.city_id)?.id
@@ -102,7 +101,7 @@ function Rows({
       axios
         .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData), {
           headers: {
-            Authorization: `"Bearer ${
+            Authorization: `Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
                 .token
             } `,
@@ -118,7 +117,7 @@ function Rows({
               getFormData(eventFormData),
               {
                 headers: {
-                  Authorization: `"Bearer ${
+                  Authorization: `Bearer ${
                     JSON.parse(
                       localStorage.getItem("admin-panel-token-insure-x")
                     ).token
@@ -147,7 +146,7 @@ function Rows({
       axios
         .post(`${_URL}/insurance-case`, getFormData(formData), {
           headers: {
-            Authorization: `"Bearer ${
+            Authorization: `Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
                 .token
             } `,
@@ -301,10 +300,8 @@ function Rows({
             }}
             value={
               insComp ??
-              isCompanys?.filter(
-                (options) => options.id === item?.insurance_company_id?.[0]
-              )[0]?.id ??
-              isCompanys[0]?.id
+              events?.find((eve) => eve?.id === item?.insured_event_id)
+                ?.insurance_company_id
             }
             {...register(`insurance_company_id`)}
           >
@@ -471,7 +468,7 @@ export default function Persons() {
       await axios
         .get(`${_URL}/insurance-case`, {
           headers: {
-            Authorization: `"Bearer ${
+            Authorization: `Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
                 .token
             } `,
@@ -480,6 +477,28 @@ export default function Persons() {
         .then((res) => {
           setElements(res?.data?.message?.insurance_cases);
           setLoading(false);
+          axios
+            .get(
+              `${_URL}/insured-events${
+                user.role === "insurance_company"
+                  ? `?insurance_company_id=${user.insurance_company.id}`
+                  : user.role === "appraisal_company"
+                  ? `?appraisal_company_id=${user.appraisal_company.id}`
+                  : user.role === "superadmin" && ""
+              }`,
+              {
+                headers: {
+                  Authorization: `Bearer ${
+                    JSON.parse(
+                      localStorage.getItem("admin-panel-token-insure-x")
+                    ).token
+                  } `,
+                },
+              }
+            )
+            .then((__res) => {
+              setEvents(__res?.data?.message?.insured_events);
+            });
         })
         .catch((err) => {
           console.log(err);
@@ -493,7 +512,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/insurance-companies`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -504,7 +523,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/city`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -515,7 +534,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/regions`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -526,7 +545,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/agents/select`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -537,7 +556,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/insured-persons`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -548,7 +567,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/sdp`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -559,7 +578,7 @@ export default function Persons() {
     axios
       .get(`${_URL}/appraisers`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -567,31 +586,11 @@ export default function Persons() {
       .then((res) => {
         setAppraiser(res?.data?.message?.appraisers);
       });
-    axios
-      .get(
-        `${_URL}/insured-events${
-          user.role === "insurance_company"
-            ? `?insurance_company_id=${user.insurance_company.id}`
-            : user.role === "appraisal_company"
-            ? `?appraisal_company_id=${user.appraisal_company.id}`
-            : user.role === "superadmin" && ""
-        }`,
-        {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        }
-      )
-      .then((res) => {
-        setEvents(res?.data?.message?.insured_events);
-      });
+
     axios
       .get(`${_URL}/appraisal-companies`, {
         headers: {
-          Authorization: `"Bearer ${
+          Authorization: `Bearer ${
             JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
           } `,
         },
@@ -661,31 +660,30 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"event type"} />
         </div>
 
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={{
-              ...item,
-              insurance_company_id: events?.find(
-                (_item) => _item?.id === item?.insured_event_id
-              )?.insurance_company_id,
-            }}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isCitys={isCitys}
-            agents={agents}
-            person={person}
-            sdp={sdp}
-            appraisers={appraiser}
-            events={events?.filter(
-              (_events) => _events?.id === item?.insured_event_id
-            )}
-            appComp={appComp}
-            region={region}
-          />
-        ))}
+        {elements
+          ?.filter(
+            (_res) =>
+              _res?.insured_event_id ===
+              events.find((_eve) => _eve.id === _res?.insured_event_id)?.id
+          )
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              loading={loading}
+              isCompanys={isCompanys}
+              isCitys={isCitys}
+              agents={agents}
+              person={person}
+              sdp={sdp}
+              appraisers={appraiser}
+              events={events}
+              appComp={appComp}
+              region={region}
+            />
+          ))}
       </div>
     </>
   );

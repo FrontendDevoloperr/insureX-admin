@@ -20,7 +20,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
       (data.insurance_company_ids = item.insurance_company_ids);
     !data.region_id && (data.region_id = item.region_id);
     if (data?.id) {
-      let formData = data;
+      let formData = { ...data, role: "agent" };
       delete formData.id;
       setIsLoading(true);
       axios
@@ -266,7 +266,6 @@ export default function Persons() {
         .catch((err) => {
           console.log(err);
           setLoading(false);
-          
         });
     };
     fetchData();
