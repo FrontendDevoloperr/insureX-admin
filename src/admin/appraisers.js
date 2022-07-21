@@ -225,7 +225,12 @@ function Rows({
               if (item?.id) {
                 setIsLoading(true);
                 axios
-                  .delete(`${_URL}/appraisers/${item.id}`)
+                  .patch(
+                    `${_URL}/appraisers/${item.id}`,
+                    getFormData({
+                      delete: true,
+                    })
+                  )
                   .then((res) => {
                     setIsLoading(false);
                     setElements(
@@ -426,18 +431,20 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isRegions={isRegions}
-            appraiselCompanys={appraiselCompanys}
-          />
-        ))}
+        {elements
+          ?.filter((resp) => !resp.delete)
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              loading={loading}
+              isCompanys={isCompanys}
+              isRegions={isRegions}
+              appraiselCompanys={appraiselCompanys}
+            />
+          ))}
       </div>
     </>
   );

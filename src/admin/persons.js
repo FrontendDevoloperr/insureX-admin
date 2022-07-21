@@ -229,15 +229,21 @@ function Rows({
               if (item?.id) {
                 setIsLoading(true);
                 axios
-                  .delete(`${_URL}/insured-persons/${item.id}`, {
-                    headers: {
-                      Authorization: `"Bearer ${
-                        JSON.parse(
-                          localStorage.getItem("admin-panel-token-insure-x")
-                        ).token
-                      } `,
-                    },
-                  })
+                  .patch(
+                    `${_URL}/insured-persons/${item.id}`,
+                    getFormData({
+                      delete: true,
+                    }),
+                    {
+                      headers: {
+                        Authorization: `"Bearer ${
+                          JSON.parse(
+                            localStorage.getItem("admin-panel-token-insure-x")
+                          ).token
+                        } `,
+                      },
+                    }
+                  )
                   .then((res) => {
                     setIsLoading(false);
                     setElements(
@@ -404,19 +410,23 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"agent ID"} />
           <input className="disabled" readOnly={true} value={"city ID"} />
         </div>
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isCitys={isCitys}
-            agents={agents}
-            isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
-          />
-        ))}
+        {elements
+          ?.filter((resp) => !resp.delete)
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              loading={loading}
+              isCompanys={isCompanys}
+              isCitys={isCitys}
+              agents={agents}
+              isNowEdit={
+                Number(location.hash.split("#")[1]) === Number(item?.id)
+              }
+            />
+          ))}
       </div>
     </>
   );
