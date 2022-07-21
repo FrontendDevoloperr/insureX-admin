@@ -1,11 +1,12 @@
 import React from "react";
-import { LoadingOverlay, Header } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { useSelector } from "react-redux";
+import { Trash } from "tabler-icons-react";
 
 function Rows({ item, setElements, datas, loading }) {
   const { register, handleSubmit } = useForm();
@@ -138,7 +139,42 @@ function Rows({ item, setElements, datas, loading }) {
             {item?.id ? "Update" : "Create"}
           </button>
         ) : (
-          ""
+          <div
+            title="Удалить"
+            type="button"
+            className="delete"
+            onClick={() => {
+              if (!item?.id) {
+                setElements(datas.filter((item) => item?.new !== true));
+              }
+              if (item?.id) {
+                setIsLoading(true);
+                axios
+                  .patch(
+                    `${_URL}/insurance-companies/${item.id}`,
+                    getFormData({
+                      delete: true,
+                    })
+                  )
+                  .then((res) => {
+                    setIsLoading(false);
+                    setElements(
+                      datas.filter((__res) => __res?.id !== item?.id)
+                    );
+                    toast.success("Removed");
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    setIsLoading(false);
+                    toast.error("Error when deleting data");
+                  });
+              }
+            }}
+          >
+            <ActionIcon color="red">
+              <Trash size={16} />
+            </ActionIcon>
+          </div>
         )}
       </form>
     </>
@@ -170,13 +206,12 @@ export default function Persons() {
           .catch((err) => {
             console.log(err);
             setLoading(false);
-            
           });
       };
       fetchData();
     }
-    if(user.role === "insurance_company") {
-      setElements([user.insurance_company])
+    if (user.role === "insurance_company") {
+      setElements([user.insurance_company]);
     }
   }, []);
 
@@ -231,15 +266,17 @@ export default function Persons() {
             value={"address"}
           />
         </div>
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-          />
-        ))}
+        {elements
+          ?.filter((resp) => !resp.delete)
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              loading={loading}
+            />
+          ))}
       </div>
     </>
   );

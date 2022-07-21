@@ -1,11 +1,12 @@
 import React from "react";
-import { LoadingOverlay, Header } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { useSelector } from "react-redux";
+import { Trash } from "tabler-icons-react";
 
 function Rows({
   item,
@@ -210,7 +211,51 @@ function Rows({
             {item?.id ? "Update" : "Create"}
           </button>
         ) : (
-          ""
+          <div
+            title="Удалить"
+            type="button"
+            className="delete"
+            onClick={() => {
+              if (!item?.id) {
+                setElements(datas.filter((item) => item?.new !== true));
+              }
+              if (item?.id) {
+                setIsLoading(true);
+                axios
+                  .patch(
+                    `${_URL}/appraisal_companies/${item.id}`,
+                    getFormData({
+                      delete: true,
+                    }),
+                    {
+                      headers: {
+                        Authorization: `"Bearer ${
+                          JSON.parse(
+                            localStorage.getItem("admin-panel-token-insure-x")
+                          ).token
+                        } `,
+                      },
+                    }
+                  )
+                  .then((res) => {
+                    setIsLoading(false);
+                    setElements(
+                      datas.filter((__res) => __res?.id !== item?.id)
+                    );
+                    toast.success("Removed");
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    setIsLoading(false);
+                    toast.error("Error when deleting data");
+                  });
+              }
+            }}
+          >
+            <ActionIcon color="red">
+              <Trash size={16} />
+            </ActionIcon>
+          </div>
         )}
       </form>
     </>
@@ -372,18 +417,20 @@ export default function Persons() {
           />
           <input className="disabled" readOnly={true} value={"city"} />
         </div>
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isRegions={isRegions}
-            isCitys={isCitys}
-          />
-        ))}
+        {elements
+          ?.filter((resp) => !resp.delete)
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              loading={loading}
+              isCompanys={isCompanys}
+              isRegions={isRegions}
+              isCitys={isCitys}
+            />
+          ))}
       </div>
     </>
   );

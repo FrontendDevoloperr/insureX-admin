@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadingOverlay, Header } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData, CaseTypeExtract, typeCase } from "../utils";
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { GoogDriveIcon, PlusUser } from "../icons";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Trash } from "tabler-icons-react";
 
 function Rows({
   item,
@@ -440,7 +441,42 @@ function Rows({
               {item?.id ? "Update" : "Create"}
             </button>
           ) : (
-            ""
+            <div
+              title="Удалить"
+              type="button"
+              className="delete"
+              onClick={() => {
+                if (!item?.id) {
+                  setElements(datas.filter((item) => item?.new !== true));
+                }
+                if (item?.id) {
+                  setIsLoading(true);
+                  axios
+                    .patch(
+                      `${_URL}/insurance-case/${item.id}`,
+                      getFormData({
+                        delete: true,
+                      })
+                    )
+                    .then((res) => {
+                      setIsLoading(false);
+                      setElements(
+                        datas.filter((__res) => __res?.id !== item?.id)
+                      );
+                      toast.success("Removed");
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                      setIsLoading(false);
+                      toast.error("Error when deleting data");
+                    });
+                }
+              }}
+            >
+              <ActionIcon color="red">
+                <Trash size={16} />
+              </ActionIcon>
+            </div>
           )}
         </form>
       )}
@@ -663,9 +699,11 @@ export default function Persons() {
         {elements
           ?.filter(
             (_res) =>
+              !_res.delete &&
               _res?.insured_event_id ===
-              events.find((_eve) => _eve.id === _res?.insured_event_id)?.id
+                events.find((_eve) => _eve.id === _res?.insured_event_id)?.id
           )
+
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}

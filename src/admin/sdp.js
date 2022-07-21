@@ -189,7 +189,12 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
             if (item?.id) {
               setIsLoading(true);
               axios
-                .delete(`${_URL}/sdp/${item.id}`)
+                .patch(
+                  `${_URL}/sdp/${item.id}`,
+                  getFormData({
+                    delete: true,
+                  })
+                )
                 .then((res) => {
                   setIsLoading(false);
                   setElements(datas.filter((__res) => __res?.id !== item?.id));
@@ -322,17 +327,19 @@ export default function Sdp() {
           />
           <input className="disabled " readOnly={true} value={"login_id"} />
         </div>
-        {elements?.map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isCitys={isCitys}
-          />
-        ))}
+        {elements
+          ?.filter((resp) => !resp.delete)
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              loading={loading}
+              isCompanys={isCompanys}
+              isCitys={isCitys}
+            />
+          ))}
       </div>
     </>
   );
