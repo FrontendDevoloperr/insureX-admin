@@ -90,6 +90,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
         }
         {...register(`insurance_company_ids`)}
       >
+        <option  style={{display:"none"}}>choose...</option>
         {isCompanys?.map((options) => (
           <option key={options.id} value={options.id}>
             {options.title}
@@ -144,6 +145,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
         value={isCitys.find((options) => options.id === item?.city_id)?.id}
         {...register(`city_id`)}
       >
+        <option  style={{display:"none"}}>choose...</option>
         {isCitys.map((options) => (
           <option
             // selected={options.id === item?.city_id}

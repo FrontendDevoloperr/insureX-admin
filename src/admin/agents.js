@@ -94,6 +94,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
         />
         <MultiSelect
           className="input-multi-select"
+          placeholder="choose..."
           style={{
             width: "200px",
           }}
@@ -166,6 +167,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           }
           {...register(`region_id`)}
         >
+          <option  style={{display:"none"}}>choose...</option>
           {isRegions.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}
