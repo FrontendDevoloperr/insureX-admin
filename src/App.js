@@ -12,6 +12,7 @@ import {
 import { _URL } from "./utils";
 
 function App() {
+  console.log("new version22");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);

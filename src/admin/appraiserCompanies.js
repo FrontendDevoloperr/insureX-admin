@@ -131,7 +131,6 @@ function Rows({
           }
           {...register(`insurance_company_ids`)}
         >
-          
           {isCompanys?.map((options) => (
             <option key={options.id} value={options.id}>
               {options.title}
@@ -170,7 +169,6 @@ function Rows({
           }
           {...register(`region_id`)}
         >
-          
           {isRegions.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}
@@ -198,7 +196,6 @@ function Rows({
           }
           {...register(`city_id`)}
         >
-          
           {isCitys.map((options) => (
             <option
               key={options?.id}
@@ -346,7 +343,11 @@ export default function Persons() {
           },
         })
         .then((res) => {
-          setIsCompanys(res?.data?.message?.insurance_companies);
+          setIsCompanys(
+            res?.data?.message?.insurance_companies?.filter(
+              (item) => !item?.delete
+            )
+          );
         });
     }
 
