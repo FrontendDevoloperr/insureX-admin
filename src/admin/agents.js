@@ -167,6 +167,10 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           }
           {...register(`region_id`)}
         >
+<<<<<<< HEAD
+=======
+          <option style={{ display: "none" }}>choose...</option>
+>>>>>>> 7b5e6109ee64bab7a9e102e0bfb5bbc2719cf021
           {isRegions.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}
