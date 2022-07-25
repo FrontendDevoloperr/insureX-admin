@@ -154,14 +154,9 @@ function Rows({
           },
         })
         .then((res) => {
-          setIsLoading(false);
-          setElements(
-            [...datas, res?.data?.message?.insurance_case].filter(
-              (item) => !item?.new
-            )
-          );
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
+          window.location.reload();
         })
         .catch((err) => {
           console.log(err);
@@ -194,7 +189,6 @@ function Rows({
             }
             {...register(`appraisal_company_id`)}
           >
-            
             {appComp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.appraisal_company_name}
@@ -214,7 +208,6 @@ function Rows({
             }
             {...register(`appraiser_id`)}
           >
-            
             {appraisers?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -234,7 +227,6 @@ function Rows({
             }
             {...register(`sdp_id`)}
           >
-            
             {sdp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -254,7 +246,6 @@ function Rows({
             }
             {...register(`agent_id`)}
           >
-            
             {agents.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -291,7 +282,6 @@ function Rows({
                 ?.first_name
             }
           >
-            
             {person?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -311,7 +301,6 @@ function Rows({
             }
             {...register(`insurance_company_id`)}
           >
-            
             {isCompanys?.map((options) => (
               <option key={options.id} value={options.id}>
                 {options.title}
@@ -369,7 +358,6 @@ function Rows({
             }
             {...register(`city_id`)}
           >
-            
             {isCitys.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.city_name}
@@ -388,7 +376,6 @@ function Rows({
             }
             {...register(`region_id`)}
           >
-            
             {region?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.region_name}
@@ -411,7 +398,6 @@ function Rows({
               })
             }
           >
-            
             {typeCase?.map((options) => (
               <option
                 key={options?.link}
