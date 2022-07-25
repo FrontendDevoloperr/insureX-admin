@@ -226,7 +226,7 @@ function Rows({
                 setIsLoading(true);
                 axios
                   .patch(
-                    `${_URL}/appraisal_companies/${item.id}`,
+                    `${_URL}/appraisal-companies/${item.id}`,
                     getFormData({
                       delete: true,
                     }),
