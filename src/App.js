@@ -18,7 +18,7 @@ function App() {
   let token = JSON.parse(
     localStorage.getItem("admin-panel-token-insure-x") ?? "{}"
   );
-
+console.log("start version 1.0.0");
   React.useEffect(() => {
     if (!user?.auth) {
       if (token?.auth) {

@@ -169,12 +169,11 @@ function Popup() {
               </Box>
             )}
 
-            {console.log(messages, "messages")}
-
             <div style={{ display: "flex", flexDirection: "column-reverse" }}>
-              {messages?.map((message, i) => (
-                <React.Fragment key={message?.id + Math.random()}>
-                  {i <= 5 && (
+              {messages
+                ?.filter((_res) => _res.role !== "customer")
+                .map((message, i) => (
+                  <React.Fragment key={message?.id + Math.random()}>
                     <Box
                       title={message?.role}
                       onClick={(e) => {
@@ -189,7 +188,7 @@ function Popup() {
                           setOpened(false);
                         }
                         if (message?.role === "agent") {
-                          navigate(`/agent`);
+                          navigate(`/agents`);
                           setOpened(false);
                         }
                         if (message?.role === "appraiser") {
@@ -252,9 +251,8 @@ function Popup() {
                         </Text>
                       </div>
                     </Box>
-                  )}
-                </React.Fragment>
-              ))}
+                  </React.Fragment>
+                ))}
             </div>
           </ScrollArea>
         ) : (
