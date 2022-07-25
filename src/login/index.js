@@ -11,11 +11,17 @@ import {
 import axios from "axios";
 import toast from "react-hot-toast";
 import { getFormData, _URL } from "../utils";
-import { isAppraisalCompany, isInsuranceCompany, login, setRole } from "../redux/reducer";
+import {
+  isAppraisalCompany,
+  isInsuranceCompany,
+  login,
+  setRole,
+} from "../redux/reducer";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  console.log("new version 25.07.2022");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
@@ -48,15 +54,18 @@ export default function Login() {
               appraisal_company: res?.data?.message?.user?.appraisal_company,
             })
           );
-          if(typeof res?.data?.message?.user?.insurance_company === "object"){
-            dispatch(isInsuranceCompany(res?.data?.message?.user?.insurance_company));
+          if (typeof res?.data?.message?.user?.insurance_company === "object") {
+            dispatch(
+              isInsuranceCompany(res?.data?.message?.user?.insurance_company)
+            );
             navigate("/");
           }
-          if(typeof res?.data?.message?.user?.appraisal_company === "object"){
-            dispatch(isAppraisalCompany(res?.data?.message?.user?.appraisal_company))
+          if (typeof res?.data?.message?.user?.appraisal_company === "object") {
+            dispatch(
+              isAppraisalCompany(res?.data?.message?.user?.appraisal_company)
+            );
             navigate("/");
           }
-          
         } else toast.error("Role Failed");
       })
       .catch((err) => {
