@@ -169,83 +169,93 @@ function Popup() {
               </Box>
             )}
 
-            {messages?.reverse()?.map((message, i) => (
-              <Box
-                style={i >= 5 ? { display: "none" } : {}}
-                title={message?.role}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (message?.role === "insured_person") {
-                    navigate(`/persons`);
-                    setOpened(false);
-                  }
-                  if (message?.role === "sdp") {
-                    navigate(`/sdp`);
-                    setOpened(false);
-                  }
-                  if (message?.role === "agent") {
-                    navigate(`/agent`);
-                    setOpened(false);
-                  }
-                  if (message?.role === "appraiser") {
-                    navigate(`/appraisers`);
-                    setOpened(false);
-                  }
-                  if (message?.oao_ie_number) {
-                    navigate(`/appraiser-company`);
-                    setOpened(false);
-                  }
-                  if (message?.ie_number) {
-                    navigate(`/insurance-company`);
-                    setOpened(false);
-                  }
-                  if (message?.appraisal_company_id && !message?.first_name) {
-                    navigate(`/events`);
-                    setOpened(false);
-                  }
-                }}
-                sx={(theme) => ({
-                  backgroundColor:
-                    theme.colorScheme === "dark"
-                      ? theme.colors.dark[6]
-                      : theme.colors.gray[0],
-                  textAlign: "center",
-                  padding: theme.spacing.sm,
-                  borderRadius: theme.radius.md,
-                  marginBottom: theme.spacing.sm,
-                  cursor: "pointer",
+            {console.log(messages, "messages")}
 
-                  "&:hover": {
-                    backgroundColor:
-                      theme.colorScheme === "dark"
-                        ? theme.colors.dark[5]
-                        : theme.colors.gray[1],
-                  },
-                })}
-                key={message?.id + Math.random()}
-              >
-                <div>
-                  <Text>
-                    {message?.oao_ie_number && message?.appraisal_company_name}
-                    {message?.ie_number && message?.title}
-                    {message?.first_name && message?.first_name + " "}
-                    {message?.second_name && message?.second_name}
-                    {message?.appraisal_company_id &&
-                      !message?.first_name &&
-                      "Insured Event"}
-                  </Text>
-                  <Text size="xs" color="dimmed">
-                    {message.role ||
-                      (message?.ie_number && "insurance_company") ||
-                      (message?.oao_ie_number && "appraisal_company")}
-                    {message?.appraisal_company_id &&
-                      !message?.first_name &&
-                      "New Created"}
-                  </Text>
-                </div>
-              </Box>
-            ))}
+            <div style={{ display: "flex", flexDirection: "column-reverse" }}>
+              {messages?.map((message, i) => (
+                <React.Fragment key={message?.id + Math.random()}>
+                  {i <= 5 && (
+                    <Box
+                      title={message?.role}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (message?.role === "insured_person") {
+                          navigate(`/persons`);
+                          setOpened(false);
+                        }
+                        if (message?.role === "sdp") {
+                          navigate(`/sdp`);
+                          setOpened(false);
+                        }
+                        if (message?.role === "agent") {
+                          navigate(`/agent`);
+                          setOpened(false);
+                        }
+                        if (message?.role === "appraiser") {
+                          navigate(`/appraisers`);
+                          setOpened(false);
+                        }
+                        if (message?.oao_ie_number) {
+                          navigate(`/appraiser-company`);
+                          setOpened(false);
+                        }
+                        if (message?.ie_number) {
+                          navigate(`/insurance-company`);
+                          setOpened(false);
+                        }
+                        if (
+                          message?.appraisal_company_id &&
+                          !message?.first_name
+                        ) {
+                          navigate(`/events`);
+                          setOpened(false);
+                        }
+                      }}
+                      sx={(theme) => ({
+                        backgroundColor:
+                          theme.colorScheme === "dark"
+                            ? theme.colors.dark[6]
+                            : theme.colors.gray[0],
+                        textAlign: "center",
+                        padding: theme.spacing.sm,
+                        borderRadius: theme.radius.md,
+                        marginBottom: theme.spacing.sm,
+                        cursor: "pointer",
+
+                        "&:hover": {
+                          backgroundColor:
+                            theme.colorScheme === "dark"
+                              ? theme.colors.dark[5]
+                              : theme.colors.gray[1],
+                        },
+                      })}
+                    >
+                      <div>
+                        <Text>
+                          {message?.oao_ie_number &&
+                            message?.appraisal_company_name}
+                          {message?.ie_number && message?.title}
+                          {message?.first_name && message?.first_name + " "}
+                          {message?.second_name && message?.second_name}
+                          {message?.appraisal_company_id &&
+                            !message?.first_name &&
+                            "Insured Event"}
+                        </Text>
+                        <Text size="xs" color="dimmed">
+                          {message.role ||
+                            (message?.ie_number && "insurance_company") ||
+                            (message?.oao_ie_number && "appraisal_company")}
+                          {message?.appraisal_company_id &&
+                            !message?.first_name &&
+                            "New Created"}
+                        </Text>
+                      </div>
+                    </Box>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
           </ScrollArea>
         ) : (
           <Center>
