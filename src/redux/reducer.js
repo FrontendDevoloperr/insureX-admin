@@ -24,8 +24,8 @@ export const userSlice = createSlice({
     message: (state, data) => {
       state.messages = data.payload;
     },
-    newMessage: (state) => {
-      state.read_messages = true;
+    newMessage: (state, data) => {
+      state.read_messages = data.payload;
     },
     oldMessage: (state) => {
       state.read_messages = false;

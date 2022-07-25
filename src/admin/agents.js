@@ -167,15 +167,6 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           }
           {...register(`region_id`)}
         >
-          <option
-            value={
-              isRegions.filter((options) => options.id === item?.region_id)[0]
-                ?.id
-            }
-            style={{ display: "none" }}
-          >
-            choose...
-          </option>
           {isRegions.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}

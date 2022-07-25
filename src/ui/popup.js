@@ -1,41 +1,118 @@
 import React, { useState } from "react";
+import io from "socket.io-client";
+import axios from "axios";
 import { Box, Center, Popover, ScrollArea, Text } from "@mantine/core";
 import { NoMessage, Notification } from "../icons";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { oldMessage } from "../redux/reducer";
+import { _URL } from "./../utils";
+import { toast, useToasterStore } from "react-hot-toast";
 
+const socket = io("wss://api.insurextest.link", { reconnect: true });
 function Popup() {
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const user = useSelector(({ user }) => user);
   const [opened, setOpened] = useState(false);
-  const __message =
-    user.role === "superadmin"
-      ? user?.messages?.filter(
-          (_items) =>
-            _items?.role === "sdp" ||
-            _items?.role === "agent" ||
-            _items?.role === "appraiser" ||
-            _items?.role === "insured_person" ||
-            _items?.ie_number ||
-            _items?.oao_ie_number
-        )
-      : user.role === "insurance_company"
-      ? user?.messages?.filter((_items) => _items?.ie_number)
-      : user.role === "appraisal_company"
-      ? user?.messages?.filter(
-          (_items) =>
-            `${_items?.oao_ie_number}` ===
-              `${user.appraisal_company.oao_ie_number}` ||
-            Number(_items?.appraisal_company_id) ===
-              Number(user.appraisal_company.id)
-        )
-      : [];
+  const [newMessage, setNewMessage] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const { toasts } = useToasterStore();
+
+  React.useEffect(() => {
+    toasts
+      .filter((t) => t.visible) // Only consider visible toasts
+      .filter((_, i) => i >= 1) // Is toast index over limit
+      .forEach((t) => toast.dismiss(t.id)); // Dismiss – Use toast.remove(t.id) removal without animation
+  }, [toasts]);
+
+  React.useEffect(() => {
+    if (user?.auth) {
+      socket.on("message-send", (msg) => {
+        console.log(msg);
+        if (user.role === "superadmin") {
+          setNewMessage(true);
+        }
+        if (
+          user.role === "insurance_company" &&
+          Number(user.insurance_company.id) === Number(msg.insurance_company_id)
+        ) {
+          setNewMessage(true);
+          toast.success("New message received");
+        }
+        if (
+          user.role === "appraisal_company" &&
+          Number(user.appraisal_company.id) === Number(msg.appraisal_company_id)
+        ) {
+          setNewMessage(true);
+          toast.success("New message received");
+        }
+        axios
+          .get(`${_URL}/push/messages`, {
+            headers: {
+              Authorization: `Bearer ${
+                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                  .token
+              } `,
+            },
+          })
+          .then((res) => {
+            setMessages(
+              res?.data?.messages?.filter((__message) =>
+                user.role === "superadmin"
+                  ? __message?.role ||
+                    __message?.ie_number ||
+                    __message?.oao_ie_number
+                  : user.role === "insurance_company"
+                  ? __message?.ie_number ||
+                    Number(__message?.insurance_company_id) ===
+                      Number(user.insurance_company.id)
+                  : user.role === "appraisal_company"
+                  ? __message?.oao_ie_number ||
+                    Number(__message?.appraisal_company_id) ===
+                      Number(user.appraisal_company.id)
+                  : false
+              )
+            );
+          });
+      });
+    }
+  }, [user?.auth]);
+  React.useEffect(() => {
+    if (user?.auth) {
+      axios
+        .get(`${_URL}/push/messages`, {
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+                .token
+            } `,
+          },
+        })
+        .then((res) => {
+          setMessages(
+            res?.data?.messages?.filter((__message) =>
+              user.role === "superadmin"
+                ? __message?.role ||
+                  __message?.ie_number ||
+                  __message?.oao_ie_number
+                : user.role === "insurance_company"
+                ? __message?.ie_number ||
+                  Number(__message?.insurance_company_id) ===
+                    Number(user.insurance_company.id)
+                : user.role === "appraisal_company"
+                ? __message?.oao_ie_number ||
+                  Number(__message?.appraisal_company_id) ===
+                    Number(user.appraisal_company.id)
+                : false
+            )
+          );
+        });
+    }
+  }, [user?.auth]);
+
   return (
     <Popover
-      onClick={() => dispatch(oldMessage())}
-      className={user.read_messages ? "popup-notification" : ""}
+      onClick={() => setNewMessage(false)}
+      className={`${newMessage ? "popup-notification" : ""}`}
       style={{ width: "max-content" }}
       opened={opened}
       onClose={() => setOpened(false)}
@@ -56,7 +133,7 @@ function Popup() {
           textAlign: "center",
         }}
       >
-        {__message?.length > 0 ? (
+        {messages?.length > 0 ? (
           <ScrollArea
             style={{
               height: 250,
@@ -64,7 +141,7 @@ function Popup() {
             }}
             offsetScrollbars
           >
-            {!__message?.length && (
+            {!messages?.length && (
               <Box
                 sx={(theme) => ({
                   backgroundColor:
@@ -92,7 +169,7 @@ function Popup() {
               </Box>
             )}
 
-            {__message?.reverse()?.map((message, i) => (
+            {messages?.reverse()?.map((message, i) => (
               <Box
                 style={i >= 5 ? { display: "none" } : {}}
                 title={message?.role}

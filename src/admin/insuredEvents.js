@@ -194,7 +194,7 @@ function Rows({
             }
             {...register(`appraisal_company_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {appComp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.appraisal_company_name}
@@ -214,7 +214,7 @@ function Rows({
             }
             {...register(`appraiser_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {appraisers?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -234,7 +234,7 @@ function Rows({
             }
             {...register(`sdp_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {sdp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -254,7 +254,7 @@ function Rows({
             }
             {...register(`agent_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {agents.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -291,7 +291,7 @@ function Rows({
                 ?.first_name
             }
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {person?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -311,7 +311,7 @@ function Rows({
             }
             {...register(`insurance_company_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {isCompanys?.map((options) => (
               <option key={options.id} value={options.id}>
                 {options.title}
@@ -369,7 +369,7 @@ function Rows({
             }
             {...register(`city_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {isCitys.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.city_name}
@@ -388,7 +388,7 @@ function Rows({
             }
             {...register(`region_id`)}
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {region?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.region_name}
@@ -411,7 +411,7 @@ function Rows({
               })
             }
           >
-            <option  style={{display:"none"}}>choose...</option>
+            
             {typeCase?.map((options) => (
               <option
                 key={options?.link}

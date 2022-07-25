@@ -106,7 +106,7 @@ function Rows({
           }
           {...register(`insurance_company_id`)}
         >
-          <option  style={{display:"none"}}>choose...</option>
+          
           {isCompanys?.map((options) => (
             <option key={options.id} value={options.id}>
               {options.title}
@@ -127,7 +127,7 @@ function Rows({
           }
           {...register(`appraisal_company_id`)}
         >
-          <option  style={{display:"none"}}>choose...</option>
+          
           {appraiselCompanys?.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.appraisal_company_name}
@@ -194,7 +194,7 @@ function Rows({
           }
           {...register(`region_id`)}
         >
-          <option  style={{display:"none"}}>choose...</option>
+          
           {isRegions?.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}
