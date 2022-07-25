@@ -90,7 +90,6 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
         }
         {...register(`insurance_company_ids`)}
       >
-        
         {isCompanys?.map((options) => (
           <option key={options.id} value={options.id}>
             {options.title}
@@ -145,7 +144,6 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
         value={isCitys.find((options) => options.id === item?.city_id)?.id}
         {...register(`city_id`)}
       >
-        
         {isCitys.map((options) => (
           <option
             // selected={options.id === item?.city_id}
@@ -273,7 +271,11 @@ export default function Sdp() {
           },
         })
         .then((res) => {
-          setIsCompanys(res?.data?.message?.insurance_companies);
+          setIsCompanys(
+            res?.data?.message?.insurance_companies?.filter(
+              (item) => !item?.delete
+            )
+          );
         });
     }
     axios

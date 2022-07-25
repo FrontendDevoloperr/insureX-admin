@@ -106,7 +106,6 @@ function Rows({
           }
           {...register(`insurance_company_id`)}
         >
-          
           {isCompanys?.map((options) => (
             <option key={options.id} value={options.id}>
               {options.title}
@@ -127,7 +126,6 @@ function Rows({
           }
           {...register(`appraisal_company_id`)}
         >
-          
           {appraiselCompanys?.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.appraisal_company_name}
@@ -194,7 +192,6 @@ function Rows({
           }
           {...register(`region_id`)}
         >
-          
           {isRegions?.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}
@@ -346,7 +343,7 @@ export default function Persons() {
   React.useEffect(() => {
     if (user.role === "superadmin" || user.role === "appraisal_company") {
       axios
-        .get(`${_URL}/insurance-companies`, {
+        .get(`${_URL}/insurance-companies?delete=false`, {
           headers: {
             Authorization: `"Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
@@ -355,7 +352,11 @@ export default function Persons() {
           },
         })
         .then((res) => {
-          setIsCompanys(res?.data?.message?.insurance_companies);
+          setIsCompanys(
+            res?.data?.message?.insurance_companies?.filter(
+              (item) => !item?.delete
+            )
+          );
         });
     }
     if (user.role === "insurance_company") {
@@ -365,7 +366,7 @@ export default function Persons() {
     }
     if (user.role === "superadmin" || user.role === "insurance_company") {
       axios
-        .get(`${_URL}/appraisal-companies`, {
+        .get(`${_URL}/appraisal-companies?delete=false`, {
           headers: {
             Authorization: `"Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))

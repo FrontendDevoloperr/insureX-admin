@@ -549,7 +549,11 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setIsCompanys(res?.data?.message?.insurance_companies);
+        setIsCompanys(
+          res?.data?.message?.insurance_companies?.filter(
+            (item) => !item?.delete
+          )
+        );
       });
     axios
       .get(`${_URL}/city`, {
@@ -582,7 +586,7 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setAgents(res?.data?.message?.agents);
+        setAgents(res?.data?.message?.agents?.filter((item) => !item?.delete));
       });
     axios
       .get(`${_URL}/insured-persons`, {
@@ -593,7 +597,9 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setPerson(res?.data?.message?.insured_persons);
+        setPerson(
+          res?.data?.message?.insured_persons?.filter((item) => !item?.delete)
+        );
       });
     axios
       .get(`${_URL}/sdp`, {
@@ -604,7 +610,7 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setSdp(res?.data?.message?.sdp);
+        setSdp(res?.data?.message?.sdp?.filter((item) => !item?.delete));
       });
     axios
       .get(`${_URL}/appraisers`, {
@@ -615,7 +621,9 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setAppraiser(res?.data?.message?.appraisers);
+        setAppraiser(
+          res?.data?.message?.appraisers?.filter((item) => !item?.delete)
+        );
       });
 
     axios
@@ -627,7 +635,11 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setAppComp(res?.data?.message?.appraisal_companies);
+        setAppComp(
+          res?.data?.message?.appraisal_companies?.filter(
+            (item) => !item?.delete
+          )
+        );
       });
   }, []);
 

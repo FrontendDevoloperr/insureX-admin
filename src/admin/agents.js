@@ -287,7 +287,11 @@ export default function Persons() {
         },
       })
       .then((res) => {
-        setIsCompanys(res?.data?.message?.insurance_companies);
+        setIsCompanys(
+          res?.data?.message?.insurance_companies?.filter(
+            (item) => !item.delete
+          )
+        );
       });
     axios
       .get(`${_URL}/regions`, {
