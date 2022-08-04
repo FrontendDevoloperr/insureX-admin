@@ -132,15 +132,7 @@ function Rows({
             </option>
           ))}
         </select>
-        <input
-          onInput={(e) => {
-            e.target.value !== item?.second_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
-          defaultValue={item?.second_name}
-          {...register(`second_name`)}
-        />
+
         <input
           onInput={(e) => {
             e.target.value !== item?.first_name
@@ -150,7 +142,15 @@ function Rows({
           defaultValue={item?.first_name}
           {...register(`first_name`)}
         />
-
+        <input
+          onInput={(e) => {
+            e.target.value !== item?.second_name
+              ? setIsUpdated(true)
+              : setIsUpdated(false);
+          }}
+          defaultValue={item?.second_name}
+          {...register(`second_name`)}
+        />
         <input
           onInput={(e) => {
             e.target.value !== item?.phone
