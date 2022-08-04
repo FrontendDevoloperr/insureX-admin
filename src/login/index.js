@@ -94,7 +94,7 @@ export default function Login() {
               mt="md"
             />
             <Button fullWidth mt="xl" type="submit" loading={loading}>
-              Войти
+              Log In
             </Button>
           </Paper>
         </form>
