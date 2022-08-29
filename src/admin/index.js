@@ -14,6 +14,13 @@ import { LogoutIcon } from "../icons";
 import Logo from "../icons/logo.svg";
 import Popup from "../ui/popup";
 import { logout } from "../redux/reducer";
+import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
+import { getCity } from "../redux/reducer/city";
+import { getRegion } from "../redux/reducer/region";
+import { getAgents } from "../redux/reducer/agents";
+
+import axios from "axios";
+import { _URL, getRequest } from "../utils";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -162,6 +169,87 @@ export default function AdminPanel() {
     dispatch(logout());
     localStorage.removeItem("admin-panel-token-insure-x");
   }
+
+  const getInsuredCompaniesFC = () => {
+    axios
+      .get(`${_URL}/insurance-companies`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getInsuredCompanies(
+            data?.message?.insurance_companies?.filter((item) => !item?.delete)
+          )
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const cityFC = () => {
+    axios
+      .get(`${_URL}/city`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(getCity(data?.message?.cities));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const regionFC = () => {
+    axios
+      .get(`${_URL}/regions`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(getRegion(data?.message?.regions));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const agentsFC = () => {
+    axios
+      .get(`${_URL}/agents/select`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getAgents(data?.message?.agents?.filter((item) => !item?.delete))
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  React.useEffect(() => {
+    getInsuredCompaniesFC();
+    cityFC();
+    regionFC();
+    agentsFC();
+  }, []);
 
   return (
     <AppShell

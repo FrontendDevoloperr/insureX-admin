@@ -28,6 +28,16 @@ export const CaseTypeExtract = (data) => {
   );
 };
 
+export const getRequest = async (url) => {
+  return await axios.get(`${URL}` + url, {
+    headers: {
+      Authorization: `Bearer ${
+        JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+      } `,
+    },
+  });
+};
+
 export const typeCase = [
   {
     event_type_id: 1,

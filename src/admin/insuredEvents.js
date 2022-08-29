@@ -482,16 +482,20 @@ function Rows({
 export default function Persons() {
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
-  const [agents, setAgents] = React.useState([]);
+  // const [isCompanys, setIsCompanys] = React.useState([]);
+  // const [isCitys, setIsCitys] = React.useState([]);
+  // const [agents, setAgents] = React.useState([]);
   const [person, setPerson] = React.useState([]);
   const [sdp, setSdp] = React.useState([]);
   const [appraiser, setAppraiser] = React.useState([]);
   const [events, setEvents] = React.useState([]);
   const [appComp, setAppComp] = React.useState([]);
-  const [region, setRegion] = React.useState([]);
+  // const [region, setRegion] = React.useState([]);
   const user = useSelector((state) => state.user);
+  const { insuredCompanies } = useSelector(({ insuredCmp }) => insuredCmp);
+  const { city } = useSelector(({ city }) => city);
+  const { region } = useSelector(({ region }) => region);
+  const { agents } = useSelector(({ agents }) => agents);
 
   React.useEffect(() => {
     setLoading(true);
@@ -540,54 +544,6 @@ export default function Persons() {
   }, []);
 
   React.useEffect(() => {
-    axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCompanys(
-          res?.data?.message?.insurance_companies?.filter(
-            (item) => !item?.delete
-          )
-        );
-      });
-    axios
-      .get(`${_URL}/city`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCitys(res?.data?.message?.cities);
-      });
-    axios
-      .get(`${_URL}/regions`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setRegion(res?.data?.message?.regions);
-      });
-    axios
-      .get(`${_URL}/agents/select`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setAgents(res?.data?.message?.agents?.filter((item) => !item?.delete));
-      });
     axios
       .get(`${_URL}/insured-persons`, {
         headers: {
@@ -718,8 +674,8 @@ export default function Persons() {
               setElements={setElements}
               datas={elements}
               loading={loading}
-              isCompanys={isCompanys}
-              isCitys={isCitys}
+              isCompanys={insuredCompanies}
+              isCitys={city}
               agents={agents}
               person={person}
               sdp={sdp}

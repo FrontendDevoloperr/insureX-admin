@@ -221,7 +221,6 @@ function Popup() {
                         borderRadius: theme.radius.md,
                         marginBottom: theme.spacing.sm,
                         cursor: "pointer",
-
                         "&:hover": {
                           backgroundColor:
                             theme.colorScheme === "dark"
