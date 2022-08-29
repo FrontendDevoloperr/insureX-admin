@@ -7,11 +7,13 @@ import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { useLocation } from "react-router-dom";
 import { Trash } from "tabler-icons-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getPersons } from "../redux/reducer/insuredPerson";
+import { getInsuredPersonFC } from "./index";
 
 function Rows({
   item,
-  setElements,
+  dispatch,
   datas,
   loading,
   isCompanys,
@@ -70,11 +72,7 @@ function Rows({
         })
         .then((res) => {
           setIsLoading(false);
-          setElements(
-            [...datas, res?.data?.message?.insured_person].filter(
-              (item) => !item?.new
-            )
-          );
+          getInsuredPersonFC(dispatch);
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
         })
@@ -221,7 +219,7 @@ function Rows({
             className="delete"
             onClick={() => {
               if (!item?.id) {
-                setElements(datas.filter((item) => item?.new !== true));
+                getInsuredPersonFC(dispatch);
               }
               if (item?.id) {
                 setIsLoading(true);
@@ -243,9 +241,7 @@ function Rows({
                   )
                   .then((res) => {
                     setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
-                    );
+                    getInsuredPersonFC(dispatch);
                     toast.success("Removed");
                   })
                   .catch((err) => {
@@ -267,65 +263,15 @@ function Rows({
 }
 
 export default function Persons() {
-  const [elements, setElements] = React.useState([]);
+  // const [elements, setElements] = React.useState([]);
+  const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
   const [agents, setAgent] = React.useState([]);
   const location = useLocation();
   const user = useSelector((state) => state.user);
-
-  React.useEffect(() => {
-    if (user.role === "superadmin") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(`${_URL}/insured-persons`, {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          })
-          .then((res) => {
-            setElements(res?.data?.message?.insured_persons);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
-    }
-    if (user.role === "insurance_company") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(
-            `${_URL}/insured-persons?insurance_company_id=${user.insurance_company.id}`,
-            {
-              headers: {
-                Authorization: `"Bearer ${
-                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                    .token
-                } `,
-              },
-            }
-          )
-          .then((res) => {
-            setElements(res?.data?.message?.insured_persons);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
-    }
-  }, [user.role]);
+  const elements = useSelector(({ person }) => person);
 
   React.useEffect(() => {
     if (user.role === "insurance_company") {
@@ -385,7 +331,9 @@ export default function Persons() {
                 "You cannot add new entries until you finish the previous one."
               );
             } else {
-              setElements(elements?.concat([{ new: true }])?.reverse());
+              dispatch(
+                getPersons(elements?.concat([{ new: true }])?.reverse())
+              );
               toast.success("You can fill in a new entry");
             }
           }}
@@ -412,12 +360,16 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"city ID"} />
         </div>
         {elements
-          ?.filter((resp) => !resp.delete)
+          ?.filter(
+            (resp) =>
+              !resp.delete &&
+              resp.insurance_company_id === user.insurance_company.id
+          )
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}
               item={item}
-              setElements={setElements}
+              dispatch={dispatch}
               datas={elements}
               loading={loading}
               isCompanys={isCompanys}
