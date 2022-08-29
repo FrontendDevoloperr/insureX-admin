@@ -268,6 +268,7 @@ export default function Sdp() {
               ? !resp.insurance_company_id === user?.insurance_company?.id
               : resp
           )
+          ?.reverse()
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}
