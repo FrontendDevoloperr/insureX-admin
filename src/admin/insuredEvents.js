@@ -25,6 +25,7 @@ function Rows({
   appComp,
   region,
   dispatch,
+  loading,
 }) {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
@@ -172,7 +173,7 @@ function Rows({
     <>
       {events && (
         <form className="row" onSubmit={handleSubmit(onSubmit)}>
-          <LoadingOverlay visible={isLoading} />
+          <LoadingOverlay visible={isLoading || loading} />
           <select
             onInput={(e) => {
               setIsUpdated(true);
@@ -484,7 +485,7 @@ function Rows({
   );
 }
 
-export default function Persons() {
+export default function InsuredEvents() {
   const dispatch = useDispatch();
   const person = useSelector(({ persons }) => persons);
   const events = useSelector(({ event }) => event);
@@ -496,16 +497,18 @@ export default function Persons() {
   const { sdp } = useSelector(({ sdp }) => sdp);
   const { appraiser } = useSelector(({ appraiser }) => appraiser);
   const appComp = useSelector(({ appComp }) => appComp);
-  const [paginationCustome, setPaginationCustome] = React.useState(5);
+  const [paginationCustome, setPaginationCustome] = React.useState(10);
   const [loading, setLoading] = React.useState(false);
 
   return (
     <>
       <Header
-        height={40}
+        height={45}
         p="xs"
         sx={{
           display: "flex",
+          paddingBottom: "10px !important",
+          gap: 5,
         }}
       >
         <button
@@ -527,20 +530,8 @@ export default function Persons() {
         <button
           className="adder"
           onClick={() => {
-            setLoading(true);
-            setPaginationCustome(paginationCustome + 5);
-            setTimeout(() => {
-              setLoading(false);
-            }, 2000);
-          }}
-        >
-          <span>+ 5</span>
-        </button>
-        <button
-          className="adder"
-          onClick={() => {
-            setLoading(true);
-            setPaginationCustome(
+            if (
+              paginationCustome <
               elements?.filter(
                 (_res) =>
                   !_res.delete &&
@@ -548,13 +539,50 @@ export default function Persons() {
                     events?.find((_eve) => _eve.id === _res?.insured_event_id)
                       ?.id
               )?.length
-            );
-            setTimeout(() => {
-              setLoading(false);
-            }, 2000);
+            ) {
+              setLoading(true);
+              setPaginationCustome(paginationCustome + 10);
+              setTimeout(() => {
+                setLoading(false);
+              }, 2000);
+            }
+          }}
+        >
+          <span>+ 10</span>
+        </button>
+        <button
+          className="adder"
+          onClick={() => {
+            if (
+              paginationCustome <
+              elements?.filter(
+                (_res) =>
+                  !_res.delete &&
+                  _res?.insured_event_id ===
+                    events?.find((_eve) => _eve.id === _res?.insured_event_id)
+                      ?.id
+              )?.length
+            ) {
+              setLoading(true);
+              setPaginationCustome(
+                elements?.filter(
+                  (_res) =>
+                    !_res.delete &&
+                    _res?.insured_event_id ===
+                      events?.find((_eve) => _eve.id === _res?.insured_event_id)
+                        ?.id
+                )?.length
+              );
+              setTimeout(() => {
+                setLoading(false);
+              }, 2000);
+            }
           }}
         >
           <span>All</span>
+        </button>
+        <button className="adder" style={{ marginLeft: 100 }}>
+          current : {paginationCustome}
         </button>
       </Header>
       <div className="ox-scroll">
@@ -623,6 +651,7 @@ export default function Persons() {
                   appComp={appComp}
                   region={region}
                   dispatch={dispatch}
+                  loading={loading}
                 />
               )}
             </>
