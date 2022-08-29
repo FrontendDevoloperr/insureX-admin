@@ -157,6 +157,19 @@ const tabs = {
   ],
 };
 
+export const getSdpFC = (dispatch) => {
+  axios
+    .get(`${_URL}/sdp`, {
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+        } `,
+      },
+    })
+    .then(({ data }) => {
+      dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
+    });
+};
 export default function AdminPanel() {
   const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
@@ -281,20 +294,6 @@ export default function AdminPanel() {
     });
   };
 
-  const getSdpFC = () => {
-    axios
-      .get(`${_URL}/sdp`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then(({ data }) => {
-        dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
-      });
-  };
-
   const getAppraiserFC = () => {
     axios
       .get(`${_URL}/appraisers`, {
@@ -333,7 +332,7 @@ export default function AdminPanel() {
     regionFC();
     agentsFC();
     getInsuredPersonFC();
-    getSdpFC();
+    getSdpFC(dispatch);
     getAppraiserFC();
     getAppraiserCompFC();
     getEventsAndCasesFC();

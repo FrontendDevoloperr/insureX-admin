@@ -6,9 +6,11 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getSdp } from "../redux/reducer/sdp";
+import { getSdpFC } from "./index";
 
-function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
+function Rows({ item, getSdp, datas, loading, isCompanys, isCitys, dispatch }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -58,9 +60,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
         })
         .then((res) => {
           setIsLoading(false);
-          setElements(
-            [...datas, res?.data?.message?.sdp].filter((item) => !item?.new)
-          );
+          getSdpFC(dispatch);
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
         })
@@ -77,13 +77,8 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
       <LoadingOverlay visible={isLoading} />
       <select
         className="multiples-select"
-        onInput={(e) => {
-          e.target.value !== item?.insurance_company_ids?.[0]
-            ? setIsUpdated(true)
-            : setIsUpdated(false);
-          item.insurance_company_ids = e.target.value;
-        }}
-        value={
+        onInput={() => setIsUpdated(true)}
+        defaultValue={
           isCompanys?.filter(
             (options) => options.id === item?.insurance_company_ids?.[0]
           )[0]?.id
@@ -184,7 +179,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
           className="delete"
           onClick={() => {
             if (!item?.id) {
-              setElements(datas.filter((item) => item?.new !== true));
+              getSdpFC(dispatch);
             }
             if (item?.id) {
               setIsLoading(true);
@@ -197,7 +192,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
                 )
                 .then((res) => {
                   setIsLoading(false);
-                  setElements(datas.filter((__res) => __res?.id !== item?.id));
+                  getSdpFC(dispatch);
                   toast.success("Deleted");
                 })
                 .catch((err) => {
@@ -218,43 +213,12 @@ function Rows({ item, setElements, datas, loading, isCompanys, isCitys }) {
 }
 
 export default function Sdp() {
-  const [elements, setElements] = React.useState([]);
+  const dispatch = useDispatch();
+  const elements = useSelector(({ sdp }) => sdp?.sdp);
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
   const user = useSelector((state) => state.user);
-
-  React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(
-          `${_URL}${
-            user.role === "superadmin"
-              ? "/sdp"
-              : user.role === "insurance_company" &&
-                `/sdp?insurance_company_id=${user.insurance_company.id}`
-          }`,
-          {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          }
-        )
-        .then((res) => {
-          setElements(res?.data?.message?.sdp);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    };
-    fetchData();
-  }, []);
 
   React.useEffect(() => {
     if (user.role === "insurance_company") {
@@ -297,12 +261,12 @@ export default function Sdp() {
         <button
           className="adder"
           onClick={() => {
-            if (elements.filter((item) => item?.new)?.length) {
+            if (elements?.filter((item) => item?.new)?.length) {
               toast.error(
                 "You cannot add new entries until you finish the previous one."
               );
             } else {
-              setElements(elements?.concat([{ new: true }])?.reverse());
+              dispatch(getSdp(elements?.concat([{ new: true }])?.reverse()));
               toast.success("You can fill in a new entry");
             }
           }}
@@ -332,16 +296,21 @@ export default function Sdp() {
           <input className="disabled " readOnly={true} value={"login_id"} />
         </div>
         {elements
-          ?.filter((resp) => !resp.delete)
+          ?.filter((resp) =>
+            !resp.delete && user.role === "insurance_company"
+              ? !resp.insurance_company_id === user?.insurance_company?.id
+              : resp
+          )
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}
               item={item}
-              setElements={setElements}
+              getSdp={getSdp}
               datas={elements}
               loading={loading}
               isCompanys={isCompanys}
               isCitys={isCitys}
+              dispatch={dispatch}
             />
           ))}
       </div>
