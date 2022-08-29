@@ -1,19 +1,20 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { _URL, getFormData, CaseTypeExtract, typeCase } from "../utils";
+import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
+import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { _URL, getFormData, CaseTypeExtract, typeCase } from "../utils";
 import toast from "react-hot-toast";
 import { GoogDriveIcon, PlusUser } from "../icons";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+
 import { Trash } from "tabler-icons-react";
+import { setCases } from "../redux/reducer/cases";
 
 function Rows({
   item,
   setElements,
   datas,
-  loading,
   isCompanys,
   isCitys,
   agents,
@@ -23,11 +24,12 @@ function Rows({
   events,
   appComp,
   region,
+  dispatch,
 }) {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(loading);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [appCom, setAppCom] = React.useState(
     appComp?.find(
       (app) =>
@@ -171,7 +173,6 @@ function Rows({
       {events && (
         <form className="row" onSubmit={handleSubmit(onSubmit)}>
           <LoadingOverlay visible={isLoading} />
-
           <select
             onInput={(e) => {
               setIsUpdated(true);
@@ -442,7 +443,9 @@ function Rows({
               className="delete"
               onClick={() => {
                 if (!item?.id) {
-                  setElements(datas.filter((item) => item?.new !== true));
+                  dispatch(
+                    setElements(datas.filter((item) => item?.new !== true))
+                  );
                 }
                 if (item?.id) {
                   setIsLoading(true);
@@ -455,8 +458,10 @@ function Rows({
                     )
                     .then((res) => {
                       setIsLoading(false);
-                      setElements(
-                        datas.filter((__res) => __res?.id !== item?.id)
+                      dispatch(
+                        setElements(
+                          datas.filter((__res) => __res?.id !== item?.id)
+                        )
                       );
                       toast.success("Removed");
                     })
@@ -480,91 +485,29 @@ function Rows({
 }
 
 export default function Persons() {
-  const [elements, setElements] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  // const [isCompanys, setIsCompanys] = React.useState([]);
-  // const [isCitys, setIsCitys] = React.useState([]);
-  // const [agents, setAgents] = React.useState([]);
-  const [person, setPerson] = React.useState([]);
-  // const [sdp, setSdp] = React.useState([]);
-  // const [appraiser, setAppraiser] = React.useState([]);
-  const [events, setEvents] = React.useState([]);
-  // const [appComp, setAppComp] = React.useState([]);
-  // const [region, setRegion] = React.useState([]);
-  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const person = useSelector(({ persons }) => persons);
+  const events = useSelector(({ event }) => event);
+  const elements = useSelector(({ cases }) => cases);
   const { insuredCompanies } = useSelector(({ insuredCmp }) => insuredCmp);
   const { city } = useSelector(({ city }) => city);
   const { region } = useSelector(({ region }) => region);
   const { agents } = useSelector(({ agents }) => agents);
   const { sdp } = useSelector(({ sdp }) => sdp);
   const { appraiser } = useSelector(({ appraiser }) => appraiser);
-  const { appComp } = useSelector(({ appComp }) => appComp);
-
-  React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(`${_URL}/insurance-case`, {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          setElements(res?.data?.message?.insurance_cases);
-          setLoading(false);
-          axios
-            .get(
-              `${_URL}/insured-events${
-                user.role === "insurance_company"
-                  ? `?insurance_company_id=${user.insurance_company.id}`
-                  : user.role === "appraisal_company"
-                  ? `?appraisal_company_id=${user.appraisal_company.id}`
-                  : user.role === "superadmin" && ""
-              }`,
-              {
-                headers: {
-                  Authorization: `Bearer ${
-                    JSON.parse(
-                      localStorage.getItem("admin-panel-token-insure-x")
-                    ).token
-                  } `,
-                },
-              }
-            )
-            .then((__res) => {
-              setEvents(__res?.data?.message?.insured_events);
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    };
-    fetchData();
-  }, []);
-
-  React.useEffect(() => {
-    axios
-      .get(`${_URL}/insured-persons`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setPerson(
-          res?.data?.message?.insured_persons?.filter((item) => !item?.delete)
-        );
-      });
-  }, []);
+  const appComp = useSelector(({ appComp }) => appComp);
+  const [paginationCustome, setPaginationCustome] = React.useState(5);
+  const [loading, setLoading] = React.useState(false);
 
   return (
     <>
-      <Header height={60} p="xs">
+      <Header
+        height={40}
+        p="xs"
+        sx={{
+          display: "flex",
+        }}
+      >
         <button
           className="adder"
           onClick={() => {
@@ -573,13 +516,45 @@ export default function Persons() {
                 "You cannot add new entries until you finish the previous one."
               );
             } else {
-              setElements(elements?.concat([{ new: true }])?.reverse());
+              dispatch(setCases(elements?.concat([{ new: true }])?.reverse()));
               toast.success("You can fill in a new entry");
             }
           }}
         >
           <span>Add </span>
           <PlusUser color={"#fff"} />
+        </button>
+        <button
+          className="adder"
+          onClick={() => {
+            setLoading(true);
+            setPaginationCustome(paginationCustome + 5);
+            setTimeout(() => {
+              setLoading(false);
+            }, 2000);
+          }}
+        >
+          <span>+ 5</span>
+        </button>
+        <button
+          className="adder"
+          onClick={() => {
+            setLoading(true);
+            setPaginationCustome(
+              elements?.filter(
+                (_res) =>
+                  !_res.delete &&
+                  _res?.insured_event_id ===
+                    events?.find((_eve) => _eve.id === _res?.insured_event_id)
+                      ?.id
+              )?.length
+            );
+            setTimeout(() => {
+              setLoading(false);
+            }, 2000);
+          }}
+        >
+          <span>All</span>
         </button>
       </Header>
       <div className="ox-scroll">
@@ -627,26 +602,30 @@ export default function Persons() {
             (_res) =>
               !_res.delete &&
               _res?.insured_event_id ===
-                events.find((_eve) => _eve.id === _res?.insured_event_id)?.id
+                events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
           )
 
           .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              setElements={setElements}
-              datas={elements}
-              loading={loading}
-              isCompanys={insuredCompanies}
-              isCitys={city}
-              agents={agents}
-              person={person}
-              sdp={sdp}
-              appraisers={appraiser}
-              events={events}
-              appComp={appComp}
-              region={region}
-            />
+            <>
+              {i < paginationCustome && (
+                <Rows
+                  key={item?.id ?? i}
+                  item={item}
+                  setElements={setCases}
+                  datas={elements}
+                  isCompanys={insuredCompanies}
+                  isCitys={city}
+                  agents={agents}
+                  person={person}
+                  sdp={sdp}
+                  appraisers={appraiser}
+                  events={events}
+                  appComp={appComp}
+                  region={region}
+                  dispatch={dispatch}
+                />
+              )}
+            </>
           ))}
       </div>
     </>

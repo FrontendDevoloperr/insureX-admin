@@ -2,14 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const appraiserCompaniesSlice = createSlice({
   name: "appraiserCompanies",
-  initialState: {
-    appraiserCompanies: [],
-    loading: false,
-    error: null,
-  },
+  initialState: [],
   reducers: {
-    getAppraiserCompanies: (state, action) => {
-      state.appraiserCompanies = action.payload;
+    getAppraiserCompanies: (state, { payload }) => {
+      return payload;
     },
   },
 });

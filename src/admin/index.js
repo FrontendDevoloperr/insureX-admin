@@ -19,13 +19,14 @@ import { getCity } from "../redux/reducer/city";
 import { getRegion } from "../redux/reducer/region";
 import { getAgents } from "../redux/reducer/agents";
 import { getSdp } from "../redux/reducer/sdp";
-
-import { getInsuredPerson } from "../redux/reducer/insuredPerson";
-
+import { setEvents } from "../redux/reducer/events";
+import { setCases } from "../redux/reducer/cases";
+import { getPersons } from "../redux/reducer/insuredPerson";
 import axios from "axios";
-import { _URL, getRequest } from "../utils";
+import { _URL } from "../utils";
 import { getAppraiser } from "../redux/reducer/appraiser";
 import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
+import { eventSlice } from "./../redux/reducer/cases";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -249,24 +250,36 @@ export default function AdminPanel() {
       });
   };
 
-  // const getInsuredPersonFC = () => {
-  //   axios
-  //     .get(`${_URL}/insured-persons`, {
-  //       headers: {
-  //         Authorization: `Bearer ${
-  //           JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-  //         } `,
-  //       },
-  //     })
-  //     .then(({ data }) => {
-  //       dispatch(
-  //         getInsuredPerson(
-  //           data?.message?.insured_persons?.filter((item) => !item?.delete)
-  //         )
-  //       );
-  //     })
-  //     .catch((err) => {});
-  // };
+  const getInsuredPersonFC = () => {
+    axios
+      .get(`${_URL}/insured-persons`)
+      .then(({ data }) => {
+        dispatch(
+          getPersons(
+            data?.message?.insured_persons?.filter((item) => !item?.delete)
+          )
+        );
+      })
+      .catch((err) => {});
+  };
+  const getEventsAndCasesFC = async () => {
+    await axios.get(`${_URL}/insurance-case`).then(({ data }) => {
+      dispatch(setCases(data?.message?.insurance_cases));
+      axios
+        .get(
+          `${_URL}/insured-events${
+            user.role === "insurance_company"
+              ? `?insurance_company_id=${user.insurance_company.id}`
+              : user.role === "appraisal_company"
+              ? `?appraisal_company_id=${user.appraisal_company.id}`
+              : user.role === "superadmin" && ""
+          }`
+        )
+        .then(({ data }) => {
+          dispatch(setEvents(data?.message?.insured_events));
+        });
+    });
+  };
 
   const getSdpFC = () => {
     axios
@@ -301,25 +314,17 @@ export default function AdminPanel() {
   };
 
   const getAppraiserCompFC = () => {
-    axios
-      .get(`${_URL}/appraisal-companies`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then(({ data }) => {
-        dispatch(
-          getAppraiserCompanies(
-            data?.message?.appraisal_companies?.filter((item) => !item?.delete)
-          )
-        );
-        console.log(
-          data?.message?.appraisal_companies?.filter((item) => !item?.delete),
-          "data?.message?.appraisal_companies?.filter((item) => !item?.delete)"
-        );
-      });
+    axios.get(`${_URL}/appraisal-companies`).then(({ data }) => {
+      dispatch(
+        getAppraiserCompanies(
+          data?.message?.appraisal_companies?.filter((item) => !item?.delete)
+        )
+      );
+      console.log(
+        data?.message?.appraisal_companies?.filter((item) => !item?.delete),
+        "data?.message?.appraisal_companies?.filter((item) => !item?.delete)"
+      );
+    });
   };
 
   React.useEffect(() => {
@@ -327,10 +332,11 @@ export default function AdminPanel() {
     cityFC();
     regionFC();
     agentsFC();
-    // getInsuredPersonFC();
+    getInsuredPersonFC();
     getSdpFC();
     getAppraiserFC();
     getAppraiserCompFC();
+    getEventsAndCasesFC();
   }, []);
 
   return (

@@ -2,16 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const insuredPersonSlice = createSlice({
   name: "insuredPerson",
-  initialState: {
-    insuredPerson: [],
-    loading: false,
-    error: null,
-  },
+  initialState: [],
   reducers: {
-    getInsuredPerson: (state, action) => {
-      state.insuredPerson = action.payload;
+    getPersons: (state, { payload }) => {
+      return payload;
     },
   },
 });
-export const { getInsuredPerson } = insuredPersonSlice.actions;
+export const { getPersons } = insuredPersonSlice.actions;
 export default insuredPersonSlice.reducer;
