@@ -18,9 +18,14 @@ import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
 import { getCity } from "../redux/reducer/city";
 import { getRegion } from "../redux/reducer/region";
 import { getAgents } from "../redux/reducer/agents";
+import { getSdp } from "../redux/reducer/sdp";
+
+import { getInsuredPerson } from "../redux/reducer/insuredPerson";
 
 import axios from "axios";
 import { _URL, getRequest } from "../utils";
+import { getAppraiser } from "../redux/reducer/appraiser";
+import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -244,11 +249,88 @@ export default function AdminPanel() {
       });
   };
 
+  // const getInsuredPersonFC = () => {
+  //   axios
+  //     .get(`${_URL}/insured-persons`, {
+  //       headers: {
+  //         Authorization: `Bearer ${
+  //           JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+  //         } `,
+  //       },
+  //     })
+  //     .then(({ data }) => {
+  //       dispatch(
+  //         getInsuredPerson(
+  //           data?.message?.insured_persons?.filter((item) => !item?.delete)
+  //         )
+  //       );
+  //     })
+  //     .catch((err) => {});
+  // };
+
+  const getSdpFC = () => {
+    axios
+      .get(`${_URL}/sdp`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
+      });
+  };
+
+  const getAppraiserFC = () => {
+    axios
+      .get(`${_URL}/appraisers`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getAppraiser(
+            data?.message?.appraisers?.filter((item) => !item?.delete)
+          )
+        );
+      });
+  };
+
+  const getAppraiserCompFC = () => {
+    axios
+      .get(`${_URL}/appraisal-companies`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getAppraiserCompanies(
+            data?.message?.appraisal_companies?.filter((item) => !item?.delete)
+          )
+        );
+        console.log(
+          data?.message?.appraisal_companies?.filter((item) => !item?.delete),
+          "data?.message?.appraisal_companies?.filter((item) => !item?.delete)"
+        );
+      });
+  };
+
   React.useEffect(() => {
     getInsuredCompaniesFC();
     cityFC();
     regionFC();
     agentsFC();
+    // getInsuredPersonFC();
+    getSdpFC();
+    getAppraiserFC();
+    getAppraiserCompFC();
   }, []);
 
   return (

@@ -486,16 +486,19 @@ export default function Persons() {
   // const [isCitys, setIsCitys] = React.useState([]);
   // const [agents, setAgents] = React.useState([]);
   const [person, setPerson] = React.useState([]);
-  const [sdp, setSdp] = React.useState([]);
-  const [appraiser, setAppraiser] = React.useState([]);
+  // const [sdp, setSdp] = React.useState([]);
+  // const [appraiser, setAppraiser] = React.useState([]);
   const [events, setEvents] = React.useState([]);
-  const [appComp, setAppComp] = React.useState([]);
+  // const [appComp, setAppComp] = React.useState([]);
   // const [region, setRegion] = React.useState([]);
   const user = useSelector((state) => state.user);
   const { insuredCompanies } = useSelector(({ insuredCmp }) => insuredCmp);
   const { city } = useSelector(({ city }) => city);
   const { region } = useSelector(({ region }) => region);
   const { agents } = useSelector(({ agents }) => agents);
+  const { sdp } = useSelector(({ sdp }) => sdp);
+  const { appraiser } = useSelector(({ appraiser }) => appraiser);
+  const { appComp } = useSelector(({ appComp }) => appComp);
 
   React.useEffect(() => {
     setLoading(true);
@@ -555,46 +558,6 @@ export default function Persons() {
       .then((res) => {
         setPerson(
           res?.data?.message?.insured_persons?.filter((item) => !item?.delete)
-        );
-      });
-    axios
-      .get(`${_URL}/sdp`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setSdp(res?.data?.message?.sdp?.filter((item) => !item?.delete));
-      });
-    axios
-      .get(`${_URL}/appraisers`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setAppraiser(
-          res?.data?.message?.appraisers?.filter((item) => !item?.delete)
-        );
-      });
-
-    axios
-      .get(`${_URL}/appraisal-companies`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setAppComp(
-          res?.data?.message?.appraisal_companies?.filter(
-            (item) => !item?.delete
-          )
         );
       });
   }, []);
