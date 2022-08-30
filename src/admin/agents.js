@@ -1,23 +1,26 @@
 import React from "react";
-import { LoadingOverlay, Header, MultiSelect, ActionIcon } from "@mantine/core";
 import axios from "axios";
-import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { LoadingOverlay, Header, MultiSelect, ActionIcon } from "@mantine/core";
+import { _URL, getFormData } from "../utils";
+import { PlusUser } from "../icons";
+import { getAgents } from "../redux/reducer/agents";
 
-function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
-  const user = useSelector((state) => state.user);
+function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
+  const user = useSelector(({ user }) => user);
   const { register, handleSubmit } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(loading);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [insurance_company_ids, setInsurance_company_ids] = React.useState(
+    item?.insurance_company_ids
+  );
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.insurance_company_ids &&
-      (data.insurance_company_ids = item.insurance_company_ids);
+    data.insurance_company_ids = insurance_company_ids;
     !data.region_id && (data.region_id = item.region_id);
     if (data?.id) {
       let formData = { ...data, role: "agent" };
@@ -58,8 +61,10 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
         })
         .then((res) => {
           setIsLoading(false);
-          setElements(
-            [...datas, res?.data?.message?.agent].filter((item) => !item?.new)
+          dispatch(
+            getAgents(
+              [...datas, res?.data?.message?.agent].filter((item) => !item?.new)
+            )
           );
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
@@ -92,6 +97,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
+
         <MultiSelect
           className="input-multi-select"
           placeholder="choose..."
@@ -101,9 +107,9 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
           defaultValue={item?.insurance_company_ids}
           onChange={(e) => {
             setIsUpdated(true);
-            item.insurance_company_ids = e;
+            setInsurance_company_ids(e);
           }}
-          data={isCompanys.map((item) => ({
+          data={isCompanys?.map((item) => ({
             value: item?.id,
             label: item?.title,
             custome_disabled:
@@ -163,11 +169,11 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
             item.region_id = e.target.value;
           }}
           value={
-            isRegions.filter((options) => options.id === item?.region_id)[0]?.id
+            isRegions?.filter((options) => options.id === item?.region_id)[0]?.id
           }
           {...register(`region_id`)}
         >
-          {isRegions.map((options) => (
+          {isRegions?.map((options) => (
             <option key={options?.id} value={options?.id}>
               {options?.region_name}
             </option>
@@ -193,7 +199,7 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
             className="delete"
             onClick={() => {
               if (!item?.id) {
-                setElements(datas.filter((item) => item?.new !== true));
+                dispatch(getAgents(datas.filter((item) => item?.new !== true)));
               }
               if (item?.id) {
                 setIsLoading(true);
@@ -206,8 +212,8 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
                   )
                   .then((res) => {
                     setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
+                    dispatch(
+                      getAgents(datas.filter((__res) => __res?.id !== item?.id))
                     );
                     toast.success("Removed");
                   })
@@ -230,81 +236,13 @@ function Rows({ item, setElements, datas, loading, isCompanys, isRegions }) {
 }
 
 export default function Persons() {
-  const [elements, setElements] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isRegions, setIsRegions] = React.useState([]);
-  const user = useSelector((state) => state.user);
-
-  React.useEffect(() => {
-    setLoading(true);
-    const fetchData = async () => {
-      await axios
-        .get(
-          `${_URL}${
-            user.role === "superadmin"
-              ? "/agents/select"
-              : user.role === "insurance_company"
-              ? `/agents/select?insurance_company_id=${user.insurance_company.id}`
-              : ""
-          }`,
-          {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          }
-        )
-        .then((res) => {
-          setElements(
-            res?.data?.message?.agents?.filter((item) =>
-              user.role === "insurance_company"
-                ? item?.insurance_company_ids.find(
-                    (_res) => _res === user.insurance_company.id
-                  )
-                : item
-            )
-          );
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoading(false);
-        });
-    };
-    fetchData();
-  }, []);
-
-  React.useEffect(() => {
-    axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCompanys(
-          res?.data?.message?.insurance_companies?.filter(
-            (item) => !item.delete
-          )
-        );
-      });
-    axios
-      .get(`${_URL}/regions`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsRegions(res?.data?.message?.regions);
-      });
-  }, []);
+  const dispatch = useDispatch();
+  const elements = useSelector(({ agents }) => agents?.agents);
+  const isCompanys = useSelector(
+    ({ insuredCmp }) => insuredCmp?.insuredCompanies
+  );
+  const isRegions = useSelector(({ region }) => region?.region);
+  const user = useSelector(({ user }) => user);
 
   return (
     <>
@@ -317,7 +255,7 @@ export default function Persons() {
                 "You cannot add new entries until you finish the previous one."
               );
             } else {
-              setElements(elements?.concat([{ new: true }])?.reverse());
+              dispatch(getAgents(elements?.concat([{ new: true }])?.reverse()));
               toast.success("You can fill in a new entry");
             }
           }}
@@ -327,7 +265,6 @@ export default function Persons() {
         </button>
       </Header>
       <div className="ox-scroll">
-        <LoadingOverlay visible={loading} />
         <div className="row">
           <input className="disabled" readOnly={true} value={"first_name"} />
           <input className="disabled" readOnly={true} value={"last_name"} />
@@ -348,16 +285,19 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
         {elements
-          ?.filter((resp) => !resp.delete)
+          ?.filter((resp) =>
+            !resp.delete && user?.role === "insurance_company"
+              ? user?.insurance_company?.id === resp?.insurance_company_id
+              : resp
+          )
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}
               item={item}
-              setElements={setElements}
               datas={elements}
-              loading={loading}
               isCompanys={isCompanys}
               isRegions={isRegions}
+              dispatch={dispatch}
             />
           ))}
       </div>

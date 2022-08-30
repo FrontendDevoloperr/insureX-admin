@@ -116,7 +116,7 @@ function Rows({
 
             item.insurance_company_id = e.target.value;
           }}
-          value={
+          defaultValue={
             isCompanys.filter(
               (options) => options.id === item?.insurance_company_id
             )[0]?.id
@@ -175,7 +175,7 @@ function Rows({
 
             item.agent_id = e.target.value;
           }}
-          value={
+          defaultValue={
             agents?.filter((options) => options.id === item?.agent_id)[0]?.id
           }
           {...register(`agent_id`)}
@@ -193,7 +193,7 @@ function Rows({
               : setIsUpdated(false);
             item.city_id = e.target.value;
           }}
-          value={
+          defaultValue={
             isCitys.filter((options) => options.id === item?.city_id)[0]?.id
           }
           {...register(`city_id`)}
@@ -266,58 +266,19 @@ export default function Persons() {
   // const [elements, setElements] = React.useState([]);
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
-  const [agents, setAgent] = React.useState([]);
+  let isCompanys = useSelector(
+    ({ insuredCmp }) => insuredCmp?.insuredCompanies
+  );
+  const isCitys = useSelector(({ city }) => city?.city);
+  const agents = useSelector(({ agents }) => agents?.agents);
   const location = useLocation();
   const user = useSelector((state) => state.user);
-  const elements = useSelector(({ person }) => person);
+  const elements = useSelector(({ persons }) => persons);
 
   React.useEffect(() => {
     if (user.role === "insurance_company") {
-      setIsCompanys([user.insurance_company]);
+      isCompanys = [user.insurance_company];
     }
-    if (user.role === "superadmin" || user.role === "appraisal_company") {
-      axios
-        .get(`${_URL}/insurance-companies`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          setIsCompanys(
-            res?.data?.message?.insurance_companies?.filter(
-              (item) => !item?.delete
-            )
-          );
-        });
-    }
-
-    axios
-      .get(`${_URL}/city`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCitys(res?.data?.message?.cities);
-      });
-    axios
-      .get(`${_URL}/agents/select`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setAgent(res?.data?.message?.agents);
-      });
   }, []);
 
   return (
@@ -326,7 +287,7 @@ export default function Persons() {
         <button
           className="adder"
           onClick={() => {
-            if (elements.filter((item) => item?.new)?.length) {
+            if (elements?.filter((item) => item?.new)?.length) {
               toast.error(
                 "You cannot add new entries until you finish the previous one."
               );
@@ -360,10 +321,10 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"city ID"} />
         </div>
         {elements
-          ?.filter(
-            (resp) =>
-              !resp.delete &&
-              resp.insurance_company_id === user.insurance_company.id
+          ?.filter((resp) =>
+            !resp.delete && user?.role === "insurance_company"
+              ? resp?.insurance_company_id === user?.insurance_company?.id
+              : resp
           )
           .map((item, i) => (
             <Rows

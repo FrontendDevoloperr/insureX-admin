@@ -1,18 +1,19 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { _URL, getFormData } from "../utils";
+import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
 import { PlusUser } from "../icons";
-import { useSelector } from "react-redux";
 import { Trash } from "tabler-icons-react";
+import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
 
-function Rows({ item, setElements, datas, loading }) {
+function Rows({ item, datas, dispatch }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(loading);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -30,7 +31,7 @@ function Rows({ item, setElements, datas, loading }) {
           getFormData(formData),
           {
             headers: {
-              Authorization: `"Bearer ${
+              Authorization: `Bearer ${
                 JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
                   .token
               } `,
@@ -57,7 +58,7 @@ function Rows({ item, setElements, datas, loading }) {
       axios
         .post(`${_URL}/insurance-companies`, getFormData(data), {
           headers: {
-            Authorization: `"Bearer ${
+            Authorization: `Bearer ${
               JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
                 .token
             } `,
@@ -65,9 +66,11 @@ function Rows({ item, setElements, datas, loading }) {
         })
         .then((res) => {
           setIsLoading(false);
-          setElements(
-            [...datas, res?.data?.message?.insurance_company].filter(
-              (item) => !item?.new
+          dispatch(
+            getInsuredCompanies(
+              [...datas, res?.data?.message?.insurance_company].filter(
+                (item) => !item?.new
+              )
             )
           );
           toast.success("Data uploaded, new users created");
@@ -145,7 +148,11 @@ function Rows({ item, setElements, datas, loading }) {
             className="delete"
             onClick={() => {
               if (!item?.id) {
-                setElements(datas.filter((item) => item?.new !== true));
+                dispatch(
+                  getInsuredCompanies(
+                    datas?.filter((item) => item?.new !== true)
+                  )
+                );
               }
               if (item?.id) {
                 setIsLoading(true);
@@ -158,8 +165,10 @@ function Rows({ item, setElements, datas, loading }) {
                   )
                   .then((res) => {
                     setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
+                    dispatch(
+                      getInsuredCompanies(
+                        datas.filter((__res) => __res?.id !== item?.id)
+                      )
                     );
                     toast.success("Removed");
                   })
@@ -182,38 +191,15 @@ function Rows({ item, setElements, datas, loading }) {
 }
 
 export default function Persons() {
+  const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
-  const [elements, setElements] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
+  let elements = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies);
 
   React.useEffect(() => {
-    if (user.role === "superadmin") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(`${_URL}/insurance-companies`, {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          })
-          .then((res) => {
-            setElements(res?.data?.message?.insurance_companies);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
-    }
     if (user.role === "insurance_company") {
-      setElements([user.insurance_company]);
+      elements = [user.insurance_company];
     }
-  }, []);
+  }, [user.role]);
 
   return (
     <>
@@ -227,7 +213,11 @@ export default function Persons() {
                   "You cannot add new entries until you finish the previous one."
                 );
               } else {
-                setElements(elements?.concat([{ new: true }])?.reverse());
+                dispatch(
+                  getInsuredCompanies(
+                    elements?.concat([{ new: true }])?.reverse()
+                  )
+                );
                 toast.success("You can fill in a new entry");
               }
             }}
@@ -238,7 +228,6 @@ export default function Persons() {
         )}
       </Header>
       <div className="ox-scroll">
-        <LoadingOverlay visible={loading} />
         <div className="row">
           <input
             className="disabled multiples-select"
@@ -272,9 +261,8 @@ export default function Persons() {
             <Rows
               key={item?.id ?? i}
               item={item}
-              setElements={setElements}
               datas={elements}
-              loading={loading}
+              dispatch={dispatch}
             />
           ))}
       </div>
