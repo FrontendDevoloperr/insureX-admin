@@ -49,8 +49,7 @@ function Rows({
     agents.find((options) => options.id === item?.agent_id)?.id
   );
   const [personId, setPersonId] = React.useState(
-    person.find((_person) => _person?.id === item?.insured_person_id)
-      ?.first_name
+    person.find((_person) => _person?.id === item?.insured_person_id)?.id
   );
   const [insComp, setiInsComp] = React.useState(
     events?.find((eve) => eve?.id === item?.insured_event_id)
@@ -270,9 +269,8 @@ function Rows({
                 navigate("/persons#" + item?.insured_person_id);
               }
             }}
-            defaultValue={
-              personId ??
-              person.find((_person) => _person?.id === item?.insured_person_id)
+            value={
+              person.find((_person) => _person?.id === personId)
                 ?.first_name
             }
             {...register(`insured_person_id`)}
@@ -286,7 +284,7 @@ function Rows({
               setPersonId(e.target.value);
             }}
             defaultValue={
-              personId ??
+              // personId ??
               person.find((_person) => _person?.id === item?.insured_person_id)
                 ?.first_name
             }
@@ -394,10 +392,8 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              let value = JSON.parse(e.target.value ?? "{}");
+              console.log(e.target.value, "region_");
               setTypeCaseIds(e.target.value);
-              item.event_type_id = value.event_type_id;
-              item.property_type_id = value.property_type_id;
             }}
             defaultValue={
               typeCaseIds ??
