@@ -57,8 +57,8 @@ input.error {
   position: relative;
 }
 
-.ox-scroll .now-edit.row>input,
-.ox-scroll .now-edit.row>select {
+.ox-scroll .now-edit.row > input,
+.ox-scroll .now-edit.row > select {
   animation: now-edit-input 1500ms linear forwards;
 }
 
@@ -66,7 +66,7 @@ input.error {
   0% {
     opacity: 0;
     border-top: #1c7ed6 1px solid;
-    border-bottom: .1px solid #1c7ed6;
+    border-bottom: 0.1px solid #1c7ed6;
     background-color: #1c7fd649;
   }
 
@@ -74,40 +74,38 @@ input.error {
     opacity: 1;
     border-top: 1px solid #ccc;
     background: inherit;
-
   }
 }
 
 .input-multi-select {
   border-top: 1px solid #ccc;
-  border-bottom: .1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
   height: 100%;
   padding: 15px 8px;
 }
 
 .ox-scroll .row select,
-.ox-scroll .row>input {
+.ox-scroll .row > input {
   border: none;
   border-top: 1px solid #ccc;
-  border-bottom: .1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
   border-radius: 0px;
   padding: 15px 8px;
   outline: none;
   width: 110px;
 }
 
-.ox-scroll .row>input[type="email"] {
+.ox-scroll .row > input[type="email"] {
   color: #1c7ed6;
 }
 
-.ox-scroll .row>input[type="tel"] {
+.ox-scroll .row > input[type="tel"] {
   color: rgb(16, 152, 173);
 }
 
-.ox-scroll .row>input[name="address"] {
+.ox-scroll .row > input[name="address"] {
   color: #e91e63;
 }
-
 
 [custome_disabled="true"] {
   opacity: 0.5;
@@ -148,7 +146,7 @@ input.error {
   padding: 0.5rem 18px;
   line-height: 1.75;
   cursor: pointer;
-  background-color: #196c08;
+  background-color: #1890ff;
   border: 1px solid #fff;
   color: #ffffff;
   transition: all 150ms linear;
@@ -157,6 +155,15 @@ input.error {
   justify-content: center;
   gap: 10px;
   border-radius: 5px;
+}
+.adder:hover {
+  background-color: #51abff;
+  transform: translateY(-2px);
+}
+
+.ox-scroll .row button[type="submit"]:hover {
+  background-color: #51abff;
+  transform: translateX(2px);
 }
 
 .mantine-Header-root {
