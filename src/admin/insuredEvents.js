@@ -72,26 +72,34 @@ function Rows({
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     let formData = {
-      insured_person_id: item.insured_person_id ?? person[0].id,
+      insured_person_id: personId ?? item.insured_person_id ?? person[0].id,
       address: data.address,
       insured_number: data.insured_number,
-      city_id: item.city_id ?? isCitys[0]?.id,
-      agent_id: item.agent_id ?? agents[0].id,
-      appraiser_id: item.appraiser_id ?? appraisers[0].id,
-      sdp_id: item.sdp_id ?? sdp[0].id,
-      event_type_id: item.event_type_id ?? 1,
-      property_type_id: item.property_type_id ?? 1,
+      city_id: isCity ?? item.city_id ?? isCitys[0]?.id,
+      agent_id: agent ?? item.agent_id ?? agents[0].id,
+      appraiser_id: appraiser ?? item.appraiser_id ?? appraisers[0].id,
+      sdp_id: sdpId ?? item.sdp_id ?? sdp[0].id,
+      event_type_id:
+        JSON.parse(typeCaseIds ?? "{}")?.event_type_id ??
+        item.event_type_id ??
+        1,
+      property_type_id:
+        JSON.parse(typeCaseIds ?? "{}")?.property_type_id ??
+        item.property_type_id ??
+        1,
       document_date: item?.document_date ?? new Date().toISOString(),
     };
 
     let eventFormData = {
-      insurance_company_id: item.insurance_company_id ?? isCompanys[0]?.id,
-      insured_person_id: item.insured_person_id ?? person[0]?.id,
-      region_id: item.region_id ?? region[0]?.id,
+      insurance_company_id:
+        insComp ?? item.insurance_company_id ?? isCompanys[0]?.id,
+      insured_person_id: personId ?? item.insured_person_id ?? person[0]?.id,
+      region_id: regionId ?? item.region_id ?? region[0]?.id,
       address: item.address,
-      date: item?.document_date ?? new Date().toISOString(),
-      agent_id: item.agent_id ?? agents[0]?.id,
+      date: data?.date ?? item?.document_date ?? new Date().toISOString(),
+      agent_id: agent ?? item.agent_id ?? agents[0]?.id,
       appraisal_company_id:
+        appCom ??
         data?.appraisal_company_id ??
         events.find((eve) => eve?.id === item?.insured_event_id)
           ?.appraisal_company_id ??
