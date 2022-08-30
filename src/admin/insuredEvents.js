@@ -180,7 +180,7 @@ function Rows({
               item.appraisal_company_id = e.target.value;
               setAppCom(e.target.value);
             }}
-            value={
+            defaultValue={
               appCom ??
               appComp?.find(
                 (app) =>
@@ -204,7 +204,7 @@ function Rows({
               item.appraiser_id = e.target.value;
               setAppraiser(e.target.value);
             }}
-            value={
+            defaultValue={
               appraiser ??
               appraisers?.find((_app) => _app?.id === item?.appraiser_id)?.id
             }
@@ -223,7 +223,7 @@ function Rows({
               item.sdp_id = e.target.value;
               setSdpId(e.target.value);
             }}
-            value={
+            defaultValue={
               sdpId ??
               sdp?.filter((options) => options.id === item?.sdp_id)[0]?.id
             }
@@ -242,7 +242,7 @@ function Rows({
               item.agent_id = e.target.value;
               setAgent(e.target.value);
             }}
-            value={
+            defaultValue={
               agent ??
               agents.find((options) => options.id === item?.agent_id)?.id
             }
@@ -278,7 +278,7 @@ function Rows({
               item.insured_person_id = e.target.value;
               setPersonId(e.target.value);
             }}
-            value={
+            defaultValue={
               personId ??
               person.find((_person) => _person?.id === item?.insured_person_id)
                 ?.first_name
@@ -296,7 +296,7 @@ function Rows({
               item.insurance_company_id = e.target.value;
               setiInsComp(e.target.value);
             }}
-            value={
+            defaultValue={
               insComp ??
               events?.find((eve) => eve?.id === item?.insured_event_id)
                 ?.insurance_company_id
@@ -354,7 +354,7 @@ function Rows({
               item.city_id = e.target.value;
               setIsCity(e.target.value);
             }}
-            value={
+            defaultValue={
               isCity ??
               isCitys.find((options) => options.id === item?.city_id)?.id
             }
@@ -372,7 +372,7 @@ function Rows({
               item.region_id = e.target.value;
               setRegionId(e.target.value);
             }}
-            value={
+            defaultValue={
               regionId ??
               region.find((options) => options.id === item?.region_id)?.id
             }
@@ -392,7 +392,7 @@ function Rows({
               item.event_type_id = value.event_type_id;
               item.property_type_id = value.property_type_id;
             }}
-            value={
+            defaultValue={
               typeCaseIds ??
               JSON.stringify({
                 event_type_id: item?.event_type_id,
