@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getSdp } from "../redux/reducer/sdp";
 import { getSdpFC } from "./index";
 
-function Rows({ item, getSdp, datas, loading, isCompanys, isCitys, dispatch }) {
+function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -136,10 +136,10 @@ function Rows({ item, getSdp, datas, loading, isCompanys, isCitys, dispatch }) {
 
           item.city_id = e.target.value;
         }}
-        value={isCitys.find((options) => options.id === item?.city_id)?.id}
+        value={isCitys?.find((options) => options?.id === item?.city_id)?.id}
         {...register(`city_id`)}
       >
-        {isCitys.map((options) => (
+        {isCitys?.map((options) => (
           <option
             // selected={options.id === item?.city_id}
             key={options?.id}
@@ -216,44 +216,11 @@ export default function Sdp() {
   const dispatch = useDispatch();
   const elements = useSelector(({ sdp }) => sdp?.sdp);
   const [loading, setLoading] = React.useState(false);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
   const user = useSelector((state) => state.user);
-
-  React.useEffect(() => {
-    if (user.role === "insurance_company") {
-      setIsCompanys([user.insurance_company]);
-    }
-    if (user.role === "superadmin") {
-      axios
-        .get(`${_URL}/insurance-companies`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          setIsCompanys(
-            res?.data?.message?.insurance_companies?.filter(
-              (item) => !item?.delete
-            )
-          );
-        });
-    }
-    axios
-      .get(`${_URL}/city`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCitys(res?.data?.message?.cities);
-      });
-  }, []);
+  const isCitys = useSelector(({ city }) => city.city);
+  const isCompanys = useSelector(
+    ({ insuredCmp }) => insuredCmp?.insuredCompanies
+  );
 
   return (
     <>
@@ -301,6 +268,7 @@ export default function Sdp() {
               ? !resp.insurance_company_id === user?.insurance_company?.id
               : resp
           )
+          ?.reverse()
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}

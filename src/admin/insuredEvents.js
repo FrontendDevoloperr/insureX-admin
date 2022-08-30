@@ -632,6 +632,7 @@ export default function InsuredEvents() {
               _res?.insured_event_id ===
                 events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
           )
+          
 
           .map((item, i) => (
             <>

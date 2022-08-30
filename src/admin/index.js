@@ -170,6 +170,20 @@ export const getSdpFC = (dispatch) => {
       dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
     });
 };
+
+export const getInsuredPersonFC = (dispatch) => {
+  axios
+    .get(`${_URL}/insured-persons`)
+    .then(({ data }) => {
+      dispatch(
+        getPersons(
+          data?.message?.insured_persons?.filter((item) => !item?.delete)
+        )
+      );
+    })
+    .catch((err) => {});
+};
+
 export default function AdminPanel() {
   const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
@@ -263,18 +277,6 @@ export default function AdminPanel() {
       });
   };
 
-  const getInsuredPersonFC = () => {
-    axios
-      .get(`${_URL}/insured-persons`)
-      .then(({ data }) => {
-        dispatch(
-          getPersons(
-            data?.message?.insured_persons?.filter((item) => !item?.delete)
-          )
-        );
-      })
-      .catch((err) => {});
-  };
   const getEventsAndCasesFC = async () => {
     await axios.get(`${_URL}/insurance-case`).then(({ data }) => {
       dispatch(setCases(data?.message?.insurance_cases));
@@ -331,7 +333,7 @@ export default function AdminPanel() {
     cityFC();
     regionFC();
     agentsFC();
-    getInsuredPersonFC();
+    getInsuredPersonFC(dispatch);
     getSdpFC(dispatch);
     getAppraiserFC();
     getAppraiserCompFC();
