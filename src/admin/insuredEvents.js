@@ -96,7 +96,7 @@ function Rows({
         events.find((eve) => eve?.id === item?.insured_event_id)
           ?.appraisal_company_id ??
         appComp[0]?.id,
-      appraiser_id: item.appraiser_id ?? appraisers[0]?.id,
+      appraiser_id: appraiser ?? item.appraiser_id ?? appraisers[0]?.id,
     };
 
     if (data?.id) {
@@ -201,7 +201,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.appraiser_id = e.target.value;
               setAppraiser(e.target.value);
             }}
             defaultValue={
