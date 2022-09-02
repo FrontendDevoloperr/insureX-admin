@@ -260,83 +260,29 @@ export default function Persons() {
   const [isRegions, setIsRegions] = React.useState([]);
   const [appraiselCompanys, setAppraiselCompanys] = React.useState([]);
   const user = useSelector((state) => state.user);
+  const GlobalState = useSelector((state) => state);
 
   React.useEffect(() => {
     if (user.role === "superadmin") {
-      // || user.role === "appraisal_company"
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(`${_URL}/appraisers`, {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          })
-          .then((res) => {
-            setElements(res?.data?.message?.appraisers);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
+      setElements(GlobalState?.appraiser?.appraiser);
     }
     if (user.role === "insurance_company") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(
-            `${_URL}/appraisers?insurance_company_id=${user.insurance_company.id}`,
-            {
-              headers: {
-                Authorization: `"Bearer ${
-                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                    .token
-                } `,
-              },
-            }
-          )
-          .then((res) => {
-            setElements(res?.data?.message?.appraisers);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
+      setElements(
+        GlobalState?.appraiser?.appraiser?.filter(
+          (res) =>
+            Number(res?.insurance_company_id) ===
+            Number(user.insurance_company.id)
+        )
+      );
     }
     if (user.role === "appraisal_company") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(
-            `${_URL}/appraisers?appraisal_company_id=${user.appraisal_company.id}`,
-            {
-              headers: {
-                Authorization: `"Bearer ${
-                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                    .token
-                } `,
-              },
-            }
-          )
-          .then((res) => {
-            setElements(res?.data?.message?.appraisers);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
+      setElements(
+        GlobalState?.appraiser?.appraiser?.filter(
+          (res) =>
+            Number(res?.appraisal_company_id) ===
+            Number(user.appraisal_company.id)
+        )
+      );
     }
   }, []);
 

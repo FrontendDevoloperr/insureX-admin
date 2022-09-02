@@ -269,62 +269,24 @@ export default function Persons() {
   const [isRegions, setIsRegions] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
   const user = useSelector((state) => state.user);
+  const GlobalState = useSelector((state) => state);
 
   React.useEffect(() => {
     if (user.role === "superadmin") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(`${_URL}/appraisal-companies`, {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          })
-          .then((res) => {
-            setElements(res?.data?.message?.appraisal_companies);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
+      setElements(GlobalState?.appComp);
     }
 
     if (user.role === "insurance_company") {
-      setLoading(true);
-      const fetchData = async () => {
-        await axios
-          .get(
-            `${_URL}/appraisal-companies?insurance_company_id=${user.insurance_company.id}`,
-            {
-              headers: {
-                Authorization: `"Bearer ${
-                  JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                    .token
-                } `,
-              },
-            }
-          )
-          .then((res) => {
-            setElements(res?.data?.message?.appraisal_companies);
-            setLoading(false);
-          })
-          .catch((err) => {
-            console.log(err);
-            setLoading(false);
-          });
-      };
-      fetchData();
+      setElements(
+        GlobalState?.appComp?.filter((res) =>
+          res?.insurance_company_ids?.includes(user.insurance_company.id)
+        )
+      );
     }
     if (user.role === "appraisal_company") {
       setElements([user.appraisal_company]);
     }
-  }, [user.role]);
+  }, [user.role, GlobalState]);
 
   React.useEffect(() => {
     if (user.role === "insurance_company") {
@@ -333,47 +295,10 @@ export default function Persons() {
       );
     }
     if (user.role === "superadmin" || user.role === "appraisal_company") {
-      axios
-        .get(`${_URL}/insurance-companies`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          setIsCompanys(
-            res?.data?.message?.insurance_companies?.filter(
-              (item) => !item?.delete
-            )
-          );
-        });
+      setIsCompanys(GlobalState?.insuredCmp?.insuredCompanies);
     }
-
-    axios
-      .get(`${_URL}/regions`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsRegions(res?.data?.message?.regions);
-      });
-    axios
-      .get(`${_URL}/city`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then((res) => {
-        setIsCitys(res?.data?.message?.cities);
-      });
-  }, []);
+    setIsCitys(GlobalState?.city?.city);
+  }, [GlobalState]);
 
   return (
     <>
