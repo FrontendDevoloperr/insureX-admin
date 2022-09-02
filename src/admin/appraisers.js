@@ -434,6 +434,7 @@ export default function Persons() {
         </div>
         {elements
           ?.filter((resp) => !resp.delete)
+          ?.reverse()
           .map((item, i) => (
             <Rows
               key={item?.id ?? i}
