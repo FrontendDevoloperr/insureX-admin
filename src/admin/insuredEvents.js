@@ -4,7 +4,13 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
-import { _URL, getFormData, CaseTypeExtract, typeCase } from "../utils";
+import {
+  _URL,
+  getFormData,
+  CaseTypeExtract,
+  typeCase,
+  StatusesData,
+} from "../utils";
 import toast from "react-hot-toast";
 import { GoogDriveIcon, PlusUser } from "../icons";
 
@@ -31,6 +37,8 @@ function Rows({
   const navigate = useNavigate();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [statustId, setStatustId] = React.useState(item?.status_id ?? 1);
+
   const [appCom, setAppCom] = React.useState(
     appComp?.find(
       (app) =>
@@ -87,6 +95,7 @@ function Rows({
         item.property_type_id ??
         1,
       document_date: item?.document_date ?? new Date().toISOString(),
+      statust_id: statustId ?? item.statust_id,
     };
 
     let eventFormData = {
@@ -270,8 +279,7 @@ function Rows({
               }
             }}
             value={
-              person.find((_person) => _person?.id === personId)
-                ?.first_name
+              person.find((_person) => _person?.id === personId)?.first_name
             }
             {...register(`insured_person_id`)}
           />
@@ -412,6 +420,18 @@ function Rows({
                 })}
               >
                 {CaseTypeExtract(options)?.name}
+              </option>
+            ))}
+          </select>
+          <select
+            onInput={(e) => {
+              setStatustId(e.target.value);
+            }}
+            value={statustId}
+          >
+            {StatusesData?.map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.description}
               </option>
             ))}
           </select>
@@ -626,6 +646,7 @@ export default function InsuredEvents() {
           <input className="disabled" readOnly={true} value={"city"} />
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"event type"} />
+          <input className="disabled" readOnly={true} value={"status type"} />
         </div>
 
         {elements
