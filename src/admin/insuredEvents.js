@@ -32,6 +32,7 @@ function Rows({
   region,
   dispatch,
   loading,
+  GlobalState,
 }) {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
@@ -147,6 +148,21 @@ function Rows({
             )
             .then((res) => {
               console.log("success");
+              SendAppraiserMessage(
+                item?.appraiser_id,
+                appraiser,
+                personId,
+                sdpId,
+                typeCase?.find(
+                  (tp) =>
+                    tp.event_type_id ===
+                      JSON.parse(typeCaseIds ?? "{}")?.event_type_id &&
+                    tp.property_type_id ===
+                      JSON.parse(typeCaseIds ?? "{}")?.property_type_id
+                )?.name,
+                GlobalState,
+                item?.id
+              );
             })
             .catch((err) => {
               console.log(err);
@@ -400,7 +416,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              console.log(e.target.value, "region_");
               setTypeCaseIds(e.target.value);
             }}
             defaultValue={
@@ -426,6 +441,7 @@ function Rows({
           <select
             onInput={(e) => {
               setStatustId(e.target.value);
+              setIsUpdated(true);
             }}
             value={statustId}
           >
@@ -508,6 +524,46 @@ function Rows({
   );
 }
 
+function SendAppraiserMessage(
+  id,
+  changeId,
+  customer,
+  sdp,
+  nameEvent,
+  GlobalState,
+  caseID
+) {
+  if (!caseID || !GlobalState || id === changeId) return;
+  let msAppraiser51 = (
+    nameSdp,
+    nameCustomer,
+    numberEvent,
+    nameEvent,
+    nameAppraiser
+  ) =>
+    `${nameSdp} קבע שיחת וידאו עם ${nameCustomer} ע"י ${numberEvent} מס' ${nameEvent} נפתח אירוע ${nameAppraiser} שלום `;
+
+  let formData = {
+    type: `admin-${GlobalState?.user?.role}`,
+    appraiser_id: changeId,
+    ms_text: msAppraiser51(
+      GlobalState?.sdp?.sdp?.find((res) => Number(res?.id) === Number(sdp))
+        ?.first_name,
+      GlobalState?.persons?.find((res) => Number(res?.id) === Number(customer))
+        ?.first_name,
+      id,
+      nameEvent,
+      GlobalState?.appraiser?.appraiser?.find(
+        (res) => Number(res?.id) === Number(changeId)
+      )?.first_name
+    ),
+    is_case_id: caseID,
+    id: Math.floor(Math.random() * 100),
+    date_time: new Date(),
+  };
+  axios.post(`${_URL}/insurance-case/messages/create`, getFormData(formData));
+}
+
 export default function InsuredEvents() {
   const dispatch = useDispatch();
   const person = useSelector(({ persons }) => persons);
@@ -522,6 +578,7 @@ export default function InsuredEvents() {
   const appComp = useSelector(({ appComp }) => appComp);
   const [paginationCustome, setPaginationCustome] = React.useState(10);
   const [loading, setLoading] = React.useState(false);
+  const GlobalState = useSelector((state) => state);
 
   return (
     <>
@@ -676,6 +733,7 @@ export default function InsuredEvents() {
                   region={region}
                   dispatch={dispatch}
                   loading={loading}
+                  GlobalState={GlobalState}
                 />
               )}
             </React.Fragment>
