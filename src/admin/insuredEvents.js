@@ -446,7 +446,21 @@ function Rows({
             value={statustId}
           >
             {StatusesData?.map((options) => (
-              <option key={options?.id} value={options?.id}>
+              <option
+                key={options?.id}
+                value={options?.id}
+                hidden={
+                  options?.id === 4
+                    ? CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link !==
+                      ("accident" || "carburglary")
+                    : options?.id === 8
+                    ? CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link !==
+                      ("accident" || "carburglary")
+                    : options?.id === 9 &&
+                      CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link !==
+                        ("accident" || "carburglary")
+                }
+              >
                 {options?.description}
               </option>
             ))}
