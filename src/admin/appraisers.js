@@ -284,7 +284,7 @@ export default function Persons() {
         )
       );
     }
-  }, []);
+  }, [GlobalState]);
 
   React.useEffect(() => {
     if (user.role === "superadmin" || user.role === "appraisal_company") {
@@ -335,7 +335,7 @@ export default function Persons() {
       .then((res) => {
         setIsRegions(res?.data?.message?.regions);
       });
-  }, []);
+  }, [GlobalState]);
 
   return (
     <>
