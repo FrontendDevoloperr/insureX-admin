@@ -94,6 +94,8 @@ function Popup() {
     }
   }, [user?.auth, user?.role]);
 
+  console.log(messages, "-----------------------");
+
   return (
     <Popover
       onClick={() => setNewMessage(false)}
