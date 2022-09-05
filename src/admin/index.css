@@ -139,6 +139,7 @@ input.error {
 .ox-scroll .row button[type="submit"],
 .ox-scroll .row div.delete,
 .adder {
+  width: max-content;
   box-sizing: border-box;
   border-width: 2px;
   font-size: 12px;
