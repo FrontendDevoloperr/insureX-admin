@@ -1,7 +1,7 @@
 import React from "react";
 import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
 import axios from "axios";
-import { _URL, getFormData } from "../utils";
+import { _URL, getFormData, supplier_types } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
@@ -76,7 +76,7 @@ function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
     <form className="row" onSubmit={handleSubmit(onSubmit)}>
       <LoadingOverlay visible={isLoading} />
       <select
-        className="multiples-select"
+        className=""
         onInput={() => setIsUpdated(true)}
         defaultValue={
           isCompanys?.filter(
@@ -133,8 +133,6 @@ function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
       <select
         onInput={(e) => {
           setIsUpdated(true);
-
-          item.city_id = e.target.value;
         }}
         value={isCitys?.find((options) => options?.id === item?.city_id)?.id}
         {...register(`city_id`)}
@@ -157,7 +155,7 @@ function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
         }}
         defaultValue={item?.address}
         {...register(`address`)}
-        className="multiples-select"
+        className=""
       />
       <input
         onInput={(e) => {
@@ -168,6 +166,24 @@ function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
         defaultValue={item?.passport_id}
         {...register(`passport_id`)}
       />
+
+      <select
+        onInput={(e) => {
+          setIsUpdated(true);
+        }}
+        defaultValue={
+          supplier_types?.find((options) =>
+            item?.supplier_type_ids?.includes(options?.id)
+          )?.id
+        }
+        {...register(`supplier_type_ids`)}
+      >
+        {supplier_types?.map((options) => (
+          <option key={options?.id} value={options?.id}>
+            {options?.description}
+          </option>
+        ))}
+      </select>
       {isUpdated ? (
         <button type="submit" onClick={() => {}}>
           {item?.id ? "Update" : "Create"}
@@ -246,7 +262,7 @@ export default function Sdp() {
         <LoadingOverlay visible={loading} />
         <div className="row">
           <input
-            className="disabled multiples-select"
+            className="disabled "
             readOnly={true}
             value={"insurance_company_id"}
           />
@@ -255,12 +271,13 @@ export default function Sdp() {
           <input className="disabled " readOnly={true} value={"phone"} />
           <input className="disabled " readOnly={true} value={"email"} />
           <input className="disabled " readOnly={true} value={"city"} />
-          <input
-            className="disabled multiples-select"
-            readOnly={true}
-            value={"address"}
-          />
+          <input className="disabled " readOnly={true} value={"address"} />
           <input className="disabled " readOnly={true} value={"login_id"} />
+          <input
+            className="disabled "
+            readOnly={true}
+            value={"supplier_type"}
+          />
         </div>
         {elements
           ?.filter((resp) =>

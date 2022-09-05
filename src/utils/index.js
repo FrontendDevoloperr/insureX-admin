@@ -202,3 +202,54 @@ export const StatusesData = [
     inbox_notification: true,
   },
 ];
+
+export const supplier_types = [
+  {
+    id: 1,
+    name: "שרברב",
+    description: "Pipe burst, flooding",
+    ru_description: "Прорыв труб, затопление",
+  },
+  {
+    id: 3,
+    name: "קבלן שיקום",
+    description: "Rehabilitation Contractor",
+    ru_description: "Подрядчик по реабилитации",
+  },
+  {
+    id: 4,
+    name: "גרר",
+    description: "Tow truck",
+    ru_description: "Эвакуатор",
+  },
+  {
+    id: 5,
+    name: "מוסך",
+    description: "Service station",
+    ru_description: "СТО",
+  },
+  {
+    id: 6,
+    name: "בודק תכולת רטיבות",
+    description: "Damage check",
+    ru_description: "Проверка ущерба",
+  },
+  {
+    id: 7,
+    name: "חוקר שרפות",
+    description: "Fire inspector",
+    ru_description: "Пожарный испектор",
+  },
+  {
+    id: 8,
+    name: "מהנדס כללי",
+    description: "Engineer",
+    ru_description: "Инженер",
+  },
+  {
+    id: 2,
+    name: "מאתר נזילות",
+    description: "Damage locator",
+    ru_description: "Локатор повреждений",
+  },
+];
