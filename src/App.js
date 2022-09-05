@@ -12,7 +12,7 @@ import {
 import { _URL } from "./utils";
 
 function App() {
-  console.log("new version22");
+  console.log("new version 05.09.2022/year");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);

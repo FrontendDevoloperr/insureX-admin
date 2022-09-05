@@ -197,7 +197,7 @@ export default function Persons() {
 
   React.useEffect(() => {
     if (user.role === "insurance_company") {
-      elements = [user.insurance_company];
+      elements = [user?.insurance_company];
     }
   }, [user.role]);
 
