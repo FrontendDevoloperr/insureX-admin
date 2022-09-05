@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { _URL } from "./../utils";
 import { toast, useToasterStore } from "react-hot-toast";
+import moment from "moment";
 
 const socket = io("wss://api.insurextest.link", { reconnect: true });
 function Popup() {
@@ -156,13 +157,22 @@ function Popup() {
             )}
 
             <div style={{ display: "flex", flexDirection: "column-reverse" }}>
-              {messages?.map((message, i) => (
+              {messages?.sort(function (a, b) {
+                return (
+                  moment(b.date_time).format("X") -
+                  moment(a.date_time).format("X")
+                );
+              })?.map((message, i) => (
                 <React.Fragment key={message?.id + i}>
                   <Box
                     title={message?.user_type}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      if (message?.is_create_case) {
+                        navigate(`/events`);
+                        setOpened(false);
+                      }
                       if (message?.user_type === "persons") {
                         navigate(`/persons#${message?.user_id ?? "users"}`);
                         setOpened(false);
@@ -191,10 +201,6 @@ function Popup() {
                         ("insurance_company" || "event_create")
                       ) {
                         navigate(`/insurance-company`);
-                        setOpened(false);
-                      }
-                      if (message?.is_case_create) {
-                        navigate(`/events`);
                         setOpened(false);
                       }
                     }}
