@@ -266,10 +266,10 @@ export default function Persons() {
   const [elements, setElements] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isRegions, setIsRegions] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
   const user = useSelector((state) => state.user);
   const GlobalState = useSelector((state) => state);
+  const isRegions = useSelector(({ region }) => region?.region);
 
   React.useEffect(() => {
     if (user.role === "superadmin") {
