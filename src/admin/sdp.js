@@ -10,11 +10,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { getSdp } from "../redux/reducer/sdp";
 import { getSdpFC } from "./index";
 
-function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
+function Rows({ item, isCompanys, isCitys, dispatch }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(loading);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -231,7 +231,6 @@ function Rows({ item, loading, isCompanys, isCitys, dispatch }) {
 export default function Sdp() {
   const dispatch = useDispatch();
   const elements = useSelector(({ sdp }) => sdp?.sdp);
-  const [loading, setLoading] = React.useState(false);
   const user = useSelector((state) => state.user);
   const isCitys = useSelector(({ city }) => city.city);
   const isCompanys = useSelector(
@@ -259,7 +258,6 @@ export default function Sdp() {
         </button>
       </Header>
       <div className="ox-scroll">
-        <LoadingOverlay visible={loading} />
         <div className="row">
           <input
             className="disabled "
@@ -292,7 +290,6 @@ export default function Sdp() {
               item={item}
               getSdp={getSdp}
               datas={elements}
-              loading={loading}
               isCompanys={isCompanys}
               isCitys={isCitys}
               dispatch={dispatch}

@@ -12,7 +12,6 @@ function Rows({
   item,
   setElements,
   datas,
-  loading,
   isCompanys,
   isRegions,
   isCitys,
@@ -20,7 +19,7 @@ function Rows({
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(loading);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -263,7 +262,6 @@ function Rows({
 
 export default function Persons() {
   const [elements, setElements] = React.useState([]);
-  const [loading, setLoading] = React.useState(false);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
   const user = useSelector((state) => state.user);
@@ -322,7 +320,6 @@ export default function Persons() {
         )}
       </Header>
       <div className="ox-scroll">
-        <LoadingOverlay visible={loading} />
         <div className="row">
           <input
             className="disabled multiples-select"
@@ -353,7 +350,6 @@ export default function Persons() {
               item={item}
               setElements={setElements}
               datas={elements}
-              loading={loading}
               isCompanys={isCompanys}
               isRegions={isRegions}
               isCitys={isCitys}
