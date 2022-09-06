@@ -38,7 +38,6 @@ function Rows({
       };
       delete formData.id;
       delete formData.insurance_company_ids;
-      console.log(formData);
       setIsLoading(true);
       axios
         .patch(

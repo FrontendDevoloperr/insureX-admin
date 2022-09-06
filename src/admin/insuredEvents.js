@@ -147,7 +147,6 @@ function Rows({
               }
             )
             .then((res) => {
-              console.log("success");
               SendAppraiserMessage(
                 item?.appraiser_id,
                 appraiser,
