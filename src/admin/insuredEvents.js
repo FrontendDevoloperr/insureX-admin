@@ -149,9 +149,9 @@ function Rows({
             .then((res) => {
               SendAppraiserMessage(
                 item?.appraiser_id,
-                appraiser,
+                appraiser ?? data.appraiser_id,
                 personId,
-                sdpId,
+                sdpId ?? data.sdp_id,
                 typeCase?.find(
                   (tp) =>
                     tp.event_type_id ===
@@ -208,7 +208,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.appraisal_company_id = e.target.value;
               setAppCom(e.target.value);
             }}
             defaultValue={
@@ -250,7 +249,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.sdp_id = e.target.value;
               setSdpId(e.target.value);
             }}
             defaultValue={
@@ -269,7 +267,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.agent_id = e.target.value;
               setAgent(e.target.value);
             }}
             defaultValue={
@@ -303,7 +300,6 @@ function Rows({
             style={!item?.new && !isUpdated ? { display: "none" } : {}}
             onInput={(e) => {
               setIsUpdated(true);
-              item.insured_person_id = e.target.value;
               setPersonId(e.target.value);
             }}
             defaultValue={
@@ -321,7 +317,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.insurance_company_id = e.target.value;
               setiInsComp(e.target.value);
             }}
             defaultValue={
@@ -371,7 +366,6 @@ function Rows({
           <input
             onInput={(e) => {
               setIsUpdated(true);
-              item.address = e.target.value;
             }}
             defaultValue={item?.address}
             {...register(`address`)}
@@ -537,6 +531,15 @@ function Rows({
   );
 }
 
+const msAppraiser51 = (
+  nameSdp,
+  nameCustomer,
+  numberEvent,
+  nameEvent,
+  nameAppraiser
+) =>
+  `${nameSdp} קבע שיחת וידאו עם ${nameCustomer} ע"י ${numberEvent} מס' ${nameEvent} נפתח אירוע ${nameAppraiser} שלום `;
+
 function SendAppraiserMessage(
   id,
   changeId,
@@ -547,14 +550,6 @@ function SendAppraiserMessage(
   caseID
 ) {
   if (!caseID || !GlobalState || id === changeId) return;
-  let msAppraiser51 = (
-    nameSdp,
-    nameCustomer,
-    numberEvent,
-    nameEvent,
-    nameAppraiser
-  ) =>
-    `${nameSdp} קבע שיחת וידאו עם ${nameCustomer} ע"י ${numberEvent} מס' ${nameEvent} נפתח אירוע ${nameAppraiser} שלום `;
 
   let formData = {
     type: `admin-${GlobalState?.user?.role}`,
@@ -564,7 +559,7 @@ function SendAppraiserMessage(
         ?.first_name,
       GlobalState?.persons?.find((res) => Number(res?.id) === Number(customer))
         ?.first_name,
-      id,
+      id ?? changeId,
       nameEvent,
       GlobalState?.appraiser?.appraiser?.find(
         (res) => Number(res?.id) === Number(changeId)
