@@ -205,6 +205,12 @@ function Rows({
       {events && (
         <form className="row" onSubmit={handleSubmit(onSubmit)}>
           <LoadingOverlay visible={isLoading || loading} />
+          <input
+            className="disabled"
+            readOnly={true}
+            value={item?.id ?? "new"}
+            style={{ width: 50 }}
+          />
           <select
             onInput={(e) => {
               setIsUpdated(true);
@@ -221,6 +227,9 @@ function Rows({
             }
             {...register(`appraisal_company_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {appComp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.appraisal_company_name}
@@ -239,6 +248,9 @@ function Rows({
             }
             {...register(`appraiser_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {appraisers?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -257,6 +269,9 @@ function Rows({
             }
             {...register(`sdp_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {sdp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -275,6 +290,9 @@ function Rows({
             }
             {...register(`agent_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {agents.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -302,12 +320,11 @@ function Rows({
               setIsUpdated(true);
               setPersonId(e.target.value);
             }}
-            defaultValue={
-              // personId ??
-              person.find((_person) => _person?.id === item?.insured_person_id)
-                ?.first_name
-            }
+            value={personId}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {person?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -326,6 +343,9 @@ function Rows({
             }
             {...register(`insurance_company_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {isCompanys?.map((options) => (
               <option key={options.id} value={options.id}>
                 {options.title}
@@ -382,6 +402,9 @@ function Rows({
             }
             {...register(`city_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {isCitys.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.city_name}
@@ -419,6 +442,9 @@ function Rows({
               })
             }
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {typeCase?.map((options) => (
               <option
                 key={options?.link}
@@ -438,6 +464,9 @@ function Rows({
             }}
             value={statustId}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {StatusesData?.map((options) => (
               <option
                 key={options?.id}
@@ -676,6 +705,12 @@ export default function InsuredEvents() {
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />
         <div className="row">
+          <input
+            className="disabled"
+            readOnly={true}
+            value={"№ ID"}
+            style={{ width: 50 }}
+          />
           <input
             className="disabled "
             readOnly={true}

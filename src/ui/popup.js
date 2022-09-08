@@ -245,6 +245,7 @@ function Popup() {
                         <Text>{message?.user_name}</Text>
                         <Text size="xs" color="dimmed">
                           {message?.user_type}
+                          {message?.is_create_case ? message.is_case_id : null}
                         </Text>
                       </div>
                     </Box>
