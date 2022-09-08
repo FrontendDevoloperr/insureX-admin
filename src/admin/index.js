@@ -26,7 +26,6 @@ import axios from "axios";
 import { _URL } from "../utils";
 import { getAppraiser } from "../redux/reducer/appraiser";
 import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
-import { eventSlice } from "./../redux/reducer/cases";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
