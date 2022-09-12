@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
 import {
   _URL,
   getFormData,
@@ -16,6 +16,7 @@ import { GoogDriveIcon, PlusUser } from "../icons";
 
 import { Trash } from "tabler-icons-react";
 import { setCases } from "../redux/reducer/cases";
+import SearchComponent from "../ui/search";
 
 function Rows({
   item,
@@ -616,6 +617,8 @@ export default function InsuredEvents() {
   const [paginationCustome, setPaginationCustome] = React.useState(10);
   const [loading, setLoading] = React.useState(false);
   const GlobalState = useSelector((state) => state);
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
 
   return (
     <>
@@ -628,64 +631,64 @@ export default function InsuredEvents() {
           gap: 5,
         }}
       >
-        <button
-          className="adder"
-          onClick={() => {
-            if (elements.filter((item) => item?.new)?.length) {
-              toast.error(
-                "You cannot add new entries until you finish the previous one."
-              );
-            } else {
-              dispatch(setCases(elements?.concat([{ new: true }])?.reverse()));
-              toast.success("You can fill in a new entry");
-            }
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "50px",
           }}
         >
-          <span>Add </span>
-          <PlusUser color={"#fff"} />
-        </button>
-        <button
-          className="adder"
-          onClick={() => {
-            if (
-              paginationCustome <
-              elements?.filter(
-                (_res) =>
-                  !_res.delete &&
-                  Number(_res?.insured_event_id) ===
-                    Number(
-                      events?.find(
-                        (_eve) =>
-                          Number(_eve.id) === Number(_res?.insured_event_id)
-                      )?.id
-                    )
-              )?.length
-            ) {
-              setLoading(true);
-              setPaginationCustome(paginationCustome + 10);
-              setTimeout(() => {
-                setLoading(false);
-              }, 2000);
-            }
-          }}
-        >
-          <span>+ 10</span>
-        </button>
-        <button
-          className="adder"
-          onClick={() => {
-            if (
-              paginationCustome <
-              elements?.filter(
-                (_res) =>
-                  !_res.delete &&
-                  _res?.insured_event_id ===
-                    events?.find((_eve) => _eve.id === _res?.insured_event_id)
-                      ?.id
-              )?.length
-            ) {
-              setLoading(true);
-              setPaginationCustome(
+          <button
+            className="adder"
+            onClick={() => {
+              if (elements.filter((item) => item?.new)?.length) {
+                toast.error(
+                  "You cannot add new entries until you finish the previous one."
+                );
+              } else {
+                dispatch(
+                  setCases(elements?.concat([{ new: true }])?.reverse())
+                );
+                toast.success("You can fill in a new entry");
+              }
+            }}
+          >
+            <span>Add </span>
+            <PlusUser color={"#fff"} />
+          </button>
+          <button
+            className="adder"
+            onClick={() => {
+              if (
+                paginationCustome <
+                elements?.filter(
+                  (_res) =>
+                    !_res.delete &&
+                    Number(_res?.insured_event_id) ===
+                      Number(
+                        events?.find(
+                          (_eve) =>
+                            Number(_eve.id) === Number(_res?.insured_event_id)
+                        )?.id
+                      )
+                )?.length
+              ) {
+                setLoading(true);
+                setPaginationCustome(paginationCustome + 10);
+                setTimeout(() => {
+                  setLoading(false);
+                }, 2000);
+              }
+            }}
+          >
+            <span>+ 10</span>
+          </button>
+          <button
+            className="adder"
+            onClick={() => {
+              if (
+                paginationCustome <
                 elements?.filter(
                   (_res) =>
                     !_res.delete &&
@@ -693,18 +696,39 @@ export default function InsuredEvents() {
                       events?.find((_eve) => _eve.id === _res?.insured_event_id)
                         ?.id
                 )?.length
-              );
-              setTimeout(() => {
-                setLoading(false);
-              }, 2000);
-            }
-          }}
-        >
-          <span>All</span>
-        </button>
-        <button className="adder" style={{ marginLeft: 100 }}>
-          current : {paginationCustome}
-        </button>
+              ) {
+                setLoading(true);
+                setPaginationCustome(
+                  elements?.filter(
+                    (_res) =>
+                      !_res.delete &&
+                      _res?.insured_event_id ===
+                        events?.find(
+                          (_eve) => _eve.id === _res?.insured_event_id
+                        )?.id
+                  )?.length
+                );
+                setTimeout(() => {
+                  setLoading(false);
+                }, 2000);
+              }
+            }}
+          >
+            <span>All</span>
+          </button>
+          <button className="adder">current : {paginationCustome}</button>
+          <SearchComponent
+            data={elements?.filter(
+              (_res) =>
+                !_res.delete &&
+                _res?.insured_event_id ===
+                  events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
+            )}
+            setFilteredData={setFilteredData}
+            setInputText={setInputText}
+            type={"id"}
+          />
+        </div>
       </Header>
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />
@@ -753,38 +777,38 @@ export default function InsuredEvents() {
           <input className="disabled" readOnly={true} value={"status type"} />
         </div>
 
-        {elements
-          ?.filter(
-            (_res) =>
-              !_res.delete &&
-              _res?.insured_event_id ===
-                events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
-          )
-
-          .map((item, i) => (
-            <React.Fragment key={item?.id ?? i}>
-              {i < paginationCustome && (
-                <Rows
-                  key={item?.id ?? i}
-                  item={item}
-                  setElements={setCases}
-                  datas={elements}
-                  isCompanys={insuredCompanies}
-                  isCitys={city}
-                  agents={agents}
-                  person={person}
-                  sdp={sdp}
-                  appraisers={appraiser}
-                  events={events}
-                  appComp={appComp}
-                  region={region}
-                  dispatch={dispatch}
-                  loading={loading}
-                  GlobalState={GlobalState}
-                />
-              )}
-            </React.Fragment>
-          ))}
+        {(inputText
+          ? filteredData
+          : elements?.filter(
+              (_res) =>
+                !_res.delete &&
+                _res?.insured_event_id ===
+                  events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
+            )
+        ).map((item, i) => (
+          <React.Fragment key={item?.id ?? i}>
+            {i < paginationCustome && (
+              <Rows
+                key={item?.id ?? i}
+                item={item}
+                setElements={setCases}
+                datas={elements}
+                isCompanys={insuredCompanies}
+                isCitys={city}
+                agents={agents}
+                person={person}
+                sdp={sdp}
+                appraisers={appraiser}
+                events={events}
+                appComp={appComp}
+                region={region}
+                dispatch={dispatch}
+                loading={loading}
+                GlobalState={GlobalState}
+              />
+            )}
+          </React.Fragment>
+        ))}
       </div>
     </>
   );

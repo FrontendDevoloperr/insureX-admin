@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData, supplier_types } from "../utils";
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { Trash } from "tabler-icons-react";
 import { useSelector, useDispatch } from "react-redux";
 import { getSdp } from "../redux/reducer/sdp";
 import { getSdpFC } from "./index";
+import SearchComponent from "../ui/search";
 
 function Rows({ item, isCompanys, isCitys, dispatch }) {
   const { register, handleSubmit } = useForm();
@@ -236,26 +237,46 @@ export default function Sdp() {
   const isCompanys = useSelector(
     ({ insuredCmp }) => insuredCmp?.insuredCompanies
   );
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
 
   return (
     <>
       <Header height={60} p="xs">
-        <button
-          className="adder"
-          onClick={() => {
-            if (elements?.filter((item) => item?.new)?.length) {
-              toast.error(
-                "You cannot add new entries until you finish the previous one."
-              );
-            } else {
-              dispatch(getSdp(elements?.concat([{ new: true }])?.reverse()));
-              toast.success("You can fill in a new entry");
-            }
-          }}
-        >
-          <span>Add </span>
-          <PlusUser color={"#fff"} />
-        </button>
+        <Grid>
+          <Grid.Col span={3}>
+            <button
+              className="adder"
+              onClick={() => {
+                if (elements?.filter((item) => item?.new)?.length) {
+                  toast.error(
+                    "You cannot add new entries until you finish the previous one."
+                  );
+                } else {
+                  dispatch(
+                    getSdp(elements?.concat([{ new: true }])?.reverse())
+                  );
+                  toast.success("You can fill in a new entry");
+                }
+              }}
+            >
+              <span>Add </span>
+              <PlusUser color={"#fff"} />
+            </button>
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <SearchComponent
+              data={elements?.filter((resp) =>
+                !resp.delete && user.role === "insurance_company"
+                  ? !resp.insurance_company_id === user?.insurance_company?.id
+                  : resp
+              )}
+              setFilteredData={setFilteredData}
+              setInputText={setInputText}
+              type={"first_name"}
+            />
+          </Grid.Col>
+        </Grid>
       </Header>
       <div className="ox-scroll">
         <div className="row">
@@ -277,24 +298,26 @@ export default function Sdp() {
             value={"supplier_type"}
           />
         </div>
-        {elements
-          ?.filter((resp) =>
-            !resp.delete && user.role === "insurance_company"
-              ? !resp.insurance_company_id === user?.insurance_company?.id
-              : resp
-          )
-          ?.reverse()
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              getSdp={getSdp}
-              datas={elements}
-              isCompanys={isCompanys}
-              isCitys={isCitys}
-              dispatch={dispatch}
-            />
-          ))}
+        {(inputText
+          ? filteredData
+          : elements
+              ?.filter((resp) =>
+                !resp.delete && user.role === "insurance_company"
+                  ? !resp.insurance_company_id === user?.insurance_company?.id
+                  : resp
+              )
+              ?.reverse()
+        ).map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            getSdp={getSdp}
+            datas={elements}
+            isCompanys={isCompanys}
+            isCitys={isCitys}
+            dispatch={dispatch}
+          />
+        ))}
       </div>
     </>
   );
