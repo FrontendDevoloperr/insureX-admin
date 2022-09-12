@@ -321,10 +321,6 @@ export default function AdminPanel() {
           data?.message?.appraisal_companies?.filter((item) => !item?.delete)
         )
       );
-      console.log(
-        data?.message?.appraisal_companies?.filter((item) => !item?.delete),
-        "data?.message?.appraisal_companies?.filter((item) => !item?.delete)"
-      );
     });
   };
 
