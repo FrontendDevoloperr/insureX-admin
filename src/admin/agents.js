@@ -129,7 +129,6 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
           transition="pop-top-left"
           transitionDuration={80}
           transitionTimingFunction="ease"
-          classNames={"input_multi"}
         />
         <input
           onInput={(e) => {
