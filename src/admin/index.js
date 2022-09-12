@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
-import { NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
 import AppraiserCompanies from "./appraiserCompanies";
@@ -185,6 +185,7 @@ export const getInsuredPersonFC = (dispatch) => {
 };
 
 export default function AdminPanel() {
+  const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
   const { classes, cx } = useStyles();
@@ -334,7 +335,7 @@ export default function AdminPanel() {
     getAppraiserFC();
     getAppraiserCompFC();
     getEventsAndCasesFC();
-  }, []);
+  }, [location.pathname]);
 
   return (
     <AppShell

@@ -147,12 +147,11 @@ function Rows({
               }
             )
             .then((res) => {
-              console.log("success");
               SendAppraiserMessage(
                 item?.appraiser_id,
-                appraiser,
+                appraiser ?? data.appraiser_id,
                 personId,
-                sdpId,
+                sdpId ?? data.sdp_id,
                 typeCase?.find(
                   (tp) =>
                     tp.event_type_id ===
@@ -206,10 +205,15 @@ function Rows({
       {events && (
         <form className="row" onSubmit={handleSubmit(onSubmit)}>
           <LoadingOverlay visible={isLoading || loading} />
+          <input
+            className="disabled"
+            readOnly={true}
+            value={item?.id ?? "new"}
+            style={{ width: 50 }}
+          />
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.appraisal_company_id = e.target.value;
               setAppCom(e.target.value);
             }}
             defaultValue={
@@ -223,6 +227,9 @@ function Rows({
             }
             {...register(`appraisal_company_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {appComp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.appraisal_company_name}
@@ -241,6 +248,9 @@ function Rows({
             }
             {...register(`appraiser_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {appraisers?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -251,7 +261,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.sdp_id = e.target.value;
               setSdpId(e.target.value);
             }}
             defaultValue={
@@ -260,6 +269,9 @@ function Rows({
             }
             {...register(`sdp_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {sdp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -270,7 +282,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.agent_id = e.target.value;
               setAgent(e.target.value);
             }}
             defaultValue={
@@ -279,6 +290,9 @@ function Rows({
             }
             {...register(`agent_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {agents.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -304,15 +318,13 @@ function Rows({
             style={!item?.new && !isUpdated ? { display: "none" } : {}}
             onInput={(e) => {
               setIsUpdated(true);
-              item.insured_person_id = e.target.value;
               setPersonId(e.target.value);
             }}
-            defaultValue={
-              // personId ??
-              person.find((_person) => _person?.id === item?.insured_person_id)
-                ?.first_name
-            }
+            value={personId}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {person?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -322,7 +334,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.insurance_company_id = e.target.value;
               setiInsComp(e.target.value);
             }}
             defaultValue={
@@ -332,6 +343,9 @@ function Rows({
             }
             {...register(`insurance_company_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {isCompanys?.map((options) => (
               <option key={options.id} value={options.id}>
                 {options.title}
@@ -372,7 +386,6 @@ function Rows({
           <input
             onInput={(e) => {
               setIsUpdated(true);
-              item.address = e.target.value;
             }}
             defaultValue={item?.address}
             {...register(`address`)}
@@ -389,6 +402,9 @@ function Rows({
             }
             {...register(`city_id`)}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {isCitys.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.city_name}
@@ -426,6 +442,9 @@ function Rows({
               })
             }
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {typeCase?.map((options) => (
               <option
                 key={options?.link}
@@ -445,6 +464,9 @@ function Rows({
             }}
             value={statustId}
           >
+            <option hidden={true} value={null}>
+              Choose...
+            </option>
             {StatusesData?.map((options) => (
               <option
                 key={options?.id}
@@ -538,6 +560,15 @@ function Rows({
   );
 }
 
+const msAppraiser51 = (
+  nameSdp,
+  nameCustomer,
+  numberEvent,
+  nameEvent,
+  nameAppraiser
+) =>
+  `${nameSdp} קבע שיחת וידאו עם ${nameCustomer} ע"י ${numberEvent} מס' ${nameEvent} נפתח אירוע ${nameAppraiser} שלום `;
+
 function SendAppraiserMessage(
   id,
   changeId,
@@ -548,14 +579,6 @@ function SendAppraiserMessage(
   caseID
 ) {
   if (!caseID || !GlobalState || id === changeId) return;
-  let msAppraiser51 = (
-    nameSdp,
-    nameCustomer,
-    numberEvent,
-    nameEvent,
-    nameAppraiser
-  ) =>
-    `${nameSdp} קבע שיחת וידאו עם ${nameCustomer} ע"י ${numberEvent} מס' ${nameEvent} נפתח אירוע ${nameAppraiser} שלום `;
 
   let formData = {
     type: `admin-${GlobalState?.user?.role}`,
@@ -565,7 +588,7 @@ function SendAppraiserMessage(
         ?.first_name,
       GlobalState?.persons?.find((res) => Number(res?.id) === Number(customer))
         ?.first_name,
-      id,
+      id ?? changeId,
       nameEvent,
       GlobalState?.appraiser?.appraiser?.find(
         (res) => Number(res?.id) === Number(changeId)
@@ -682,6 +705,12 @@ export default function InsuredEvents() {
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />
         <div className="row">
+          <input
+            className="disabled"
+            readOnly={true}
+            value={"№ ID"}
+            style={{ width: 50 }}
+          />
           <input
             className="disabled "
             readOnly={true}

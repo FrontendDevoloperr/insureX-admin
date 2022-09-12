@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import { Box, Center, Popover, ScrollArea, Text } from "@mantine/core";
 import { NoMessage, Notification } from "../icons";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { _URL } from "./../utils";
 import { toast, useToasterStore } from "react-hot-toast";
@@ -25,50 +25,44 @@ function Popup() {
       .forEach((t) => toast.dismiss(t.id));
   }, [toasts]);
 
-  React.useEffect(() => {
-    if (user?.auth) {
-      socket.on("message-send", (msg) => {
-        if (msg.admin_type) {
-          console.log(msg);
-          if (user.role === "superadmin") {
-            setMessages([...messages, msg]);
-            setNewMessage(true);
-            toast.success("New message received");
-          }
-          if (
-            user.role === "insurance_company" &&
-            Number(user.insurance_company.id) ===
-              Number(msg.insurance_company_id)
-          ) {
-            setMessages([...messages, msg]);
-            setNewMessage(true);
-            toast.success("New message received");
-          }
-          if (
-            user.role === "insurance_company" &&
-            msg?.insurance_companies
-              ?.split(",")
-              ?.includes(`${user?.insurance_company?.id}`)
-          ) {
-            setMessages([...messages, msg]);
-            setNewMessage(true);
-            toast.success("New message received");
-          }
-          if (
-            user.role === "appraisal_company" &&
-            Number(user.appraisal_company.id) ===
-              Number(msg.appraisal_company_id)
-          ) {
-            setMessages([...messages, msg]);
-            setNewMessage(true);
-            toast.success("New message received");
-          }
-        }
-      });
+  const MessagesFC = (msg) => {
+    if (msg.admin_type) {
+      console.log(msg);
+      if (user.role === "superadmin") {
+        setMessages([...messages, msg]);
+        setNewMessage(true);
+        toast.success("New message received");
+      }
+      if (
+        user.role === "insurance_company" &&
+        Number(user.insurance_company.id) === Number(msg.insurance_company_id)
+      ) {
+        setMessages([...messages, msg]);
+        setNewMessage(true);
+        toast.success("New message received");
+      }
+      if (
+        user.role === "insurance_company" &&
+        msg?.insurance_companies
+          ?.split(",")
+          ?.includes(`${user?.insurance_company?.id}`)
+      ) {
+        setMessages([...messages, msg]);
+        setNewMessage(true);
+        toast.success("New message received");
+      }
+      if (
+        user.role === "appraisal_company" &&
+        Number(user.appraisal_company.id) === Number(msg.appraisal_company_id)
+      ) {
+        setMessages([...messages, msg]);
+        setNewMessage(true);
+        toast.success("New message received");
+      }
     }
-  }, [user?.auth]);
+  };
 
-  React.useEffect(() => {
+  const MessagesFCS = () => {
     if (user?.auth) {
       axios
         .get(`${_URL}/push/messages`, {
@@ -106,6 +100,16 @@ function Popup() {
           }
         });
     }
+  };
+
+  React.useEffect(() => {
+    if (user?.auth) {
+      socket.on("message-send", (msg) => MessagesFC(msg));
+    }
+  }, [user?.auth]);
+
+  React.useEffect(() => {
+    MessagesFCS();
   }, [user?.auth, user?.role]);
 
   return (
@@ -130,7 +134,7 @@ function Popup() {
           justifyContent: "center",
           flexDirection: "column",
           textAlign: "center",
-          minWidth: '185px'
+          minWidth: "185px",
         }}
       >
         {messages?.length > 0 ? (
@@ -138,7 +142,7 @@ function Popup() {
             style={{
               maxHeight: 300,
               width: "max-content",
-              minWidth: '185px'
+              minWidth: "185px",
             }}
             offsetScrollbars
           >
@@ -241,6 +245,7 @@ function Popup() {
                         <Text>{message?.user_name}</Text>
                         <Text size="xs" color="dimmed">
                           {message?.user_type}
+                          {message?.is_create_case ? message.is_case_id : null}
                         </Text>
                       </div>
                     </Box>
