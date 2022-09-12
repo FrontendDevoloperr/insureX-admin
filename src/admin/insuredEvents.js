@@ -96,7 +96,7 @@ function Rows({
         item.property_type_id ??
         1,
       document_date: item?.document_date ?? new Date().toISOString(),
-      statust_id: statustId ?? item.statust_id,
+      status_id: statustId ?? item.status_id,
     };
 
     let eventFormData = {
