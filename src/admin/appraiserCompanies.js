@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
@@ -7,15 +7,9 @@ import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { useSelector } from "react-redux";
 import { Trash } from "tabler-icons-react";
+import SearchComponent from "../ui/search";
 
-function Rows({
-  item,
-  setElements,
-  datas,
-  isCompanys,
-  isRegions,
-  isCitys,
-}) {
+function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
   const { register, handleSubmit } = useForm();
 
   const [isUpdated, setIsUpdated] = React.useState(false);
@@ -268,6 +262,9 @@ export default function Persons() {
   const GlobalState = useSelector((state) => state);
   const isRegions = useSelector(({ region }) => region?.region);
 
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
+
   React.useEffect(() => {
     if (user.role === "superadmin") {
       setElements(GlobalState?.appComp);
@@ -301,22 +298,34 @@ export default function Persons() {
     <>
       <Header height={60} p="xs">
         {user.role !== "appraisal_company" && (
-          <button
-            className="adder"
-            onClick={() => {
-              if (elements.filter((item) => item?.new)?.length) {
-                toast.error(
-                  "You cannot add new entries until you finish the previous one."
-                );
-              } else {
-                setElements(elements?.concat([{ new: true }])?.reverse());
-                toast.success("You can fill in a new entry");
-              }
-            }}
-          >
-            <span>Add </span>
-            <PlusUser color={"#fff"} />
-          </button>
+          <Grid align="center">
+            <Grid.Col span={3}>
+              <button
+                className="adder"
+                onClick={() => {
+                  if (elements.filter((item) => item?.new)?.length) {
+                    toast.error(
+                      "You cannot add new entries until you finish the previous one."
+                    );
+                  } else {
+                    setElements(elements?.concat([{ new: true }])?.reverse());
+                    toast.success("You can fill in a new entry");
+                  }
+                }}
+              >
+                <span>Add </span>
+                <PlusUser color={"#fff"} />
+              </button>
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <SearchComponent
+                data={elements?.filter((resp) => !resp.delete)}
+                setFilteredData={setFilteredData}
+                setInputText={setInputText}
+                type={"appraisal_company_name"}
+              />
+            </Grid.Col>
+          </Grid>
         )}
       </Header>
       <div className="ox-scroll">
@@ -342,19 +351,20 @@ export default function Persons() {
           />
           <input className="disabled" readOnly={true} value={"city"} />
         </div>
-        {elements
-          ?.filter((resp) => !resp.delete)
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              setElements={setElements}
-              datas={elements}
-              isCompanys={isCompanys}
-              isRegions={isRegions}
-              isCitys={isCitys}
-            />
-          ))}
+        {(inputText.length
+          ? filteredData
+          : elements?.filter((resp) => !resp.delete)
+        ).map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            setElements={setElements}
+            datas={elements}
+            isCompanys={isCompanys}
+            isRegions={isRegions}
+            isCitys={isCitys}
+          />
+        ))}
       </div>
     </>
   );
