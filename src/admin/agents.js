@@ -4,10 +4,17 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Trash } from "tabler-icons-react";
 import { useSelector, useDispatch } from "react-redux";
-import { LoadingOverlay, Header, MultiSelect, ActionIcon } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Header,
+  MultiSelect,
+  ActionIcon,
+  Grid,
+} from "@mantine/core";
 import { _URL, getFormData } from "../utils";
 import { PlusUser } from "../icons";
 import { getAgents } from "../redux/reducer/agents";
+import SearchComponent from "../ui/search";
 
 function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
   const user = useSelector(({ user }) => user);
@@ -169,7 +176,8 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
             item.region_id = e.target.value;
           }}
           value={
-            isRegions?.filter((options) => options.id === item?.region_id)[0]?.id
+            isRegions?.filter((options) => options.id === item?.region_id)[0]
+              ?.id
           }
           {...register(`region_id`)}
         >
@@ -243,26 +251,47 @@ export default function Persons() {
   );
   const isRegions = useSelector(({ region }) => region?.region);
   const user = useSelector(({ user }) => user);
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
+
+  console.log(filteredData, "filteredData");
 
   return (
     <>
       <Header height={60} p="xs">
-        <button
-          className="adder"
-          onClick={() => {
-            if (elements.filter((item) => item?.new)?.length) {
-              toast.error(
-                "You cannot add new entries until you finish the previous one."
-              );
-            } else {
-              dispatch(getAgents(elements?.concat([{ new: true }])?.reverse()));
-              toast.success("You can fill in a new entry");
-            }
-          }}
-        >
-          <span>Add </span>
-          <PlusUser color={"#fff"} />
-        </button>
+        <Grid align="center">
+          <Grid.Col span={3}>
+            <button
+              className="adder"
+              onClick={() => {
+                if (elements.filter((item) => item?.new)?.length) {
+                  toast.error(
+                    "You cannot add new entries until you finish the previous one."
+                  );
+                } else {
+                  dispatch(
+                    getAgents(elements?.concat([{ new: true }])?.reverse())
+                  );
+                  toast.success("You can fill in a new entry");
+                }
+              }}
+            >
+              <span>Add </span>
+              <PlusUser color={"#fff"} />
+            </button>
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <SearchComponent
+              data={elements?.filter((resp) =>
+                !resp.delete && user?.role === "insurance_company"
+                  ? user?.insurance_company?.id === resp?.insurance_company_id
+                  : resp
+              )}
+              setFilteredData={setFilteredData}
+              setInputText={setInputText}
+            />
+          </Grid.Col>
+        </Grid>
       </Header>
       <div className="ox-scroll">
         <div className="row">
@@ -284,22 +313,24 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
-        {elements
-          ?.filter((resp) =>
-            !resp.delete && user?.role === "insurance_company"
-              ? user?.insurance_company?.id === resp?.insurance_company_id
-              : resp
-          )
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              datas={elements}
-              isCompanys={isCompanys}
-              isRegions={isRegions}
-              dispatch={dispatch}
-            />
-          ))}
+        {console.log(inputText?.length, "inputText?.length")}
+        {(inputText?.length > 2
+          ? filteredData
+          : elements?.filter((resp) =>
+              !resp.delete && user?.role === "insurance_company"
+                ? user?.insurance_company?.id === resp?.insurance_company_id
+                : resp
+            )
+        ).map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            datas={elements}
+            isCompanys={isCompanys}
+            isRegions={isRegions}
+            dispatch={dispatch}
+          />
+        ))}
       </div>
     </>
   );
