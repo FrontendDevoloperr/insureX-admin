@@ -57,8 +57,8 @@ input.error {
   position: relative;
 }
 
-.ox-scroll .now-edit.row > input,
-.ox-scroll .now-edit.row > select {
+.ox-scroll .now-edit.row>input,
+.ox-scroll .now-edit.row>select {
   animation: now-edit-input 1500ms linear forwards;
 }
 
@@ -84,8 +84,13 @@ input.error {
   padding: 15px 8px;
 }
 
+.input-multi-select div div div div {
+  max-height: 34px;
+  overflow-y: auto;
+}
+
 .ox-scroll .row select,
-.ox-scroll .row > input {
+.ox-scroll .row>input {
   border: none;
   border-top: 1px solid #ccc;
   border-bottom: 0.1px solid #ccc;
@@ -95,15 +100,15 @@ input.error {
   width: 110px;
 }
 
-.ox-scroll .row > input[type="email"] {
+.ox-scroll .row>input[type="email"] {
   color: #1c7ed6;
 }
 
-.ox-scroll .row > input[type="tel"] {
+.ox-scroll .row>input[type="tel"] {
   color: rgb(16, 152, 173);
 }
 
-.ox-scroll .row > input[name="address"] {
+.ox-scroll .row>input[name="address"] {
   color: #e91e63;
 }
 
@@ -157,6 +162,7 @@ input.error {
   gap: 10px;
   border-radius: 5px;
 }
+
 .adder:hover {
   background-color: #51abff;
   transform: translateY(-2px);
