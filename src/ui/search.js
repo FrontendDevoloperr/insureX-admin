@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "@mantine/core";
 import { Search } from "../icons/index";
 
-function SearchComponent({ data, setFilteredData, setInputText }) {
+function SearchComponent({ data, setFilteredData, setInputText, type }) {
   const FilterData = (e) => {
     const { value } = e.target;
     setInputText(value.toLowerCase());
@@ -11,7 +11,9 @@ function SearchComponent({ data, setFilteredData, setInputText }) {
     }
 
     setFilteredData(
-      data.filter((res) => res?.first_name.toLowerCase().includes(value))
+      data.filter((res) =>
+        res[type].toString().toLowerCase().includes(value.toLowerCase())
+      )
     );
   };
 

@@ -4,10 +4,11 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { _URL, getFormData } from "../utils";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
 import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
+import SearchComponent from "../ui/search";
 
 function Rows({ item, datas, dispatch }) {
   const { register, handleSubmit } = useForm();
@@ -195,36 +196,56 @@ export default function Persons() {
   const user = useSelector(({ user }) => user);
   let elements = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies);
 
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
+
   React.useEffect(() => {
     if (user.role === "insurance_company") {
       elements = [user?.insurance_company];
     }
   }, [user.role]);
 
+  console.log(
+    elements?.filter((resp) => resp.title.toLowerCase().includes(inputText)),
+    "filteredData"
+  );
+
   return (
     <>
       <Header height={60} p="xs">
         {user.role === "superadmin" && (
-          <button
-            className="adder"
-            onClick={() => {
-              if (elements.filter((item) => item?.new)?.length) {
-                toast.error(
-                  "You cannot add new entries until you finish the previous one."
-                );
-              } else {
-                dispatch(
-                  getInsuredCompanies(
-                    elements?.concat([{ new: true }])?.reverse()
-                  )
-                );
-                toast.success("You can fill in a new entry");
-              }
-            }}
-          >
-            <span>Add</span>
-            <PlusUser color={"#fff"} />
-          </button>
+          <Grid align="center">
+            <Grid.Col span={3}>
+              <button
+                className="adder"
+                onClick={() => {
+                  if (elements.filter((item) => item?.new)?.length) {
+                    toast.error(
+                      "You cannot add new entries until you finish the previous one."
+                    );
+                  } else {
+                    dispatch(
+                      getInsuredCompanies(
+                        elements?.concat([{ new: true }])?.reverse()
+                      )
+                    );
+                    toast.success("You can fill in a new entry");
+                  }
+                }}
+              >
+                <span>Add</span>
+                <PlusUser color={"#fff"} />
+              </button>
+            </Grid.Col>
+            <Grid.Col span={3}>
+              <SearchComponent
+                data={elements}
+                setFilteredData={setFilteredData}
+                setInputText={setInputText}
+                type="title"
+              />
+            </Grid.Col>
+          </Grid>
         )}
       </Header>
       <div className="ox-scroll">
@@ -255,16 +276,17 @@ export default function Persons() {
             value={"address"}
           />
         </div>
-        {elements
-          ?.filter((resp) => !resp.delete)
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              datas={elements}
-              dispatch={dispatch}
-            />
-          ))}
+        {(inputText?.length > 2
+          ? filteredData
+          : elements?.filter((resp) => !resp.delete)
+        ).map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            datas={elements}
+            dispatch={dispatch}
+          />
+        ))}
       </div>
     </>
   );

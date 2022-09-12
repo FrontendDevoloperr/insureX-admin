@@ -1,5 +1,5 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
@@ -10,6 +10,7 @@ import { Trash } from "tabler-icons-react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPersons } from "../redux/reducer/insuredPerson";
 import { getInsuredPersonFC } from "./index";
+import SearchComponent from "../ui/search";
 
 function Rows({
   item,
@@ -274,6 +275,8 @@ export default function Persons() {
   const location = useLocation();
   const user = useSelector((state) => state.user);
   const elements = useSelector(({ persons }) => persons);
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
 
   React.useEffect(() => {
     if (user.role === "insurance_company") {
@@ -284,24 +287,40 @@ export default function Persons() {
   return (
     <>
       <Header height={60} p="xs">
-        <button
-          className="adder"
-          onClick={() => {
-            if (elements?.filter((item) => item?.new)?.length) {
-              toast.error(
-                "You cannot add new entries until you finish the previous one."
-              );
-            } else {
-              dispatch(
-                getPersons(elements?.concat([{ new: true }])?.reverse())
-              );
-              toast.success("You can fill in a new entry");
-            }
-          }}
-        >
-          <span>Add </span>
-          <PlusUser color={"#fff"} />
-        </button>
+        <Grid align="center">
+          <Grid.Col span={3}>
+            <button
+              className="adder"
+              onClick={() => {
+                if (elements?.filter((item) => item?.new)?.length) {
+                  toast.error(
+                    "You cannot add new entries until you finish the previous one."
+                  );
+                } else {
+                  dispatch(
+                    getPersons(elements?.concat([{ new: true }])?.reverse())
+                  );
+                  toast.success("You can fill in a new entry");
+                }
+              }}
+            >
+              <span>Add </span>
+              <PlusUser color={"#fff"} />
+            </button>
+          </Grid.Col>
+          <Grid.Col span={3}>
+            <SearchComponent
+              data={elements?.filter((resp) =>
+                !resp.delete && user?.role === "insurance_company"
+                  ? resp?.insurance_company_id === user?.insurance_company?.id
+                  : resp
+              )}
+              setFilteredData={setFilteredData}
+              setInputText={setInputText}
+              type={"first_name"}
+            />
+          </Grid.Col>
+        </Grid>
       </Header>
       <div className="ox-scroll">
         <LoadingOverlay visible={loading} />
@@ -320,27 +339,26 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"agent ID"} />
           <input className="disabled" readOnly={true} value={"city ID"} />
         </div>
-        {elements
-          ?.filter((resp) =>
-            !resp.delete && user?.role === "insurance_company"
-              ? resp?.insurance_company_id === user?.insurance_company?.id
-              : resp
-          )
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              dispatch={dispatch}
-              datas={elements}
-              loading={loading}
-              isCompanys={isCompanys}
-              isCitys={isCitys}
-              agents={agents}
-              isNowEdit={
-                Number(location.hash.split("#")[1]) === Number(item?.id)
-              }
-            />
-          ))}
+        {(inputText.length > 2
+          ? filteredData
+          : elements?.filter((resp) =>
+              !resp.delete && user?.role === "insurance_company"
+                ? resp?.insurance_company_id === user?.insurance_company?.id
+                : resp
+            )
+        ).map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            dispatch={dispatch}
+            datas={elements}
+            loading={loading}
+            isCompanys={isCompanys}
+            isCitys={isCitys}
+            agents={agents}
+            isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
+          />
+        ))}
       </div>
     </>
   );

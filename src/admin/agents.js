@@ -129,6 +129,7 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
           transition="pop-top-left"
           transitionDuration={80}
           transitionTimingFunction="ease"
+          classNames={"input_multi"}
         />
         <input
           onInput={(e) => {
@@ -254,8 +255,6 @@ export default function Persons() {
   const [filteredData, setFilteredData] = React.useState([]);
   const [inputText, setInputText] = React.useState("");
 
-  console.log(filteredData, "filteredData");
-
   return (
     <>
       <Header height={60} p="xs">
@@ -289,6 +288,7 @@ export default function Persons() {
               )}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
+              type={"first_name"}
             />
           </Grid.Col>
         </Grid>
@@ -313,7 +313,6 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
-        {console.log(inputText?.length, "inputText?.length")}
         {(inputText?.length > 2
           ? filteredData
           : elements?.filter((resp) =>
