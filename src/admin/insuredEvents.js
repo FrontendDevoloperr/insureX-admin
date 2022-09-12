@@ -652,9 +652,13 @@ export default function InsuredEvents() {
               elements?.filter(
                 (_res) =>
                   !_res.delete &&
-                  _res?.insured_event_id ===
-                    events?.find((_eve) => _eve.id === _res?.insured_event_id)
-                      ?.id
+                  Number(_res?.insured_event_id) ===
+                    Number(
+                      events?.find(
+                        (_eve) =>
+                          Number(_eve.id) === Number(_res?.insured_event_id)
+                      )?.id
+                    )
               )?.length
             ) {
               setLoading(true);
