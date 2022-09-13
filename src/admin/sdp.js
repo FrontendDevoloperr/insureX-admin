@@ -329,7 +329,7 @@ export default function Sdp() {
           <input
             className="disabled"
             readOnly={true}
-            value={"Auth"}
+            value={"auth"}
             style={{ width: "50px" }}
           />
           <input
