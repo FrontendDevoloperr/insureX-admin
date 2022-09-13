@@ -243,7 +243,7 @@ function Rows({
               setIsUpdated(true);
               setAppraiser(e.target.value);
             }}
-            defaultValue={
+            value={
               appraiser ??
               appraisers?.find((_app) => _app?.id === item?.appraiser_id)?.id
             }
@@ -337,7 +337,7 @@ function Rows({
               setIsUpdated(true);
               setiInsComp(e.target.value);
             }}
-            defaultValue={
+            value={
               insComp ??
               events?.find((eve) => eve?.id === item?.insured_event_id)
                 ?.insurance_company_id
@@ -356,15 +356,13 @@ function Rows({
           <input
             onInput={(e) => {
               setIsUpdated(true);
-              item.insured_number = e.target.value;
             }}
-            defaultValue={item?.insured_number}
+            value={item?.insured_number}
             {...register(`insured_number`)}
           />
           <input
             style={{
               width: "140px",
-              maxHeight: "48.6px",
             }}
             onFocus={(e) => {
               e.preventDefault();
@@ -373,7 +371,6 @@ function Rows({
             }}
             onInput={(e) => {
               setIsUpdated(true);
-              item.document_date = e.target.value;
             }}
             onMouseMove={(e) => {
               e.target.type = "date";
@@ -394,7 +391,6 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.city_id = e.target.value;
               setIsCity(e.target.value);
             }}
             defaultValue={
@@ -415,12 +411,17 @@ function Rows({
           <select
             onInput={(e) => {
               setIsUpdated(true);
-              item.region_id = e.target.value;
               setRegionId(e.target.value);
             }}
-            defaultValue={
+            value={
               regionId ??
-              region.find((options) => options.id === item?.region_id)?.id
+              region.find(
+                (options) =>
+                  options.id ===
+                  events.find(
+                    (options) => options.id === item?.insured_event_id
+                  )?.region_id
+              )?.id
             }
             {...register(`region_id`)}
           >
@@ -435,7 +436,7 @@ function Rows({
               setIsUpdated(true);
               setTypeCaseIds(e.target.value);
             }}
-            defaultValue={
+            value={
               typeCaseIds ??
               JSON.stringify({
                 event_type_id: item?.event_type_id,
@@ -785,30 +786,32 @@ export default function InsuredEvents() {
                 _res?.insured_event_id ===
                   events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
             )
-        ).map((item, i) => (
-          <React.Fragment key={item?.id ?? i}>
-            {i < paginationCustome && (
-              <Rows
-                key={item?.id ?? i}
-                item={item}
-                setElements={setCases}
-                datas={elements}
-                isCompanys={insuredCompanies}
-                isCitys={city}
-                agents={agents}
-                person={person}
-                sdp={sdp}
-                appraisers={appraiser}
-                events={events}
-                appComp={appComp}
-                region={region}
-                dispatch={dispatch}
-                loading={loading}
-                GlobalState={GlobalState}
-              />
-            )}
-          </React.Fragment>
-        ))}
+        )
+          .sort((a, b) => Number(b.id) - Number(a.id))
+          .map((item, i) => (
+            <React.Fragment key={item?.id ?? i}>
+              {i < paginationCustome && (
+                <Rows
+                  key={item?.id ?? i}
+                  item={item}
+                  setElements={setCases}
+                  datas={elements}
+                  isCompanys={insuredCompanies}
+                  isCitys={city}
+                  agents={agents}
+                  person={person}
+                  sdp={sdp}
+                  appraisers={appraiser}
+                  events={events}
+                  appComp={appComp}
+                  region={region}
+                  dispatch={dispatch}
+                  loading={loading}
+                  GlobalState={GlobalState}
+                />
+              )}
+            </React.Fragment>
+          ))}
       </div>
     </>
   );
