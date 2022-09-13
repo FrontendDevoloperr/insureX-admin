@@ -10,6 +10,7 @@ import {
   MultiSelect,
   ActionIcon,
   Grid,
+  Checkbox,
 } from "@mantine/core";
 import { _URL, getFormData } from "../utils";
 import { PlusUser } from "../icons";
@@ -21,10 +22,10 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
   const { register, handleSubmit } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isChecked, setIsChecked] = React.useState(item?.authentification);
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
     item?.insurance_company_ids
   );
-
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     data.insurance_company_ids = insurance_company_ids;
@@ -84,10 +85,55 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
     }
   };
 
+  const agentsFC = () => {
+    axios
+      .get(`${_URL}/agents/select`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getAgents(data?.message?.agents?.filter((item) => !item?.delete))
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const patchAutification = (data) => {
+    const formData = {
+      authentification: !isChecked,
+    };
+    setIsLoading(true);
+    axios
+      .patch(`${_URL}/agents/${item?.id}`, getFormData(formData))
+      .then(({ data }) => {
+        setIsLoading(false);
+        setIsChecked(!isChecked);
+        agentsFC();
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setIsChecked(isChecked);
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
+        <Checkbox
+          type="checkbox"
+          checked={isChecked}
+          defaultValue={item?.authentification}
+          onChange={patchAutification}
+          className="checkbox_inp"
+        />
         <input
           onInput={(e) => {
             setIsUpdated(true);
@@ -294,6 +340,12 @@ export default function Persons() {
       </Header>
       <div className="ox-scroll">
         <div className="row">
+          <input
+            className="disabled"
+            readOnly={true}
+            value={"Auth"}
+            style={{ width: "50px" }}
+          />
           <input className="disabled" readOnly={true} value={"first_name"} />
           <input className="disabled" readOnly={true} value={"last_name"} />
           <input
@@ -319,16 +371,20 @@ export default function Persons() {
                 ? user?.insurance_company?.id === resp?.insurance_company_id
                 : resp
             )
-        ).map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            datas={elements}
-            isCompanys={isCompanys}
-            isRegions={isRegions}
-            dispatch={dispatch}
-          />
-        ))}
+        )
+          .sort(
+            (a, b) => Number(b.authentification) - Number(a.authentification)
+          )
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              datas={elements}
+              isCompanys={isCompanys}
+              isRegions={isRegions}
+              dispatch={dispatch}
+            />
+          ))}
       </div>
     </>
   );

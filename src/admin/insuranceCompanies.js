@@ -4,7 +4,13 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { _URL, getFormData } from "../utils";
-import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Header,
+  ActionIcon,
+  Grid,
+  Checkbox,
+} from "@mantine/core";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
 import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
@@ -12,7 +18,7 @@ import SearchComponent from "../ui/search";
 
 function Rows({ item, datas, dispatch }) {
   const { register, handleSubmit } = useForm();
-
+  const [isChecked, setIsChecked] = React.useState(item?.authentification);
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -85,10 +91,57 @@ function Rows({ item, datas, dispatch }) {
     }
   };
 
+  const getInsuredCompaniesFC = () => {
+    axios
+      .get(`${_URL}/insurance-companies`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getInsuredCompanies(
+            data?.message?.insurance_companies?.filter((item) => !item?.delete)
+          )
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const patchAutification = (data) => {
+    const formData = {
+      authentification: !isChecked,
+    };
+    setIsLoading(true);
+    axios
+      .patch(`${_URL}/insurance-companies/${item?.id}`, getFormData(formData))
+      .then(({ data }) => {
+        setIsLoading(false);
+        setIsChecked(!isChecked);
+        getInsuredCompaniesFC();
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setIsChecked(isChecked);
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
+        <Checkbox
+          type="checkbox"
+          checked={isChecked}
+          defaultValue={item?.authentification}
+          onChange={patchAutification}
+          className="checkbox_inp"
+        />
         <input
           className="multiples-select"
           onInput={(e) => {
@@ -194,21 +247,19 @@ function Rows({ item, datas, dispatch }) {
 export default function Persons() {
   const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
-  let elements = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies);
+  let companies = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies);
 
   const [filteredData, setFilteredData] = React.useState([]);
   const [inputText, setInputText] = React.useState("");
+  const [elements, setElements] = React.useState(companies);
 
   React.useEffect(() => {
-    if (user.role === "insurance_company") {
-      elements = [user?.insurance_company];
+    if (user?.role === "insurance_company") {
+      setElements([user?.insurance_company]);
+      return;
     }
-  }, [user.role]);
-
-  console.log(
-    elements?.filter((resp) => resp.title.toLowerCase().includes(inputText)),
-    "filteredData"
-  );
+    setElements(companies);
+  }, [user?.role, companies]);
 
   return (
     <>
@@ -251,6 +302,12 @@ export default function Persons() {
       <div className="ox-scroll">
         <div className="row">
           <input
+            className="disabled"
+            readOnly={true}
+            value={"Auth"}
+            style={{ width: "50px" }}
+          />
+          <input
             className="disabled multiples-select"
             readOnly={true}
             value={"title"}
@@ -279,14 +336,18 @@ export default function Persons() {
         {(inputText?.length > 2
           ? filteredData
           : elements?.filter((resp) => !resp.delete)
-        ).map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            datas={elements}
-            dispatch={dispatch}
-          />
-        ))}
+        )
+          .sort(
+            (a, b) => Number(b.authentification) - Number(a.authentification)
+          )
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              datas={elements}
+              dispatch={dispatch}
+            />
+          ))}
       </div>
     </>
   );

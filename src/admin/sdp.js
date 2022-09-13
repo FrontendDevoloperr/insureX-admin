@@ -1,5 +1,11 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Header,
+  ActionIcon,
+  Grid,
+  Checkbox,
+} from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData, supplier_types } from "../utils";
 import { useForm } from "react-hook-form";
@@ -13,9 +19,9 @@ import SearchComponent from "../ui/search";
 
 function Rows({ item, isCompanys, isCitys, dispatch }) {
   const { register, handleSubmit } = useForm();
-
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isChecked, setIsChecked] = React.useState(item?.authentification);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -73,9 +79,49 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
     }
   };
 
+  const getSdpFC = (dispatch) => {
+    axios
+      .get(`${_URL}/sdp`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
+      });
+  };
+
+  const patchAutification = (data) => {
+    const formData = {
+      authentification: !isChecked,
+    };
+    setIsLoading(true);
+    axios
+      .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
+      .then(({ data }) => {
+        setIsLoading(false);
+        setIsChecked(!isChecked);
+        getSdpFC();
+      })
+      .catch((err) => {
+        setIsChecked(isChecked);
+        setIsLoading(false);
+        console.log(err);
+      });
+  };
+
   return (
     <form className="row" onSubmit={handleSubmit(onSubmit)}>
       <LoadingOverlay visible={isLoading} />
+      <Checkbox
+        type="checkbox"
+        checked={isChecked}
+        defaultValue={item?.authentification}
+        onChange={patchAutification}
+        className="checkbox_inp"
+      />
       <select
         className=""
         onInput={() => setIsUpdated(true)}
@@ -281,6 +327,12 @@ export default function Sdp() {
       <div className="ox-scroll">
         <div className="row">
           <input
+            className="disabled"
+            readOnly={true}
+            value={"Auth"}
+            style={{ width: "50px" }}
+          />
+          <input
             className="disabled "
             readOnly={true}
             value={"insurance_company_id"}
@@ -300,24 +352,26 @@ export default function Sdp() {
         </div>
         {(inputText
           ? filteredData
-          : elements
-              ?.filter((resp) =>
-                !resp.delete && user.role === "insurance_company"
-                  ? !resp.insurance_company_id === user?.insurance_company?.id
-                  : resp
-              )
-              ?.reverse()
-        ).map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            getSdp={getSdp}
-            datas={elements}
-            isCompanys={isCompanys}
-            isCitys={isCitys}
-            dispatch={dispatch}
-          />
-        ))}
+          : elements?.filter((resp) =>
+              !resp.delete && user.role === "insurance_company"
+                ? !resp.insurance_company_id === user?.insurance_company?.id
+                : resp
+            )
+        )
+          .sort(
+            (a, b) => Number(b.authentification) - Number(a.authentification)
+          )
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              getSdp={getSdp}
+              datas={elements}
+              isCompanys={isCompanys}
+              isCitys={isCitys}
+              dispatch={dispatch}
+            />
+          ))}
       </div>
     </>
   );

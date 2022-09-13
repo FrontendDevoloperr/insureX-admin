@@ -1,13 +1,20 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Header,
+  ActionIcon,
+  Grid,
+  Checkbox,
+} from "@mantine/core";
 import axios from "axios";
 import { getFormData, _URL } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import SearchComponent from "../ui/search";
+import { getAppraiser } from "../redux/reducer/appraiser";
 
 function Rows({
   item,
@@ -17,8 +24,9 @@ function Rows({
   isRegions,
   appraiselCompanys,
 }) {
+  const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-
+  const [isChecked, setIsChecked] = React.useState(item?.authentification);
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -87,10 +95,54 @@ function Rows({
     }
   };
 
+  const getAppraiserFC = () => {
+    axios
+      .get(`${_URL}/appraisers`, {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
+          } `,
+        },
+      })
+      .then(({ data }) => {
+        dispatch(
+          getAppraiser(
+            data?.message?.appraisers?.filter((item) => !item?.delete)
+          )
+        );
+      });
+  };
+
+  const patchAutification = (data) => {
+    const formData = {
+      authentification: !isChecked,
+    };
+    setIsLoading(true);
+    axios
+      .patch(`${_URL}/appraisers/${item?.id}`, getFormData(formData))
+      .then(({ data }) => {
+        setIsLoading(false);
+        setIsChecked(!isChecked);
+        getAppraiserFC();
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setIsChecked(isChecked);
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
+        <Checkbox
+          type="checkbox"
+          checked={isChecked}
+          defaultValue={item?.authentification}
+          onChange={patchAutification}
+          className="checkbox_inp"
+        />
         <select
           className="multiples-select"
           onInput={(e) => {
@@ -373,6 +425,12 @@ export default function Persons() {
       <div className="ox-scroll">
         <div className="row">
           <input
+            className="disabled"
+            readOnly={true}
+            value={"Auth"}
+            style={{ width: "50px" }}
+          />
+          <input
             className="disabled multiples-select"
             readOnly={true}
             value={"insurance_company "}
@@ -390,20 +448,21 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
-        {(inputText
-          ? filteredData
-          : elements?.filter((resp) => !resp.delete)?.reverse()
-        ).map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            isCompanys={isCompanys}
-            isRegions={isRegions}
-            appraiselCompanys={appraiselCompanys}
-          />
-        ))}
+        {(inputText ? filteredData : elements?.filter((resp) => !resp.delete))
+          .sort(
+            (a, b) => Number(b.authentification) - Number(a.authentification)
+          )
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              isCompanys={isCompanys}
+              isRegions={isRegions}
+              appraiselCompanys={appraiselCompanys}
+            />
+          ))}
       </div>
     </>
   );

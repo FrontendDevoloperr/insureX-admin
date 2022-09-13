@@ -1,29 +1,38 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
+import { useSelector, useDispatch } from "react-redux";
+import { Trash } from "tabler-icons-react";
+import {
+  LoadingOverlay,
+  Header,
+  ActionIcon,
+  Grid,
+  Checkbox,
+} from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
-import { useSelector } from "react-redux";
-import { Trash } from "tabler-icons-react";
+
 import SearchComponent from "../ui/search";
+import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
 
 function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
+  const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
-
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [cityValue, setCityValue] = React.useState(
+    isCitys.find((options) => Number(options.id) === Number(item?.city_id))?.id
+  );
+  const [isChecked, setIsChecked] = React.useState(item?.authentification);
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     !data.insurance_company_ids &&
       (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
     !data.region_id && (data.region_id = item.region_id);
-    !data.city_id &&
-      !data.city_id === "null" &&
-      !data.city_id === null &&
-      (data.city_id = item.city_id === "null" ? isCitys[0]?.id : item.city_id);
+    data.city_id = !!data?.city_id.length ? data?.city_id : item?.city_id;
     if (data?.id) {
       let formData = {
         ...data,
@@ -89,10 +98,46 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
     }
   };
 
+  const getAppraiserCompFC = () => {
+    axios.get(`${_URL}/appraisal-companies`).then(({ data }) => {
+      dispatch(
+        getAppraiserCompanies(
+          data?.message?.appraisal_companies?.filter((item) => !item?.delete)
+        )
+      );
+    });
+  };
+
+  const patchAutification = (data) => {
+    const formData = {
+      authentification: !isChecked,
+    };
+    setIsLoading(true);
+    axios
+      .patch(`${_URL}/appraisal-companies/${item?.id}`, getFormData(formData))
+      .then(({ data }) => {
+        setIsLoading(false);
+        setIsChecked(!isChecked);
+        getAppraiserCompFC();
+      })
+      .catch((err) => {
+        setIsLoading(false);
+        setIsChecked(isChecked);
+        console.log(err);
+      });
+  };
+
   return (
     <>
       <form className="row" onSubmit={handleSubmit(onSubmit)}>
         <LoadingOverlay visible={isLoading} />
+        <Checkbox
+          type="checkbox"
+          checked={isChecked}
+          defaultValue={item?.authentification}
+          onChange={patchAutification}
+          className="checkbox_inp"
+        />
         <input
           className="multiples-select"
           onInput={(e) => {
@@ -114,12 +159,11 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
             e.target.value !== item?.insurance_company_ids?.[0]
               ? setIsUpdated(true)
               : setIsUpdated(false);
-            item.insurance_company_ids = e.target.value;
           }}
-          value={
+          defaultValue={
             isCompanys?.filter(
               (options) => options.id === item?.insurance_company_ids?.[0]
-            )[0]?.id
+            )?.id
           }
           {...register(`insurance_company_ids`)}
         >
@@ -154,9 +198,8 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
             e.target.value !== item?.region_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
-            item.region_id = e.target.value;
           }}
-          value={
+          defaultValue={
             isRegions.filter((options) => options.id === item?.region_id)[0]?.id
           }
           {...register(`region_id`)}
@@ -181,10 +224,13 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
             e.target.value !== item?.city_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
-            item.city_id = e.target.value;
+            setCityValue(e.target.value);
           }}
           value={
-            isCitys.filter((options) => options.id === item?.city_id)[0]?.id
+            cityValue ??
+            isCitys.find(
+              (options) => Number(options.id) === Number(item?.city_id)
+            )?.id
           }
           {...register(`city_id`)}
         >
@@ -331,6 +377,12 @@ export default function Persons() {
       <div className="ox-scroll">
         <div className="row">
           <input
+            className="disabled"
+            readOnly={true}
+            value={"Auth"}
+            style={{ width: "50px" }}
+          />
+          <input
             className="disabled multiples-select"
             readOnly={true}
             value={"appraisal_company_name"}
@@ -354,17 +406,21 @@ export default function Persons() {
         {(inputText.length
           ? filteredData
           : elements?.filter((resp) => !resp.delete)
-        ).map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            setElements={setElements}
-            datas={elements}
-            isCompanys={isCompanys}
-            isRegions={isRegions}
-            isCitys={isCitys}
-          />
-        ))}
+        )
+          .sort(
+            (a, b) => Number(b.authentification) - Number(a.authentification)
+          )
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              setElements={setElements}
+              datas={elements}
+              isCompanys={isCompanys}
+              isRegions={isRegions}
+              isCitys={isCitys}
+            />
+          ))}
       </div>
     </>
   );
