@@ -5,6 +5,7 @@ import {
   ActionIcon,
   Grid,
   Checkbox,
+  MultiSelect,
 } from "@mantine/core";
 import axios from "axios";
 import { getFormData, _URL } from "../utils";
@@ -23,15 +24,25 @@ function Rows({
   isCompanys,
   isRegions,
   appraiselCompanys,
+  user,
 }) {
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
   const [isChecked, setIsChecked] = React.useState(item?.authentification);
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  // const [appraisalCompany, setAppraisalCompany] = React.useState(
+  //   item?.appraisers_company_id
+  // );
+
+  const [insurance_company_ids, setInsurance_company_ids] = React.useState(
+    item?.insurance_company_ids
+  );
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
+    // data.appraisers_company_id = appraisalCompany;
+    data.insurance_company_persons_id = insurance_company_ids;
     !data?.appraisal_company_id &&
       (data.appraisal_company_id =
         item?.appraisal_company_id ?? appraiselCompanys[0]?.id);
@@ -143,7 +154,7 @@ function Rows({
           onChange={patchAutification}
           className="checkbox_inp"
         />
-        <select
+        {/* <select
           className="multiples-select"
           onInput={(e) => {
             e.target.value !== item?.insurance_company_id
@@ -163,7 +174,34 @@ function Rows({
               {options.title}
             </option>
           ))}
-        </select>
+        </select> */}
+
+        <MultiSelect
+          className="input-multi-select"
+          placeholder="choose..."
+          style={{
+            width: "200px",
+          }}
+          defaultValue={item?.insurance_company_persons_id}
+          onChange={(e) => {
+            setIsUpdated(true);
+            setInsurance_company_ids(e);
+          }}
+          data={isCompanys?.map((item) => ({
+            value: item?.id,
+            label: item?.title,
+            custome_disabled:
+              user.role === "appraisal_company"
+                ? item?.id !== user.insurance_company.id
+                  ? "true"
+                  : "false"
+                : "",
+          }))}
+          transition="pop-top-left"
+          transitionDuration={80}
+          transitionTimingFunction="ease"
+        />
+
         <select
           onInput={(e) => {
             e.target.value !== item?.appraisal_company_id
@@ -184,6 +222,32 @@ function Rows({
             </option>
           ))}
         </select>
+
+        {/* <MultiSelect
+          className="input-multi-select"
+          placeholder="choose..."
+          style={{
+            width: "200px",
+          }}
+          defaultValue={item?.appraisers_company_id}
+          onChange={(e) => {
+            setIsUpdated(true);
+            setAppraisalCompany(e);
+          }}
+          data={appraiselCompanys?.map((item) => ({
+            value: item?.id,
+            label: item?.appraisal_company_name,
+            custome_disabled:
+              user.role === "appraisal_company"
+                ? item?.id !== user.appraisal_companies.id
+                  ? "true"
+                  : "false"
+                : "",
+          }))}
+          transition="pop-top-left"
+          transitionDuration={80}
+          transitionTimingFunction="ease"
+        /> */}
 
         <input
           onInput={(e) => {
@@ -434,6 +498,9 @@ export default function Persons() {
             className="disabled multiples-select"
             readOnly={true}
             value={"insurance_company "}
+            style={{
+              width: "200px",
+            }}
           />
           <input
             className="disabled"
@@ -461,6 +528,7 @@ export default function Persons() {
               isCompanys={isCompanys}
               isRegions={isRegions}
               appraiselCompanys={appraiselCompanys}
+              user={user}
             />
           ))}
       </div>

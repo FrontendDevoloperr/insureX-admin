@@ -140,7 +140,7 @@ function Popup() {
         {messages?.length > 0 ? (
           <ScrollArea
             style={{
-              maxHeight: 300,
+              height: 300,
               width: "max-content",
               minWidth: "185px",
             }}
@@ -173,85 +173,83 @@ function Popup() {
               </Box>
             )}
 
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              {messages
-                ?.sort(function (a, b) {
-                  return (
-                    moment(b.date_time).format("X") -
-                    moment(a.date_time).format("X")
-                  );
-                })
-                ?.map((message, i) => (
-                  <React.Fragment key={message?.id + i}>
-                    <Box
-                      title={message?.user_type}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (message?.is_create_case) {
-                          navigate(`/events`);
-                          setOpened(false);
-                        }
-                        if (message?.user_type === "persons") {
-                          navigate(`/persons#${message?.user_id ?? "users"}`);
-                          setOpened(false);
-                        }
-                        if (message?.user_type === "sdp") {
-                          navigate(`/sdp`);
-                          setOpened(false);
-                        }
-                        if (message?.user_type === "agent") {
-                          navigate(`/agents`);
-                          setOpened(false);
-                        }
-                        if (message?.user_type === "appraiser") {
-                          navigate(`/appraisers`);
-                          setOpened(false);
-                        }
-                        if (
-                          message?.user_type ===
-                          ("appraisal_company" || "event_create")
-                        ) {
-                          navigate(`/appraiser-company`);
-                          setOpened(false);
-                        }
-                        if (
-                          message?.user_type ===
-                          ("insurance_company" || "event_create")
-                        ) {
-                          navigate(`/insurance-company`);
-                          setOpened(false);
-                        }
-                      }}
-                      sx={(theme) => ({
+            {messages
+              ?.sort(function (a, b) {
+                return (
+                  moment(b.date_time).format("X") -
+                  moment(a.date_time).format("X")
+                );
+              })
+              ?.map((message, i) => (
+                <React.Fragment key={message?.id + i}>
+                  <Box
+                    title={message?.user_type}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (message?.is_create_case) {
+                        navigate(`/events`);
+                        setOpened(false);
+                      }
+                      if (message?.user_type === "persons") {
+                        navigate(`/persons#${message?.user_id ?? "users"}`);
+                        setOpened(false);
+                      }
+                      if (message?.user_type === "sdp") {
+                        navigate(`/sdp`);
+                        setOpened(false);
+                      }
+                      if (message?.user_type === "agent") {
+                        navigate(`/agents`);
+                        setOpened(false);
+                      }
+                      if (message?.user_type === "appraiser") {
+                        navigate(`/appraisers`);
+                        setOpened(false);
+                      }
+                      if (
+                        message?.user_type ===
+                        ("appraisal_company" || "event_create")
+                      ) {
+                        navigate(`/appraiser-company`);
+                        setOpened(false);
+                      }
+                      if (
+                        message?.user_type ===
+                        ("insurance_company" || "event_create")
+                      ) {
+                        navigate(`/insurance-company`);
+                        setOpened(false);
+                      }
+                    }}
+                    sx={(theme) => ({
+                      backgroundColor:
+                        theme.colorScheme === "dark"
+                          ? theme.colors.dark[6]
+                          : theme.colors.gray[0],
+                      textAlign: "center",
+                      padding: theme.spacing.sm,
+                      borderRadius: theme.radius.md,
+                      marginBottom: theme.spacing.sm,
+                      cursor: "pointer",
+                      "&:hover": {
                         backgroundColor:
                           theme.colorScheme === "dark"
-                            ? theme.colors.dark[6]
-                            : theme.colors.gray[0],
-                        textAlign: "center",
-                        padding: theme.spacing.sm,
-                        borderRadius: theme.radius.md,
-                        marginBottom: theme.spacing.sm,
-                        cursor: "pointer",
-                        "&:hover": {
-                          backgroundColor:
-                            theme.colorScheme === "dark"
-                              ? theme.colors.dark[5]
-                              : theme.colors.gray[1],
-                        },
-                      })}
-                    >
-                      <div>
-                        <Text>{message?.user_name}</Text>
-                        <Text size="xs" color="dimmed">
-                          {message?.user_type}
-                          {message?.is_create_case ? message.is_case_id : null}
-                        </Text>
-                      </div>
-                    </Box>
-                  </React.Fragment>
-                ))}
-            </div>
+                            ? theme.colors.dark[5]
+                            : theme.colors.gray[1],
+                      },
+                    })}
+                  >
+                    <div>
+                      <Text>{message?.user_name}</Text>
+                      <Text size="xs" color="dimmed">
+                        {message?.user_type}
+                        {message?.is_create_case ? message.is_case_id : null}
+                      </Text>
+                    </div>
+                  </Box>
+                </React.Fragment>
+              ))}
           </ScrollArea>
         ) : (
           <Center>

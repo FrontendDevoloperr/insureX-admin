@@ -1,5 +1,11 @@
 import React from "react";
-import { LoadingOverlay, Header, ActionIcon, Grid } from "@mantine/core";
+import {
+  LoadingOverlay,
+  Header,
+  ActionIcon,
+  Grid,
+  MultiSelect,
+} from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
@@ -21,16 +27,18 @@ function Rows({
   isCitys,
   agents,
   isNowEdit,
+  user,
 }) {
   const { register, handleSubmit } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(loading);
+  const [insurance_company_ids, setInsurance_company_ids] = React.useState(
+    item?.insurance_company_persons_id
+  );
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.insurance_company_id &&
-      (data.insurance_company_id =
-        item.insurance_company_id ?? isCompanys[0]?.id);
+    data.insurance_company_persons_id = insurance_company_ids;
     !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id);
     !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id);
     if (data?.id) {
@@ -109,7 +117,7 @@ function Rows({
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
-        <select
+        {/* <select
           onInput={(e) => {
             e.target.value !== item?.insurance_company_id
               ? setIsUpdated(true)
@@ -129,7 +137,33 @@ function Rows({
               {options.title}
             </option>
           ))}
-        </select>
+        </select> */}
+
+        <MultiSelect
+          className="input-multi-select"
+          placeholder="choose..."
+          style={{
+            width: "200px",
+          }}
+          defaultValue={item?.insurance_company_persons_id}
+          onChange={(e) => {
+            setIsUpdated(true);
+            setInsurance_company_ids(e);
+          }}
+          data={isCompanys?.map((item) => ({
+            value: item?.id,
+            label: item?.title,
+            custome_disabled:
+              user.role === "insurance_company"
+                ? item?.id !== user.insurance_company.id
+                  ? "true"
+                  : "false"
+                : "",
+          }))}
+          transition="pop-top-left"
+          transitionDuration={80}
+          transitionTimingFunction="ease"
+        />
         <input
           onInput={(e) => {
             e.target.value !== item?.passport_id
@@ -331,6 +365,7 @@ export default function Persons() {
             className="disabled"
             readOnly={true}
             value={"insurance_company_id"}
+            style={{ width: "200px" }}
           />
           <input className="disabled" readOnly={true} value={"passport_id"} />
           <input className="disabled" readOnly={true} value={"phone"} />
@@ -346,19 +381,24 @@ export default function Persons() {
                 ? resp?.insurance_company_id === user?.insurance_company?.id
                 : resp
             )
-        ).map((item, i) => (
-          <Rows
-            key={item?.id ?? i}
-            item={item}
-            dispatch={dispatch}
-            datas={elements}
-            loading={loading}
-            isCompanys={isCompanys}
-            isCitys={isCitys}
-            agents={agents}
-            isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
-          />
-        ))}
+        )
+          ?.reverse()
+          .map((item, i) => (
+            <Rows
+              key={item?.id ?? i}
+              item={item}
+              dispatch={dispatch}
+              datas={elements}
+              loading={loading}
+              isCompanys={isCompanys}
+              isCitys={isCitys}
+              agents={agents}
+              isNowEdit={
+                Number(location.hash.split("#")[1]) === Number(item?.id)
+              }
+              user={user}
+            />
+          ))}
       </div>
     </>
   );
