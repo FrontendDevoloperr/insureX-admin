@@ -38,7 +38,8 @@ function Rows({
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    data.insurance_company_persons_id = insurance_company_ids;
+    data.insurance_company_persons_id = `{${insurance_company_ids}}`;
+    data.insurance_company_id = insurance_company_ids[0];
     !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id);
     !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id);
     if (data?.id) {
@@ -381,24 +382,20 @@ export default function Persons() {
                 ? resp?.insurance_company_id === user?.insurance_company?.id
                 : resp
             )
-        )
-          ?.reverse()
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              dispatch={dispatch}
-              datas={elements}
-              loading={loading}
-              isCompanys={isCompanys}
-              isCitys={isCitys}
-              agents={agents}
-              isNowEdit={
-                Number(location.hash.split("#")[1]) === Number(item?.id)
-              }
-              user={user}
-            />
-          ))}
+        )?.map((item, i) => (
+          <Rows
+            key={item?.id ?? i}
+            item={item}
+            dispatch={dispatch}
+            datas={elements}
+            loading={loading}
+            isCompanys={isCompanys}
+            isCitys={isCitys}
+            agents={agents}
+            isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
+            user={user}
+          />
+        ))}
       </div>
     </>
   );
