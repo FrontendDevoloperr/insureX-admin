@@ -77,6 +77,7 @@ function Rows({
       property_type_id: item?.property_type_id,
     })
   );
+  if (!events) return null;
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -121,14 +122,7 @@ function Rows({
       delete formData.id;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData), {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .patch(`${_URL}/insurance-case/${item?.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -136,16 +130,7 @@ function Rows({
           axios
             .patch(
               `${_URL}/insured-events/${item?.insured_event_id}`,
-              getFormData(eventFormData),
-              {
-                headers: {
-                  Authorization: `Bearer ${
-                    JSON.parse(
-                      localStorage.getItem("admin-panel-token-insure-x")
-                    ).token
-                  } `,
-                },
-              }
+              getFormData(eventFormData)
             )
             .then((res) => {
               SendAppraiserMessage(
@@ -180,14 +165,7 @@ function Rows({
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/insurance-case`, getFormData(formData), {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .post(`${_URL}/insurance-case`, getFormData(formData))
         .then((res) => {
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
@@ -388,49 +366,80 @@ function Rows({
             defaultValue={item?.address}
             {...register(`address`)}
           />
-          <select
-            onInput={(e) => {
-              setIsUpdated(true);
-              setIsCity(e.target.value);
-            }}
-            defaultValue={
-              isCity ??
-              isCitys.find((options) => options.id === item?.city_id)?.id
-            }
-            {...register(`city_id`)}
-          >
-            <option hidden={true} value={null}>
-              Choose...
-            </option>
-            {isCitys.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.city_name}
+          {!isUpdated && (
+            <input
+              type="text"
+              onMouseDown={() => setIsUpdated(true)}
+              value={
+                isCitys.find((options) => options.id === item?.city_id)
+                  ?.city_name ?? "Choose..."
+              }
+              readOnly={true}
+            />
+          )}
+          {isUpdated && (
+            <select
+              onInput={(e) => {
+                setIsUpdated(true);
+                setIsCity(e.target.value);
+              }}
+              defaultValue={
+                isCity ??
+                isCitys.find((options) => options.id === item?.city_id)?.id
+              }
+              {...register(`city_id`)}
+            >
+              <option hidden={true} value={null}>
+                Choose...
               </option>
-            ))}
-          </select>
-          <select
-            onInput={(e) => {
-              setIsUpdated(true);
-              setRegionId(e.target.value);
-            }}
-            value={
-              regionId ??
-              region.find(
-                (options) =>
-                  options.id ===
-                  events.find(
-                    (options) => options.id === item?.insured_event_id
-                  )?.region_id
-              )?.id
-            }
-            {...register(`region_id`)}
-          >
-            {region?.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.region_name}
-              </option>
-            ))}
-          </select>
+              {isCitys.map((options) => (
+                <option key={options?.id} value={options?.id}>
+                  {options?.city_name}
+                </option>
+              ))}
+            </select>
+          )}
+          {isUpdated && (
+            <select
+              onInput={(e) => {
+                setIsUpdated(true);
+                setRegionId(e.target.value);
+              }}
+              value={
+                regionId ??
+                region.find(
+                  (options) =>
+                    options.id ===
+                    events.find(
+                      (options) => options.id === item?.insured_event_id
+                    )?.region_id
+                )?.id
+              }
+              {...register(`region_id`)}
+            >
+              {region?.map((options) => (
+                <option key={options?.id} value={options?.id}>
+                  {options?.region_name}
+                </option>
+              ))}
+            </select>
+          )}
+          {!isUpdated && (
+            <input
+            onMouseDown={() => setIsUpdated(true)}
+              type="text"
+              {...register(`region_id`)}
+              value={
+                region.find(
+                  (options) =>
+                    options.id ===
+                    events.find(
+                      (options) => options.id === item?.insured_event_id
+                    )?.region_id
+                )?.region_name ?? "Choose..."
+              }
+            />
+          )}
           <select
             onInput={(e) => {
               setIsUpdated(true);
@@ -679,7 +688,7 @@ export default function InsuredEvents() {
                 setPaginationCustome(paginationCustome + 10);
                 setTimeout(() => {
                   setLoading(false);
-                }, 2000);
+                }, 1000);
               }
             }}
           >
@@ -711,7 +720,7 @@ export default function InsuredEvents() {
                 );
                 setTimeout(() => {
                   setLoading(false);
-                }, 2000);
+                }, 1000);
               }
             }}
           >
@@ -727,7 +736,7 @@ export default function InsuredEvents() {
             )}
             setFilteredData={setFilteredData}
             setInputText={setInputText}
-            type={"id"}
+            type={["id", "address"]}
           />
         </div>
       </Header>
@@ -778,7 +787,7 @@ export default function InsuredEvents() {
           <input className="disabled" readOnly={true} value={"status type"} />
         </div>
 
-        {(inputText
+        {(inputText?.length
           ? filteredData
           : elements?.filter(
               (_res) =>
@@ -791,24 +800,24 @@ export default function InsuredEvents() {
           .map((item, i) => (
             <React.Fragment key={item?.id ?? i}>
               {i < paginationCustome && (
-                <Rows
-                  key={item?.id ?? i}
-                  item={item}
-                  setElements={setCases}
-                  datas={elements}
-                  isCompanys={insuredCompanies}
-                  isCitys={city}
-                  agents={agents}
-                  person={person}
-                  sdp={sdp}
-                  appraisers={appraiser}
-                  events={events}
-                  appComp={appComp}
-                  region={region}
-                  dispatch={dispatch}
-                  loading={loading}
-                  GlobalState={GlobalState}
-                />
+              <Rows
+                key={item?.id ?? i}
+                item={item}
+                setElements={setCases}
+                datas={elements}
+                isCompanys={insuredCompanies}
+                isCitys={city}
+                agents={agents}
+                person={person}
+                sdp={sdp}
+                appraisers={appraiser}
+                events={events}
+                appComp={appComp}
+                region={region}
+                dispatch={dispatch}
+                loading={loading}
+                GlobalState={GlobalState}
+              />
               )}
             </React.Fragment>
           ))}

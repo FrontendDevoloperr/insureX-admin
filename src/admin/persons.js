@@ -21,8 +21,6 @@ import SearchComponent from "../ui/search";
 function Rows({
   item,
   dispatch,
-  datas,
-  loading,
   isCompanys,
   isCitys,
   agents,
@@ -31,7 +29,10 @@ function Rows({
 }) {
   const { register, handleSubmit } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(loading);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isCityOpenSelect, setIsCityOpenSelect] = React.useState(false);
+  const [isCompaniesOpenSelect, setIsCompaniesOpenSelect] =
+    React.useState(false);
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
     item?.insurance_company_persons_id
   );
@@ -118,53 +119,56 @@ function Rows({
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
-        {/* <select
-          onInput={(e) => {
-            e.target.value !== item?.insurance_company_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
 
-            item.insurance_company_id = e.target.value;
-          }}
-          defaultValue={
-            isCompanys.filter(
-              (options) => options.id === item?.insurance_company_id
-            )[0]?.id
-          }
-          {...register(`insurance_company_id`)}
-        >
-          {isCompanys.map((options) => (
-            <option key={options.id} value={options.id}>
-              {options.title}
-            </option>
-          ))}
-        </select> */}
+        {isCompaniesOpenSelect && (
+          <MultiSelect
+            className="input-multi-select"
+            placeholder="choose..."
+            style={{
+              width: "200px",
+            }}
+            defaultValue={item?.insurance_company_persons_id}
+            onChange={(e) => {
+              setIsUpdated(true);
+              setInsurance_company_ids(e);
+            }}
+            data={isCompanys?.map((item) => ({
+              value: item?.id,
+              label: item?.title,
+              custome_disabled:
+                user.role === "insurance_company"
+                  ? item?.id !== user.insurance_company.id
+                    ? "true"
+                    : "false"
+                  : "",
+            }))}
+            transition="pop-top-left"
+            transitionDuration={80}
+            transitionTimingFunction="ease"
+          />
+        )}
+        {!isCompaniesOpenSelect && (
+          <div onMouseMove={() => setIsCompaniesOpenSelect(true)}>
+            <select
+              type="text"
+              className="custome-input"
+              style={{
+                width: "200px",
+                cursor: "pointer",
+              }}
+              multiple
+              defaultValue={insurance_company_ids}
+              onClick={() => setIsCompaniesOpenSelect(true)}
+            >
+              {isCompanys
+                ?.filter((cmp) => insurance_company_ids?.includes(cmp.id))
+                ?.map(
+                  (s, i) => i < 5 && <option value={s?.id}>{s.title}</option>
+                )}
+            </select>
+          </div>
+        )}
 
-        <MultiSelect
-          className="input-multi-select"
-          placeholder="choose..."
-          style={{
-            width: "200px",
-          }}
-          defaultValue={item?.insurance_company_persons_id}
-          onChange={(e) => {
-            setIsUpdated(true);
-            setInsurance_company_ids(e);
-          }}
-          data={isCompanys?.map((item) => ({
-            value: item?.id,
-            label: item?.title,
-            custome_disabled:
-              user.role === "insurance_company"
-                ? item?.id !== user.insurance_company.id
-                  ? "true"
-                  : "false"
-                : "",
-          }))}
-          transition="pop-top-left"
-          transitionDuration={80}
-          transitionTimingFunction="ease"
-        />
         <input
           onInput={(e) => {
             e.target.value !== item?.passport_id
@@ -208,8 +212,6 @@ function Rows({
             e.target.value !== item?.agent_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
-
-            item.agent_id = e.target.value;
           }}
           defaultValue={
             agents?.filter((options) => options.id === item?.agent_id)[0]?.id
@@ -222,28 +224,35 @@ function Rows({
             </option>
           ))}
         </select>
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.city_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.city_id = e.target.value;
-          }}
-          defaultValue={
-            isCitys.filter((options) => options.id === item?.city_id)[0]?.id
-          }
-          {...register(`city_id`)}
-        >
-          {isCitys.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-              // selected={item?.city_id === options?.id}
-            >
-              {options?.city_name}
-            </option>
-          ))}
-        </select>
+        {!isCityOpenSelect && (
+          <input
+            type="text"
+            onFocus={() => setIsCityOpenSelect(true)}
+            value={
+              isCitys.find((options) => options.id === item?.city_id)?.city_name
+            }
+            readOnly={true}
+          />
+        )}
+        {isCityOpenSelect && (
+          <select
+            onInput={() => setIsUpdated(true)}
+            defaultValue={
+              isCitys.find((options) => options.id === item?.city_id)?.id
+            }
+            {...register(`city_id`)}
+          >
+            {isCitys.map((options) => (
+              <option
+                key={options?.id}
+                value={options?.id}
+                // selected={item?.city_id === options?.id}
+              >
+                {options?.city_name}
+              </option>
+            ))}
+          </select>
+        )}
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
             {item?.id ? "Update" : "Create"}
@@ -352,13 +361,18 @@ export default function Persons() {
               )}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
-              type={"first_name"}
+              type={[
+                "first_name",
+                "second_name",
+                "phone",
+                "email",
+                "passport_id",
+              ]}
             />
           </Grid.Col>
         </Grid>
       </Header>
       <div className="ox-scroll">
-        <LoadingOverlay visible={loading} />
         <div className="row">
           <input className="disabled" readOnly={true} value={"first_name"} />
           <input className="disabled" readOnly={true} value={"last_name"} />
@@ -388,7 +402,6 @@ export default function Persons() {
             item={item}
             dispatch={dispatch}
             datas={elements}
-            loading={loading}
             isCompanys={isCompanys}
             isCitys={isCitys}
             agents={agents}

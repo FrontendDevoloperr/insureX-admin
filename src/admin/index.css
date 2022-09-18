@@ -79,6 +79,7 @@ input.error {
   animation: now-edit-input 1500ms linear forwards;
 }
 
+
 @keyframes now-edit-input {
   0% {
     opacity: 0;
@@ -107,7 +108,8 @@ input.error {
 }
 
 .ox-scroll .row select,
-.ox-scroll .row>input {
+.ox-scroll .row>input,
+.ox-scroll .row .custome-input {
   border: none;
   border-top: 1px solid #ccc;
   border-bottom: 0.1px solid #ccc;

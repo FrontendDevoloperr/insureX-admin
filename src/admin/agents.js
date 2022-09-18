@@ -35,14 +35,7 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
       delete formData.id;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/agents/${item?.id}`, getFormData(formData), {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .patch(`${_URL}/agents/${item?.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -59,14 +52,7 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/agents`, getFormData(data), {
-          headers: {
-            Authorization:
-              "Bearer " +
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token || "",
-          },
-        })
+        .post(`${_URL}/agents`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
           dispatch(
@@ -87,13 +73,7 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
 
   const agentsFC = () => {
     axios
-      .get(`${_URL}/agents/select`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/agents/select`)
       .then(({ data }) => {
         dispatch(
           getAgents(data?.message?.agents?.filter((item) => !item?.delete))
@@ -333,7 +313,14 @@ export default function Persons() {
               )}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
-              type={"first_name"}
+              type={[
+                "first_name",
+                "second_name",
+                "passport_id",
+                "phone",
+                "email",
+                "employee_number",
+              ]}
             />
           </Grid.Col>
         </Grid>
@@ -364,7 +351,7 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
-        {(inputText?.length > 2
+        {(inputText?.length
           ? filteredData
           : elements?.filter((resp) =>
               !resp.delete && user?.role === "insurance_company"

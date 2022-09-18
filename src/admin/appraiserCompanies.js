@@ -42,18 +42,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
       delete formData.insurance_company_ids;
       setIsLoading(true);
       axios
-        .patch(
-          `${_URL}/appraisal-companies/${item?.id}`,
-          getFormData(formData),
-          {
-            headers: {
-              Authorization: `"Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          }
-        )
+        .patch(`${_URL}/appraisal-companies/${item?.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -72,14 +61,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
       data.passport_id = data?.oao_ie_number;
       data.role = "appraisal_company";
       axios
-        .post(`${_URL}/appraisal-companies`, getFormData(data), {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .post(`${_URL}/appraisal-companies`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -219,31 +201,39 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           defaultValue={item?.office_address}
           {...register(`office_address`)}
         />
-        <select
-          onInput={(e) => {
-            e.target.value !== item?.city_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            setCityValue(e.target.value);
-          }}
-          value={
-            cityValue ??
-            isCitys.find(
-              (options) => Number(options.id) === Number(item?.city_id)
-            )?.id
-          }
-          {...register(`city_id`)}
-        >
-          {isCitys.map((options) => (
-            <option
-              key={options?.id}
-              value={options?.id}
-              // selected={item?.city_id === options?.id}
-            >
-              {options?.city_name}
-            </option>
-          ))}
-        </select>
+        {!isUpdated && (
+          <input
+            type="text"
+            onMouseDown={() => setIsUpdated(true)}
+            value={
+              isCitys.find((options) => options.id === item?.city_id)
+                ?.city_name ?? "Choose..."
+            }
+            readOnly={true}
+          />
+        )}
+        {isUpdated && (
+          <select
+            onInput={(e) => {
+              setIsUpdated(true);
+              setCityValue(e.target.value);
+            }}
+            value={
+              cityValue ??
+              isCitys.find(
+                (options) => Number(options.id) === Number(item?.city_id)
+              )?.id
+            }
+            {...register(`city_id`)}
+          >
+            {isCitys.map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.city_name}
+              </option>
+            ))}
+          </select>
+        )}
+
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
             {item?.id ? "Update" : "Create"}
@@ -264,16 +254,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
                     `${_URL}/appraisal-companies/${item.id}`,
                     getFormData({
                       delete: true,
-                    }),
-                    {
-                      headers: {
-                        Authorization: `"Bearer ${
-                          JSON.parse(
-                            localStorage.getItem("admin-panel-token-insure-x")
-                          ).token
-                        } `,
-                      },
-                    }
+                    })
                   )
                   .then((res) => {
                     setIsLoading(false);
@@ -368,7 +349,12 @@ export default function Persons() {
                 data={elements?.filter((resp) => !resp.delete)}
                 setFilteredData={setFilteredData}
                 setInputText={setInputText}
-                type={"appraisal_company_name"}
+                type={[
+                  "appraisal_company_name",
+                  "oao_ie_number",
+                  "phone",
+                  "email",
+                ]}
               />
             </Grid.Col>
           </Grid>
@@ -403,7 +389,7 @@ export default function Persons() {
           />
           <input className="disabled" readOnly={true} value={"city"} />
         </div>
-        {(inputText.length
+        {(inputText?.length
           ? filteredData
           : elements?.filter((resp) => !resp.delete)
         )

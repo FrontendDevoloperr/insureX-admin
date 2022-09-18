@@ -36,14 +36,7 @@ function Rows({ item, datas, dispatch }) {
         .patch(
           `${_URL}/insurance-companies/${item?.id}`,
           getFormData(formData),
-          {
-            headers: {
-              Authorization: `Bearer ${
-                JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                  .token
-              } `,
-            },
-          }
+          
         )
         .then((res) => {
           setIsLoading(false);
@@ -63,14 +56,7 @@ function Rows({ item, datas, dispatch }) {
       data.passport_id = data.ie_number;
       data.role = "insurance_company";
       axios
-        .post(`${_URL}/insurance-companies`, getFormData(data), {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .post(`${_URL}/insurance-companies`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
           dispatch(
@@ -93,13 +79,7 @@ function Rows({ item, datas, dispatch }) {
 
   const getInsuredCompaniesFC = () => {
     axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/insurance-companies`)
       .then(({ data }) => {
         dispatch(
           getInsuredCompanies(
@@ -293,7 +273,7 @@ export default function Persons() {
                 data={elements}
                 setFilteredData={setFilteredData}
                 setInputText={setInputText}
-                type="title"
+                type={["title", "email", "ie_number", "phone"]}
               />
             </Grid.Col>
           </Grid>
@@ -333,7 +313,7 @@ export default function Persons() {
             value={"address"}
           />
         </div>
-        {(inputText?.length > 2
+        {(inputText?.length
           ? filteredData
           : elements?.filter((resp) => !resp.delete)
         )

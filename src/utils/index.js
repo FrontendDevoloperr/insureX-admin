@@ -28,13 +28,7 @@ export const CaseTypeExtract = (data) => {
 };
 
 export const getRequest = async (url) => {
-  return await axios.get(`${URL}` + url, {
-    headers: {
-      Authorization: `Bearer ${
-        JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-      } `,
-    },
-  });
+  return await axios.get(`${URL}` + url);
 };
 
 export const typeCase = [

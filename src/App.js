@@ -12,7 +12,7 @@ import {
 import { _URL } from "./utils";
 
 function App() {
-  console.log("new version GMT +5 17:00 06.09.2022/year");
+  console.log("new version GMT +5 04:00 18/09/2022/year");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);

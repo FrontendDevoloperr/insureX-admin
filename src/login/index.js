@@ -24,6 +24,21 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
+  const setAuth = (res) => {
+    toast.success("Login Successful");
+    dispatch(login(true));
+    dispatch(setRole(res?.data?.message?.user?.role));
+    localStorage.setItem(
+      "admin-panel-token-insure-x",
+      JSON.stringify({
+        auth: true,
+        role: res?.data?.message?.user?.role,
+        token: res?.data?.message?.token,
+        insurance_company: res?.data?.message?.user?.insurance_company,
+        appraisal_company: res?.data?.message?.user?.appraisal_company,
+      })
+    );
+  };
   const {
     register,
     handleSubmit,
@@ -35,31 +50,26 @@ export default function Login() {
       .post(`${_URL}/account/login`, getFormData(data))
       .then((res) => {
         setLoading(false);
+
         if (
           res?.data?.message?.user?.role === "superadmin" ||
           res?.data?.message?.user?.role === "insurance_company" ||
           res?.data?.message?.user?.role === "appraisal_company"
         ) {
-          toast.success("Login Successful");
-          dispatch(login(true));
-          dispatch(setRole(res?.data?.message?.user?.role));
-          localStorage.setItem(
-            "admin-panel-token-insure-x",
-            JSON.stringify({
-              auth: true,
-              role: res?.data?.message?.user?.role,
-              token: res?.data?.message?.token,
-              insurance_company: res?.data?.message?.user?.insurance_company,
-              appraisal_company: res?.data?.message?.user?.appraisal_company,
-            })
-          );
+          if (res?.data?.message?.user?.role === "superadmin") setAuth(res);
           if (typeof res?.data?.message?.user?.insurance_company === "object") {
+            if (!res?.data?.message?.user?.insurance_company?.authentification)
+              return toast.error("user not authentification");
+            setAuth(res);
             dispatch(
               isInsuranceCompany(res?.data?.message?.user?.insurance_company)
             );
             navigate("/");
           }
           if (typeof res?.data?.message?.user?.appraisal_company === "object") {
+            if (!res?.data?.message?.user?.appraisal_company?.authentification)
+              return toast.error("user not authentification");
+            setAuth(res);
             dispatch(
               isAppraisalCompany(res?.data?.message?.user?.appraisal_company)
             );

@@ -14,7 +14,6 @@ import { PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
 import { useSelector, useDispatch } from "react-redux";
 import { getSdp } from "../redux/reducer/sdp";
-import { getSdpFC } from "./index";
 import SearchComponent from "../ui/search";
 
 function Rows({ item, isCompanys, isCitys, dispatch }) {
@@ -33,14 +32,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
       delete formData.id;
       setIsLoading(true);
       axios
-        .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData), {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -57,14 +49,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
       delete data?.new;
       delete data?.id;
       axios
-        .post(`${_URL}/sdp`, getFormData(data), {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .post(`${_URL}/sdp`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
           getSdpFC(dispatch);
@@ -80,17 +65,9 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
   };
 
   const getSdpFC = (dispatch) => {
-    axios
-      .get(`${_URL}/sdp`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then(({ data }) => {
-        dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
-      });
+    axios.get(`${_URL}/sdp`).then(({ data }) => {
+      dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
+    });
   };
 
   const patchAutification = (data) => {
@@ -177,23 +154,35 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         {...register(`email`)}
       />
 
-      <select
-        onInput={(e) => {
-          setIsUpdated(true);
-        }}
-        value={isCitys?.find((options) => options?.id === item?.city_id)?.id}
-        {...register(`city_id`)}
-      >
-        {isCitys?.map((options) => (
-          <option
-            // selected={options.id === item?.city_id}
-            key={options?.id}
-            value={options?.id}
-          >
-            {options?.city_name}
-          </option>
-        ))}
-      </select>
+      {isUpdated && (
+        <select
+          onInput={(e) => {
+            setIsUpdated(true);
+          }}
+          value={isCitys?.find((options) => options?.id === item?.city_id)?.id}
+          {...register(`city_id`)}
+        >
+          {isCitys?.map((options) => (
+            <option
+              // selected={options.id === item?.city_id}
+              key={options?.id}
+              value={options?.id}
+            >
+              {options?.city_name}
+            </option>
+          ))}
+        </select>
+      )}
+      {!isUpdated && (
+        <input
+          type="text"
+          onMouseDown={() => setIsUpdated(true)}
+          value={
+            isCitys?.find((options) => options?.id === item?.city_id)?.city_name
+          }
+          readOnly
+        />
+      )}
       <input
         onInput={(e) => {
           e.target.value !== item?.address
@@ -319,7 +308,13 @@ export default function Sdp() {
               )}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
-              type={"first_name"}
+              type={[
+                "first_name",
+                "second_name",
+                "email",
+                "phone",
+                "passport_id",
+              ]}
             />
           </Grid.Col>
         </Grid>
@@ -350,7 +345,7 @@ export default function Sdp() {
             value={"supplier_type"}
           />
         </div>
-        {(inputText
+        {(inputText?.length
           ? filteredData
           : elements?.filter((resp) =>
               !resp.delete && user.role === "insurance_company"

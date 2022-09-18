@@ -57,14 +57,7 @@ function Rows({
 
       setIsLoading(true);
       axios
-        .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData), {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -82,14 +75,7 @@ function Rows({
       delete formData?.new;
       delete formData?.id;
       axios
-        .post(`${_URL}/appraisers`, getFormData(formData), {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .post(`${_URL}/appraisers`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           setElements(
@@ -107,21 +93,11 @@ function Rows({
   };
 
   const getAppraiserFC = () => {
-    axios
-      .get(`${_URL}/appraisers`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then(({ data }) => {
-        dispatch(
-          getAppraiser(
-            data?.message?.appraisers?.filter((item) => !item?.delete)
-          )
-        );
-      });
+    axios.get(`${_URL}/appraisers`).then(({ data }) => {
+      dispatch(
+        getAppraiser(data?.message?.appraisers?.filter((item) => !item?.delete))
+      );
+    });
   };
 
   const patchAutification = (data) => {
@@ -405,22 +381,13 @@ export default function Persons() {
 
   React.useEffect(() => {
     if (user.role === "superadmin" || user.role === "appraisal_company") {
-      axios
-        .get(`${_URL}/insurance-companies?delete=false`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          setIsCompanys(
-            res?.data?.message?.insurance_companies?.filter(
-              (item) => !item?.delete
-            )
-          );
-        });
+      axios.get(`${_URL}/insurance-companies?delete=false`).then((res) => {
+        setIsCompanys(
+          res?.data?.message?.insurance_companies?.filter(
+            (item) => !item?.delete
+          )
+        );
+      });
     }
     if (user.role === "insurance_company") {
       setIsCompanys(
@@ -428,27 +395,12 @@ export default function Persons() {
       );
     }
     if (user.role === "superadmin" || user.role === "insurance_company") {
-      axios
-        .get(`${_URL}/appraisal-companies?delete=false`, {
-          headers: {
-            Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
-        .then((res) => {
-          setAppraiselCompanys(res?.data?.message?.appraisal_companies);
-        });
+      axios.get(`${_URL}/appraisal-companies?delete=false`).then((res) => {
+        setAppraiselCompanys(res?.data?.message?.appraisal_companies);
+      });
     } else setAppraiselCompanys([user.appraisal_company]);
     axios
-      .get(`${_URL}/regions`, {
-        headers: {
-          Authorization: `"Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/regions`)
       .then((res) => {
         setIsRegions(res?.data?.message?.regions);
       });
@@ -481,7 +433,13 @@ export default function Persons() {
               data={elements?.filter((resp) => !resp.delete)}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
-              type={"first_name"}
+              type={[
+                "first_name",
+                "second_name",
+                "phone",
+                "passport_id",
+                "email",
+              ]}
             />
           </Grid.Col>
         </Grid>
@@ -515,7 +473,10 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"address"} />
         </div>
-        {(inputText ? filteredData : elements?.filter((resp) => !resp.delete))
+        {(inputText?.length
+          ? filteredData
+          : elements?.filter((resp) => !resp.delete)
+        )
           .sort(
             (a, b) => Number(b.authentification) - Number(a.authentification)
           )

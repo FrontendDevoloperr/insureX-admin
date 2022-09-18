@@ -37,7 +37,7 @@ function Popup() {
         user.role === "insurance_company" &&
         Number(user.insurance_company.id) === Number(msg.insurance_company_id)
       ) {
-        setMessages([...messages, msg]);
+        setMessages(messages.concat([msg]));
         setNewMessage(true);
         toast.success("New message received");
       }
@@ -47,7 +47,7 @@ function Popup() {
           ?.split(",")
           ?.includes(`${user?.insurance_company?.id}`)
       ) {
-        setMessages([...messages, msg]);
+        setMessages(messages.concat([msg]));
         setNewMessage(true);
         toast.success("New message received");
       }
@@ -55,7 +55,7 @@ function Popup() {
         user.role === "appraisal_company" &&
         Number(user.appraisal_company.id) === Number(msg.appraisal_company_id)
       ) {
-        setMessages([...messages, msg]);
+        setMessages(messages.concat([msg]));
         setNewMessage(true);
         toast.success("New message received");
       }
@@ -65,14 +65,7 @@ function Popup() {
   const MessagesFCS = () => {
     if (user?.auth) {
       axios
-        .get(`${_URL}/push/messages`, {
-          headers: {
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
-                .token
-            } `,
-          },
-        })
+        .get(`${_URL}/push/messages`)
         .then(({ data }) => {
           if (user?.role === "superadmin") {
             setMessages(data?.messages?.filter((res) => res.admin_type));

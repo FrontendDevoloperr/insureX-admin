@@ -119,7 +119,7 @@ const tabs = {
 
     {
       link: "/appraiser-company",
-      label: "APPRAISER COMPANIES",
+      label: "APPRAISAL COMPANIES",
       element: <AppraiserCompanies />,
     },
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
@@ -137,7 +137,7 @@ const tabs = {
 
     {
       link: "/appraiser-company",
-      label: "APPRAISER COMPANIES",
+      label: "APPRAISAL COMPANIES",
       element: <AppraiserCompanies />,
     },
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
@@ -147,7 +147,7 @@ const tabs = {
   appraisal_company: [
     {
       link: "/appraiser-company",
-      label: "APPRAISER COMPANIES",
+      label: "APPRAISAL COMPANIES",
       element: <AppraiserCompanies />,
     },
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
@@ -157,17 +157,9 @@ const tabs = {
 };
 
 export const getSdpFC = (dispatch) => {
-  axios
-    .get(`${_URL}/sdp`, {
-      headers: {
-        Authorization: `Bearer ${
-          JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-        } `,
-      },
-    })
-    .then(({ data }) => {
-      dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
-    });
+  axios.get(`${_URL}/sdp`).then(({ data }) => {
+    dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
+  });
 };
 
 export const getInsuredPersonFC = (dispatch) => {
@@ -205,13 +197,7 @@ export default function AdminPanel() {
 
   const getInsuredCompaniesFC = () => {
     axios
-      .get(`${_URL}/insurance-companies`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/insurance-companies`)
       .then(({ data }) => {
         dispatch(
           getInsuredCompanies(
@@ -226,13 +212,7 @@ export default function AdminPanel() {
 
   const cityFC = () => {
     axios
-      .get(`${_URL}/city`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/city`)
       .then(({ data }) => {
         dispatch(getCity(data?.message?.cities));
       })
@@ -243,13 +223,7 @@ export default function AdminPanel() {
 
   const regionFC = () => {
     axios
-      .get(`${_URL}/regions`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/regions`)
       .then(({ data }) => {
         dispatch(getRegion(data?.message?.regions));
       })
@@ -260,13 +234,7 @@ export default function AdminPanel() {
 
   const agentsFC = () => {
     axios
-      .get(`${_URL}/agents/select`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
+      .get(`${_URL}/agents/select`)
       .then(({ data }) => {
         dispatch(
           getAgents(data?.message?.agents?.filter((item) => !item?.delete))
@@ -297,21 +265,11 @@ export default function AdminPanel() {
   };
 
   const getAppraiserFC = () => {
-    axios
-      .get(`${_URL}/appraisers`, {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("admin-panel-token-insure-x")).token
-          } `,
-        },
-      })
-      .then(({ data }) => {
-        dispatch(
-          getAppraiser(
-            data?.message?.appraisers?.filter((item) => !item?.delete)
-          )
-        );
-      });
+    axios.get(`${_URL}/appraisers`).then(({ data }) => {
+      dispatch(
+        getAppraiser(data?.message?.appraisers?.filter((item) => !item?.delete))
+      );
+    });
   };
 
   const getAppraiserCompFC = () => {
