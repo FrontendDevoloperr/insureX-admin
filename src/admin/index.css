@@ -23,7 +23,7 @@ input.error {
   overflow: auto;
   min-height: 80%;
   max-width: calc(100vw - 350px);
-  max-height: calc(95vh - 110px);
+  max-height: calc(95vh - 175px);
   position: relative;
 }
 
