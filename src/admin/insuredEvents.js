@@ -426,7 +426,7 @@ function Rows({
           )}
           {!isUpdated && (
             <input
-            onMouseDown={() => setIsUpdated(true)}
+              onMouseDown={() => setIsUpdated(true)}
               type="text"
               {...register(`region_id`)}
               value={
@@ -740,8 +740,11 @@ export default function InsuredEvents() {
           />
         </div>
       </Header>
-      <div className="ox-scroll">
-        <LoadingOverlay visible={loading} />
+      <div
+        className="ox-scroll"
+        style={{ minHeight: "max-content", overflow: "hidden" }}
+      >
+        {" "}
         <div className="row">
           <input
             className="disabled"
@@ -785,7 +788,31 @@ export default function InsuredEvents() {
           <input className="disabled" readOnly={true} value={"region"} />
           <input className="disabled" readOnly={true} value={"event type"} />
           <input className="disabled" readOnly={true} value={"status type"} />
+          <input
+            className="disabled"
+            style={{ width: 32, padding: 0 }}
+            readOnly={true}
+            value={"Store"}
+          />
+          <input
+            className="disabled"
+            style={{ width: 66 }}
+            readOnly={true}
+            value={"delete"}
+          />
         </div>
+      </div>
+      <div
+        className="ox-scroll"
+        onScroll={(e) => {
+          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
+            (_, i) =>
+              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
+                e.target.scrollLeft)
+          );
+        }}
+      >
+        <LoadingOverlay visible={loading} />
 
         {(inputText?.length
           ? filteredData
@@ -800,24 +827,24 @@ export default function InsuredEvents() {
           .map((item, i) => (
             <React.Fragment key={item?.id ?? i}>
               {i < paginationCustome && (
-              <Rows
-                key={item?.id ?? i}
-                item={item}
-                setElements={setCases}
-                datas={elements}
-                isCompanys={insuredCompanies}
-                isCitys={city}
-                agents={agents}
-                person={person}
-                sdp={sdp}
-                appraisers={appraiser}
-                events={events}
-                appComp={appComp}
-                region={region}
-                dispatch={dispatch}
-                loading={loading}
-                GlobalState={GlobalState}
-              />
+                <Rows
+                  key={item?.id ?? i}
+                  item={item}
+                  setElements={setCases}
+                  datas={elements}
+                  isCompanys={insuredCompanies}
+                  isCitys={city}
+                  agents={agents}
+                  person={person}
+                  sdp={sdp}
+                  appraisers={appraiser}
+                  events={events}
+                  appComp={appComp}
+                  region={region}
+                  dispatch={dispatch}
+                  loading={loading}
+                  GlobalState={GlobalState}
+                />
               )}
             </React.Fragment>
           ))}

@@ -372,7 +372,10 @@ export default function Persons() {
           </Grid.Col>
         </Grid>
       </Header>
-      <div className="ox-scroll">
+      <div
+        className="ox-scroll"
+        style={{ minHeight: "max-content", overflow: "hidden" }}
+      >
         <div className="row">
           <input className="disabled" readOnly={true} value={"first_name"} />
           <input className="disabled" readOnly={true} value={"last_name"} />
@@ -388,7 +391,24 @@ export default function Persons() {
           <input className="disabled" readOnly={true} value={"address"} />
           <input className="disabled" readOnly={true} value={"agent ID"} />
           <input className="disabled" readOnly={true} value={"city ID"} />
+          <input
+            className="disabled"
+            style={{ width: 66 }}
+            readOnly={true}
+            value={"delete"}
+          />
         </div>
+      </div>
+      <div
+        className="ox-scroll"
+        onScroll={(e) => {
+          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
+            (_, i) =>
+              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
+                e.target.scrollLeft)
+          );
+        }}
+      >
         {(inputText.length > 2
           ? filteredData
           : elements?.filter((resp) =>

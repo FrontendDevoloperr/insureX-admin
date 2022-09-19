@@ -33,11 +33,7 @@ function Rows({ item, datas, dispatch }) {
       delete formData.insurance_company_ids;
       setIsLoading(true);
       axios
-        .patch(
-          `${_URL}/insurance-companies/${item?.id}`,
-          getFormData(formData),
-          
-        )
+        .patch(`${_URL}/insurance-companies/${item?.id}`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
@@ -279,7 +275,10 @@ export default function Persons() {
           </Grid>
         )}
       </Header>
-      <div className="ox-scroll">
+      <div
+        className="ox-scroll"
+        style={{ minHeight: "max-content", overflow: "hidden" }}
+      >
         <div className="row">
           <input
             className="disabled"
@@ -312,7 +311,24 @@ export default function Persons() {
             readOnly={true}
             value={"address"}
           />
+          <input
+            className="disabled"
+            style={{ width: 66 }}
+            readOnly={true}
+            value={"delete"}
+          />
         </div>
+      </div>
+      <div
+        className="ox-scroll"
+        onScroll={(e) => {
+          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
+            (_, i) =>
+              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
+                e.target.scrollLeft)
+          );
+        }}
+      >
         {(inputText?.length
           ? filteredData
           : elements?.filter((resp) => !resp.delete)

@@ -319,7 +319,11 @@ export default function Sdp() {
           </Grid.Col>
         </Grid>
       </Header>
-      <div className="ox-scroll">
+
+      <div
+        className="ox-scroll"
+        style={{ minHeight: "max-content", overflow: "hidden" }}
+      >
         <div className="row">
           <input
             className="disabled"
@@ -344,7 +348,24 @@ export default function Sdp() {
             readOnly={true}
             value={"supplier_type"}
           />
+          <input
+            className="disabled"
+            style={{ width: 66 }}
+            readOnly={true}
+            value={"delete"}
+          />
         </div>
+      </div>
+      <div
+        className="ox-scroll"
+        onScroll={(e) => {
+          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
+            (_, i) =>
+              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
+                e.target.scrollLeft)
+          );
+        }}
+      >
         {(inputText?.length
           ? filteredData
           : elements?.filter((resp) =>
