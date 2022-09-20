@@ -44,13 +44,13 @@ export default function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  
   const onSubmit = (data) => {
     setLoading(true);
     axios
       .post(`${_URL}/account/login`, getFormData(data))
       .then((res) => {
         setLoading(false);
-
         if (
           res?.data?.message?.user?.role === "superadmin" ||
           res?.data?.message?.user?.role === "insurance_company" ||
@@ -59,7 +59,7 @@ export default function Login() {
           if (res?.data?.message?.user?.role === "superadmin") setAuth(res);
           if (typeof res?.data?.message?.user?.insurance_company === "object") {
             if (!res?.data?.message?.user?.insurance_company?.authentification)
-              return toast.error("user not authentification");
+              return toast.error("User not authorized");
             setAuth(res);
             dispatch(
               isInsuranceCompany(res?.data?.message?.user?.insurance_company)
@@ -68,7 +68,7 @@ export default function Login() {
           }
           if (typeof res?.data?.message?.user?.appraisal_company === "object") {
             if (!res?.data?.message?.user?.appraisal_company?.authentification)
-              return toast.error("user not authentification");
+              return toast.error("User not authorized");
             setAuth(res);
             dispatch(
               isAppraisalCompany(res?.data?.message?.user?.appraisal_company)
