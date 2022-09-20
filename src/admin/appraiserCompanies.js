@@ -143,8 +143,8 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
               : setIsUpdated(false);
           }}
           defaultValue={
-            isCompanys?.filter(
-              (options) => options.id === item?.insurance_company_ids?.[0]
+            isCompanys?.find(
+              (resp) => resp?.id === item?.insurance_company_ids[0]
             )?.id
           }
           {...register(`insurance_company_ids`)}
