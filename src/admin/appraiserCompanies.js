@@ -29,20 +29,16 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    !data.insurance_company_ids &&
-      (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
+    // !data.insurance_company_ids &&
+    //   (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
     !data.region_id && (data.region_id = item.region_id);
     data.city_id = !!data?.city_id.length ? data?.city_id : item?.city_id;
     if (data?.id) {
-      let formData = {
-        ...data,
-        insurance_company_id: data.insurance_company_ids,
-      };
-      delete formData.id;
-      delete formData.insurance_company_ids;
       setIsLoading(true);
+      data.insurance_company_id = data.insurance_company_ids;
+      delete data.insurance_company_ids;
       axios
-        .patch(`${_URL}/appraisal-companies/${item?.id}`, getFormData(formData))
+        .patch(`${_URL}/appraisal-companies/${item?.id}`, data)
         .then((res) => {
           setIsLoading(false);
           toast.success("Updated");
