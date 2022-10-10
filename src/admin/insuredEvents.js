@@ -77,7 +77,11 @@ function Rows({
       property_type_id: item?.property_type_id,
     })
   );
-  if (!events || !person.find((_person) => _person?.id === item?.insured_person_id)?.id) return null;
+  if (
+    !events ||
+    !person.find((_person) => _person?.id === item?.insured_person_id)?.id
+  )
+    return null;
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
@@ -478,23 +482,11 @@ function Rows({
             <option hidden={true} value={null}>
               Choose...
             </option>
-            {StatusesData?.map((options) => (
-              <option
-                key={options?.id}
-                value={options?.id}
-                hidden={
-                  options?.id === 4
-                    ? CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link !==
-                      ("accident" || "carburglary")
-                    : options?.id === 8
-                    ? CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link !==
-                      ("accident" || "carburglary")
-                    : options?.id === 9 &&
-                      CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link !==
-                        ("accident" || "carburglary")
-                }
-              >
-                {options?.description}
+            {StatusesData(
+              CaseTypeExtract(JSON.parse(typeCaseIds ?? "{}"))?.link
+            )?.map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.title}
               </option>
             ))}
           </select>
