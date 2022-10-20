@@ -168,7 +168,7 @@ function Rows({
             label: item?.title,
             custome_disabled:
               user.role === "appraisal_company"
-                ? item?.id !== user.insurance_company.id
+                ? item?.id !== user?.appraisal_company?.id
                   ? "true"
                   : "false"
                 : "",
