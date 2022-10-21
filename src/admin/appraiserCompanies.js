@@ -128,6 +128,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           onInput={(e) => {
             setIsUpdated(true);
           }}
+          disabled
           defaultValue={item?.oao_ie_number}
           {...register(`oao_ie_number`)}
         />
@@ -158,6 +159,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
               : setIsUpdated(false);
           }}
           defaultValue={item?.phone}
+          disabled
           type="tel"
           {...register(`phone`)}
         />

@@ -36,13 +36,15 @@ function Rows({
   // );
 
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
-    item?.insurance_company_ids
+    item?.insurance_company_persons_id
   );
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
+
     // data.appraisers_company_id = appraisalCompany;
-    data.insurance_company_persons_id = insurance_company_ids;
+    data.insurance_company_persons_id =
+      insurance_company_ids ?? item?.insurance_company_persons_id;
     !data?.appraisal_company_id &&
       (data.appraisal_company_id =
         item?.appraisal_company_id ?? appraiselCompanys[0]?.id);
@@ -183,9 +185,8 @@ function Rows({
             e.target.value !== item?.appraisal_company_id
               ? setIsUpdated(true)
               : setIsUpdated(false);
-            item.appraisal_company_id = e.target.value;
           }}
-          value={
+          defaultValue={
             appraiselCompanys?.find(
               (options) => options?.id === item?.appraisal_company_id
             )?.id
