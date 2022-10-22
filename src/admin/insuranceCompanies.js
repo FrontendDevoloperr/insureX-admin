@@ -132,7 +132,7 @@ function Rows({ item, datas, dispatch }) {
             setIsUpdated(true);
           }}
           defaultValue={item?.ie_number}
-          disabled={true}
+          disabled={item?.new ? false : true}
           {...register(`ie_number`)}
         />
 
@@ -156,7 +156,7 @@ function Rows({ item, datas, dispatch }) {
           }}
           defaultValue={item?.phone}
           type="tel"
-          disabled={true}
+          disabled={item?.new ? false : true}
 {...register(`phone`)}
         />
         <input

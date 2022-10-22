@@ -402,36 +402,35 @@ function Rows({
               ))}
             </select>
           )}
-          {isUpdated && (
-            <select
-              onInput={(e) => {
-                setIsUpdated(true);
-                setRegionId(e.target.value);
-              }}
-              value={
-                regionId ??
-                region.find(
-                  (options) =>
-                    options.id ===
-                    events.find(
-                      (options) => options.id === item?.insured_event_id
-                    )?.region_id
-                )?.id
-              }
-              {...register(`region_id`)}
-            >
-              {region?.map((options) => (
-                <option key={options?.id} value={options?.id}>
-                  {options?.region_name}
-                </option>
-              ))}
-            </select>
-          )}
-          {!isUpdated && (
+
+          <select
+            onInput={(e) => {
+              setIsUpdated(true);
+              setRegionId(e.target.value);
+            }}
+            value={
+              regionId ??
+              region.find(
+                (options) =>
+                  options.id ===
+                  events.find(
+                    (options) => options.id === item?.insured_event_id
+                  )?.region_id
+              )?.id
+            }
+            {...register(`region_id`)}
+          >
+            {region?.map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.region_name}
+              </option>
+            ))}
+          </select>
+          {/* {!isUpdated && (
             <input
               onMouseDown={() => setIsUpdated(true)}
               type="text"
-              {...register(`region_id`)}
+              // {...register(`region_id`)}
               value={
                 region.find(
                   (options) =>
@@ -442,7 +441,7 @@ function Rows({
                 )?.region_name ?? "Choose..."
               }
             />
-          )}
+          )} */}
           <select
             onInput={(e) => {
               setIsUpdated(true);

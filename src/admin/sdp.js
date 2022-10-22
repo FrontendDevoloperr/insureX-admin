@@ -141,8 +141,8 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         }}
         defaultValue={item?.phone}
         type="tel"
-        disabled={true}
-{...register(`phone`)}
+        disabled={item?.new ? false : true}
+        {...register(`phone`)}
       />
       <input
         onInput={(e) => {
@@ -201,8 +201,8 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
             : setIsUpdated(false);
         }}
         defaultValue={item?.passport_id}
-        disabled={true}
-{...register(`passport_id`)}
+        disabled={item?.new ? false : true}
+        {...register(`passport_id`)}
       />
 
       <select
