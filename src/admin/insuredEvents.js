@@ -76,11 +76,13 @@ function Rows({
       property_type_id: item?.property_type_id,
     })
   );
-  if (
-    !events ||
-    !person.find((_person) => _person?.id === item?.insured_person_id)?.id
-  )
-    return null;
+  if (item?.id) {
+    if (
+      !events ||
+      !person.find((_person) => _person?.id === item?.insured_person_id)?.id
+    )
+      return null;
+  }
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
