@@ -37,6 +37,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
       setIsLoading(true);
       data.insurance_company_id = data.insurance_company_ids;
       delete data.insurance_company_ids;
+      delete data.id;
       axios
         .patch(`${_URL}/appraisal-companies/${item?.id}`, data)
         .then((res) => {
@@ -132,7 +133,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           onInput={(e) => {
             setIsUpdated(true);
           }}
-          disabled={item?.new ? false : true}
+          readOnly={item?.new ? false : true}
           defaultValue={item?.oao_ie_number}
           {...register(`oao_ie_number`)}
         />
@@ -164,7 +165,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           }}
           defaultValue={item?.phone}
           type="tel"
-          disabled={item?.new ? false : true}
+          readOnly={item?.new ? false : true}
           {...register(`phone`)}
         />
         <input

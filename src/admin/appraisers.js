@@ -252,7 +252,7 @@ function Rows({
           }}
           defaultValue={item?.phone}
           type="tel"
-          disabled={item?.new ? false : true}
+          readOnly={item?.new ? false : true}
 {...register(`phone`)}
         />
         <input
@@ -262,7 +262,7 @@ function Rows({
               : setIsUpdated(false);
           }}
           defaultValue={item?.passport_id}
-          disabled={item?.new ? false : true}
+          readOnly={item?.new ? false : true}
 {...register(`passport_id`)}
         />
         <input
