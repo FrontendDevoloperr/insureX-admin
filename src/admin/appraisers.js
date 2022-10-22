@@ -252,7 +252,8 @@ function Rows({
           }}
           defaultValue={item?.phone}
           type="tel"
-          {...register(`phone`)}
+          disabled={true}
+{...register(`phone`)}
         />
         <input
           onInput={(e) => {
@@ -261,7 +262,8 @@ function Rows({
               : setIsUpdated(false);
           }}
           defaultValue={item?.passport_id}
-          {...register(`passport_id`)}
+          disabled={true}
+{...register(`passport_id`)}
         />
         <input
           onInput={(e) => {
@@ -356,7 +358,7 @@ export default function Persons() {
   const [filteredData, setFilteredData] = React.useState([]);
   const [inputText, setInputText] = React.useState("");
 
-  React.useEffect(() => {
+  React.useInsertionEffect(() => {
     if (user.role === "superadmin") {
       setElements(GlobalState?.appraiser?.appraiser);
     }
@@ -380,7 +382,7 @@ export default function Persons() {
     }
   }, [GlobalState]);
 
-  React.useEffect(() => {
+  React.useInsertionEffect(() => {
     if (user.role === "superadmin" || user.role === "appraisal_company") {
       axios.get(`${_URL}/insurance-companies?delete=false`).then((res) => {
         setIsCompanys(

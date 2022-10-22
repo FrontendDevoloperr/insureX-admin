@@ -282,7 +282,7 @@ export default function AdminPanel() {
     });
   };
 
-  React.useEffect(() => {
+  React.useInsertionEffect(() => {
     getInsuredCompaniesFC();
     cityFC();
     regionFC();

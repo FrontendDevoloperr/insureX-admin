@@ -132,6 +132,7 @@ function Rows({ item, datas, dispatch }) {
             setIsUpdated(true);
           }}
           defaultValue={item?.ie_number}
+          disabled={true}
           {...register(`ie_number`)}
         />
 
@@ -155,7 +156,8 @@ function Rows({ item, datas, dispatch }) {
           }}
           defaultValue={item?.phone}
           type="tel"
-          {...register(`phone`)}
+          disabled={true}
+{...register(`phone`)}
         />
         <input
           className="multiples-select"
@@ -229,7 +231,7 @@ export default function Persons() {
   const [inputText, setInputText] = React.useState("");
   const [elements, setElements] = React.useState(companies);
 
-  React.useEffect(() => {
+  React.useInsertionEffect(() => {
     if (user?.role === "insurance_company") {
       setElements([user?.insurance_company]);
       return;
