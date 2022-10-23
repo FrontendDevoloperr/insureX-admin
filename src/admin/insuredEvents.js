@@ -570,7 +570,9 @@ const msAppraiser51 = (
   nameEvent,
   nameAppraiser
 ) =>
-  `${nameSdp} קבע שיחת וידאו עם ${nameCustomer} ע"י ${numberEvent} מס' ${nameEvent} נפתח אירוע ${nameAppraiser} שלום `;
+  `שלום ${nameAppraiser}, נפתח אירוע ${nameEvent} מס' ${numberEvent} ע"י ${nameCustomer}, קבע שיחת וידאו עם  ${
+    nameSdp ?? ""
+  } `;
 
 function SendAppraiserMessage(
   id,
