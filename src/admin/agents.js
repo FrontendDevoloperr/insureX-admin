@@ -117,18 +117,12 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
           className="checkbox_inp"
         />
         <input
-          onInput={(e) => {
-            setIsUpdated(true)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.first_name}
           {...register(`first_name`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.second_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
@@ -159,52 +153,31 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
           transitionTimingFunction="ease"
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.passport_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.passport_id}
           readOnly={item?.new ? false : true}
-{...register(`passport_id`)}
+          {...register(`passport_id`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.phone
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.phone}
           type="tel"
           readOnly={item?.new ? false : true}
           {...register(`phone`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.email
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.email}
           type="email"
           {...register(`email`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.employee_number
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.employee_number}
           {...register(`employee_number`)}
         />
         <select
-          onInput={(e) => {
-            e.target.value !== item?.region_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-            item.region_id = e.target.value
-          }}
+          onInput={(e) => setIsUpdated(true)}
           value={
             isRegions?.filter((options) => options.id === item?.region_id)[0]
               ?.id
@@ -218,11 +191,7 @@ function Rows({ item, datas, isCompanys, isRegions, dispatch }) {
           ))}
         </select>
         <input
-          onInput={(e) => {
-            e.target.value !== item?.address
-              ? setIsUpdated(true)
-              : setIsUpdated(false)
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.address}
           {...register(`address`)}
         />

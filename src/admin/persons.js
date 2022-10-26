@@ -1,22 +1,22 @@
-import React from "react";
+import React from 'react'
 import {
   LoadingOverlay,
   Header,
   ActionIcon,
   Grid,
   MultiSelect,
-} from "@mantine/core";
-import axios from "axios";
-import { _URL, getFormData } from "../utils";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { PlusUser } from "../icons";
-import { useLocation } from "react-router-dom";
-import { Trash } from "tabler-icons-react";
-import { useDispatch, useSelector } from "react-redux";
-import { getPersons } from "../redux/reducer/insuredPerson";
-import { getInsuredPersonFC } from "./index";
-import SearchComponent from "../ui/search";
+} from '@mantine/core'
+import axios from 'axios'
+import { _URL, getFormData } from '../utils'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import { PlusUser } from '../icons'
+import { useLocation } from 'react-router-dom'
+import { Trash } from 'tabler-icons-react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getPersons } from '../redux/reducer/insuredPerson'
+import { getInsuredPersonFC } from './index'
+import SearchComponent from '../ui/search'
 
 function Rows({
   item,
@@ -27,95 +27,90 @@ function Rows({
   isNowEdit,
   user,
 }) {
-  const { register, handleSubmit } = useForm();
-  const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isCityOpenSelect, setIsCityOpenSelect] = React.useState(false);
-  const [isCompaniesOpenSelect, setIsCompaniesOpenSelect] =
-    React.useState(false);
+  const { register, handleSubmit } = useForm()
+  const [isUpdated, setIsUpdated] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [isCityOpenSelect, setIsCityOpenSelect] = React.useState(false)
+  const [isCompaniesOpenSelect, setIsCompaniesOpenSelect] = React.useState(
+    false,
+  )
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
-    item?.insurance_company_persons_id
-  );
+    item?.insurance_company_persons_id,
+  )
 
   const onSubmit = (data) => {
-    data = { ...data, id: item.id };
-    data.insurance_company_persons_id = `{${insurance_company_ids}}`;
-    data.insurance_company_id = insurance_company_ids[0];
-    !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id);
-    !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id);
+    data = { ...data, id: item.id }
+    data.insurance_company_persons_id = `{${insurance_company_ids}}`
+    data.insurance_company_id = insurance_company_ids[0]
+    !data.city_id && (data.city_id = item.city_id ?? isCitys[0]?.id)
+    !data.agent_id && (data.agent_id = item.agent_id ?? agents[0].id)
     if (data?.id) {
-      let formData = { ...data, role: "insured_person" };
-      delete formData.id;
-      setIsLoading(true);
+      let formData = { ...data, role: 'insured_person' }
+      delete formData.id
+      setIsLoading(true)
       axios
         .patch(`${_URL}/insured-persons/${item?.id}`, getFormData(formData), {
           headers: {
             Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+              JSON.parse(localStorage.getItem('admin-panel-token-insure-x'))
                 .token
             } `,
           },
         })
         .then((res) => {
-          setIsLoading(false);
-          toast.success("Updated");
-          setIsUpdated(false);
+          setIsLoading(false)
+          toast.success('Updated')
+          setIsUpdated(false)
         })
         .catch((err) => {
-          console.log(err);
-          setIsLoading(false);
-          toast.error("Error while updating data");
-        });
+          console.log(err)
+          setIsLoading(false)
+          toast.error('Error while updating data')
+        })
     }
     if (!item.id) {
-      setIsLoading(true);
-      delete data?.new;
-      delete data?.id;
-      data.role = "insured_person";
+      setIsLoading(true)
+      delete data?.new
+      delete data?.id
+      data.role = 'insured_person'
       axios
         .post(`${_URL}/insured-persons`, getFormData(data), {
           headers: {
             Authorization: `"Bearer ${
-              JSON.parse(localStorage.getItem("admin-panel-token-insure-x"))
+              JSON.parse(localStorage.getItem('admin-panel-token-insure-x'))
                 .token
             } `,
           },
         })
         .then((res) => {
-          setIsLoading(false);
-          getInsuredPersonFC(dispatch);
-          toast.success("Data uploaded, new users created");
-          setIsUpdated(false);
+          setIsLoading(false)
+          getInsuredPersonFC(dispatch)
+          toast.success('Data uploaded, new users created')
+          setIsUpdated(false)
         })
         .catch((err) => {
-          console.log(err);
-          setIsLoading(false);
-          toast.error("Error loading data, please try again");
-        });
+          console.log(err)
+          setIsLoading(false)
+          toast.error('Error loading data, please try again')
+        })
     }
-  };
+  }
 
   return (
     <>
       <form
-        className={`row ${isNowEdit ? "now-edit" : ""}`}
+        className={`row ${isNowEdit ? 'now-edit' : ''}`}
         onSubmit={handleSubmit(onSubmit)}
       >
         <LoadingOverlay visible={isLoading} />
         <input
           autoFocus={isNowEdit}
-          onInput={(e) => {
-            setIsUpdated(true);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.first_name}
           {...register(`first_name`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.second_name
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.second_name}
           {...register(`second_name`)}
         />
@@ -125,22 +120,22 @@ function Rows({
             className="input-multi-select"
             placeholder="choose..."
             style={{
-              width: "200px",
+              width: '200px',
             }}
             defaultValue={item?.insurance_company_persons_id}
             onChange={(e) => {
-              setIsUpdated(true);
-              setInsurance_company_ids(e);
+              setIsUpdated(true)
+              setInsurance_company_ids(e)
             }}
             data={isCompanys?.map((item) => ({
               value: item?.id,
               label: item?.title,
               custome_disabled:
-                user.role === "insurance_company"
+                user.role === 'insurance_company'
                   ? item?.id !== user.insurance_company.id
-                    ? "true"
-                    : "false"
-                  : "",
+                    ? 'true'
+                    : 'false'
+                  : '',
             }))}
             transition="pop-top-left"
             transitionDuration={80}
@@ -153,8 +148,8 @@ function Rows({
               type="text"
               className="custome-input"
               style={{
-                width: "200px",
-                cursor: "pointer",
+                width: '200px',
+                cursor: 'pointer',
               }}
               multiple
               defaultValue={insurance_company_ids}
@@ -163,58 +158,38 @@ function Rows({
               {isCompanys
                 ?.filter((cmp) => insurance_company_ids?.includes(cmp.id))
                 ?.map(
-                  (s, i) => i < 5 && <option value={s?.id}>{s.title}</option>
+                  (s, i) => i < 5 && <option value={s?.id}>{s.title}</option>,
                 )}
             </select>
           </div>
         )}
 
         <input
-          onInput={(e) => {
-            e.target.value !== item?.passport_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.passport_id}
           readOnly={item?.new ? false : true}
           {...register(`passport_id`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.phone
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.phone}
           type="tel"
           readOnly={item?.new ? false : true}
           {...register(`phone`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.email
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.email}
           type="email"
           {...register(`email`)}
         />
         <input
-          onInput={(e) => {
-            e.target.value !== item?.address
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={item?.address}
           {...register(`address`)}
         />
         <select
-          onInput={(e) => {
-            e.target.value !== item?.agent_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-          }}
+          onInput={(e) => setIsUpdated(true)}
           defaultValue={
             agents?.filter((options) => options.id === item?.agent_id)[0]?.id
           }
@@ -257,7 +232,7 @@ function Rows({
         )}
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
-            {item?.id ? "Update" : "Create"}
+            {item?.id ? 'Update' : 'Create'}
           </button>
         ) : (
           <div
@@ -266,10 +241,10 @@ function Rows({
             className="delete"
             onClick={() => {
               if (!item?.id) {
-                getInsuredPersonFC(dispatch);
+                getInsuredPersonFC(dispatch)
               }
               if (item?.id) {
-                setIsLoading(true);
+                setIsLoading(true)
                 axios
                   .patch(
                     `${_URL}/insured-persons/${item.id}`,
@@ -280,22 +255,22 @@ function Rows({
                       headers: {
                         Authorization: `"Bearer ${
                           JSON.parse(
-                            localStorage.getItem("admin-panel-token-insure-x")
+                            localStorage.getItem('admin-panel-token-insure-x'),
                           ).token
                         } `,
                       },
-                    }
+                    },
                   )
                   .then((res) => {
-                    setIsLoading(false);
-                    getInsuredPersonFC(dispatch);
-                    toast.success("Removed");
+                    setIsLoading(false)
+                    getInsuredPersonFC(dispatch)
+                    toast.success('Removed')
                   })
                   .catch((err) => {
-                    console.log(err);
-                    setIsLoading(false);
-                    toast.error("Error when deleting data");
-                  });
+                    console.log(err)
+                    setIsLoading(false)
+                    toast.error('Error when deleting data')
+                  })
               }
             }}
           >
@@ -306,27 +281,25 @@ function Rows({
         )}
       </form>
     </>
-  );
+  )
 }
 
 export default function Persons() {
-  const dispatch = useDispatch();
-  let isCompanys = useSelector(
-    ({ insuredCmp }) => insuredCmp?.insuredCompanies
-  );
-  const isCitys = useSelector(({ city }) => city?.city);
-  const agents = useSelector(({ agents }) => agents?.agents);
-  const location = useLocation();
-  const user = useSelector((state) => state.user);
-  const elements = useSelector(({ persons }) => persons);
-  const [filteredData, setFilteredData] = React.useState([]);
-  const [inputText, setInputText] = React.useState("");
+  const dispatch = useDispatch()
+  let isCompanys = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies)
+  const isCitys = useSelector(({ city }) => city?.city)
+  const agents = useSelector(({ agents }) => agents?.agents)
+  const location = useLocation()
+  const user = useSelector((state) => state.user)
+  const elements = useSelector(({ persons }) => persons)
+  const [filteredData, setFilteredData] = React.useState([])
+  const [inputText, setInputText] = React.useState('')
 
   React.useInsertionEffect(() => {
-    if (user.role === "insurance_company") {
-      isCompanys = [user.insurance_company];
+    if (user.role === 'insurance_company') {
+      isCompanys = [user.insurance_company]
     }
-  }, []);
+  }, [])
 
   return (
     <>
@@ -338,35 +311,35 @@ export default function Persons() {
               onClick={() => {
                 if (elements?.filter((item) => item?.new)?.length) {
                   toast.error(
-                    "You cannot add new entries until you finish the previous one."
-                  );
+                    'You cannot add new entries until you finish the previous one.',
+                  )
                 } else {
                   dispatch(
-                    getPersons(elements?.concat([{ new: true }])?.reverse())
-                  );
-                  toast.success("You can fill in a new entry");
+                    getPersons(elements?.concat([{ new: true }])?.reverse()),
+                  )
+                  toast.success('You can fill in a new entry')
                 }
               }}
             >
               <span>Add </span>
-              <PlusUser color={"#fff"} />
+              <PlusUser color={'#fff'} />
             </button>
           </Grid.Col>
           <Grid.Col span={3}>
             <SearchComponent
               data={elements?.filter((resp) =>
-                !resp.delete && user?.role === "insurance_company"
+                !resp.delete && user?.role === 'insurance_company'
                   ? resp?.insurance_company_id === user?.insurance_company?.id
-                  : resp
+                  : resp,
               )}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
               type={[
-                "first_name",
-                "second_name",
-                "phone",
-                "email",
-                "passport_id",
+                'first_name',
+                'second_name',
+                'phone',
+                'email',
+                'passport_id',
               ]}
             />
           </Grid.Col>
@@ -374,47 +347,47 @@ export default function Persons() {
       </Header>
       <div
         className="ox-scroll"
-        style={{ minHeight: "max-content", overflow: "hidden" }}
+        style={{ minHeight: 'max-content', overflow: 'hidden' }}
       >
         <div className="row">
-          <input className="disabled" readOnly={true} value={"first_name"} />
-          <input className="disabled" readOnly={true} value={"last_name"} />
+          <input className="disabled" readOnly={true} value={'first_name'} />
+          <input className="disabled" readOnly={true} value={'last_name'} />
           <input
             className="disabled"
             readOnly={true}
-            value={"insurance_company_id"}
-            style={{ width: "200px" }}
+            value={'insurance_company_id'}
+            style={{ width: '200px' }}
           />
-          <input className="disabled" readOnly={true} value={"passport_id"} />
-          <input className="disabled" readOnly={true} value={"phone"} />
-          <input className="disabled" readOnly={true} value={"email"} />
-          <input className="disabled" readOnly={true} value={"address"} />
-          <input className="disabled" readOnly={true} value={"agent ID"} />
-          <input className="disabled" readOnly={true} value={"city ID"} />
+          <input className="disabled" readOnly={true} value={'passport_id'} />
+          <input className="disabled" readOnly={true} value={'phone'} />
+          <input className="disabled" readOnly={true} value={'email'} />
+          <input className="disabled" readOnly={true} value={'address'} />
+          <input className="disabled" readOnly={true} value={'agent ID'} />
+          <input className="disabled" readOnly={true} value={'city ID'} />
           <input
             className="disabled"
             style={{ width: 66 }}
             readOnly={true}
-            value={"delete"}
+            value={'delete'}
           />
         </div>
       </div>
       <div
         className="ox-scroll"
         onScroll={(e) => {
-          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
+          ;[...Array(document.querySelectorAll('.ox-scroll').length)].map(
             (_, i) =>
-              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
-                e.target.scrollLeft)
-          );
+              (document.querySelectorAll('.ox-scroll')[i].scrollLeft =
+                e.target.scrollLeft),
+          )
         }}
       >
         {(inputText.length > 2
           ? filteredData
           : elements?.filter((resp) =>
-              !resp.delete && user?.role === "insurance_company"
+              !resp.delete && user?.role === 'insurance_company'
                 ? resp?.insurance_company_id === user?.insurance_company?.id
-                : resp
+                : resp,
             )
         )?.map((item, i) => (
           <Rows
@@ -425,11 +398,11 @@ export default function Persons() {
             isCompanys={isCompanys}
             isCitys={isCitys}
             agents={agents}
-            isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
+            isNowEdit={Number(location.hash.split('#')[1]) === Number(item?.id)}
             user={user}
           />
         ))}
       </div>
     </>
-  );
+  )
 }
