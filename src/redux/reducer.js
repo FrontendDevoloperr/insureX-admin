@@ -22,7 +22,7 @@ export const userSlice = createSlice({
       state.role = null;
     },
     message: (state, data) => {
-      state.messages = data.payload;
+      state.messages = [...state.messages, ...data.payload];
     },
     newMessage: (state, data) => {
       state.read_messages = data.payload;

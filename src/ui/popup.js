@@ -1,23 +1,24 @@
 import React, { useState } from "react";
-import io from "socket.io-client";
-import axios from "axios";
-import { Box, Center, Popover, ScrollArea, Text } from "@mantine/core";
-import { NoMessage, Notification } from "../icons";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { _URL } from "./../utils";
+import { useSelector, useDispatch } from "react-redux";
+import io from "socket.io-client";
+import { Box, Center, Popover, ScrollArea, Text } from "@mantine/core";
 import { toast, useToasterStore } from "react-hot-toast";
+import axios from "axios";
+import { NoMessage, Notification } from "../icons";
+import { _URL } from "./../utils";
 import moment from "moment";
 import songById from "../static/notification_sound.mp3";
+import { message } from "../redux/reducer";
 
 const socket = io("wss://api.insurextest.link", { reconnect: true });
 
 function Popup() {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
   const [newMessage, setNewMessage] = useState(false);
-  const [messages, setMessages] = useState([]);
   const { toasts } = useToasterStore();
   let song = new Audio(songById);
 
@@ -32,7 +33,7 @@ function Popup() {
     if (msg.admin_type) {
       console.log(msg);
       if (user.role === "superadmin") {
-        setMessages([...messages, msg]);
+        dispatch(message([msg]));
         setNewMessage(true);
         toast.success("New message received");
         song.play();
@@ -41,7 +42,7 @@ function Popup() {
         user.role === "insurance_company" &&
         Number(user.insurance_company.id) === Number(msg.insurance_company_id)
       ) {
-        setMessages(messages.concat(msg));
+        dispatch(message([msg]));
         setNewMessage(true);
         toast.success("New message received");
       }
@@ -51,15 +52,15 @@ function Popup() {
           ?.split(",")
           ?.includes(`${user?.insurance_company?.id}`)
       ) {
-        setMessages(messages.concat(msg));
         setNewMessage(true);
+        dispatch(message([msg]));
         toast.success("New message received");
       }
       if (
         user.role === "appraisal_company" &&
         Number(user.appraisal_company.id) === Number(msg.appraisal_company_id)
       ) {
-        setMessages(messages.concat(msg));
+        dispatch(message([msg]));
         setNewMessage(true);
         toast.success("New message received");
       }
@@ -70,26 +71,30 @@ function Popup() {
     if (user?.auth) {
       axios.get(`${_URL}/push/messages`).then(({ data }) => {
         if (user?.role === "superadmin") {
-          setMessages(data?.messages?.filter((res) => res.admin_type));
+          dispatch(message(data?.messages?.filter((res) => res.admin_type)));
         }
         if (user?.role === "insurance_company") {
-          setMessages(
-            data?.messages?.filter((res) =>
-              Number(res?.insurance_company_id)
-                ? Number(res?.insurance_company_id) ===
-                    Number(user?.insurance_company?.id) && res?.admin_type
-                : res?.insurance_company_ids
-                    ?.split(",")
-                    ?.includes(`${user?.insurance_company?.id}`)
+          dispatch(
+            message(
+              data?.messages?.filter((res) =>
+                Number(res?.insurance_company_id)
+                  ? Number(res?.insurance_company_id) ===
+                      Number(user?.insurance_company?.id) && res?.admin_type
+                  : res?.insurance_company_ids
+                      ?.split(",")
+                      ?.includes(`${user?.insurance_company?.id}`)
+              )
             )
           );
         }
         if (user?.role === "appraisal_company") {
-          setMessages(
-            data?.messages?.filter(
-              (res) =>
-                Number(res?.appraisal_company_id) ===
-                  Number(user?.appraisal_company?.id) && res?.admin_type
+          dispatch(
+            message(
+              data?.messages?.filter(
+                (res) =>
+                  Number(res?.appraisal_company_id) ===
+                    Number(user?.appraisal_company?.id) && res?.admin_type
+              )
             )
           );
         }
@@ -132,7 +137,7 @@ function Popup() {
           minWidth: "185px",
         }}
       >
-        {messages?.length > 0 ? (
+        {user?.messages?.length > 0 ? (
           <ScrollArea
             style={{
               height: 300,
@@ -141,7 +146,7 @@ function Popup() {
             }}
             offsetScrollbars
           >
-            {!messages?.length && (
+            {!user?.messages?.length && (
               <Box
                 sx={(theme) => ({
                   backgroundColor:
@@ -168,7 +173,7 @@ function Popup() {
               </Box>
             )}
 
-            {messages
+            {user?.messages
               ?.sort(function (a, b) {
                 return (
                   moment(b.date_time).format("X") -
