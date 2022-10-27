@@ -435,6 +435,9 @@ export default function Persons() {
             className="disabled"
             readOnly={true}
             value={"appraisal_company"}
+            style={{
+              width: "200px",
+            }}
           />
           <input className="disabled" readOnly={true} value={"fist_name"} />
           <input className="disabled" readOnly={true} value={"last_name"} />
