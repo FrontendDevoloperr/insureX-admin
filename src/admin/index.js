@@ -1,69 +1,69 @@
-import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
-import { NavLink, Route, Routes, useLocation } from "react-router-dom";
-import Persons from "./persons";
-import Agents from "./agents";
-import AppraiserCompanies from "./appraiserCompanies";
-import InsuredCompanies from "./insuranceCompanies";
-import Appraisers from "./appraisers";
-import Sdp from "./sdp";
-import InsuredEvent from "./insuredEvents";
-import "./index.css";
-import { LogoutIcon } from "../icons";
-import Logo from "../icons/logo.svg";
-import Popup from "../ui/popup";
-import { logout } from "../redux/reducer";
-import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
-import { getCity } from "../redux/reducer/city";
-import { getRegion } from "../redux/reducer/region";
-import { getAgents } from "../redux/reducer/agents";
-import { getSdp } from "../redux/reducer/sdp";
-import { setEvents } from "../redux/reducer/events";
-import { setCases } from "../redux/reducer/cases";
-import { getPersons } from "../redux/reducer/insuredPerson";
-import axios from "axios";
-import { _URL } from "../utils";
-import { getAppraiser } from "../redux/reducer/appraiser";
-import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
+import React from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { Navbar, Text, createStyles, AppShell, Header } from '@mantine/core'
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
+import Persons from './persons'
+import Agents from './agents'
+import AppraiserCompanies from './appraiserCompanies'
+import InsuredCompanies from './insuranceCompanies'
+import Appraisers from './appraisers'
+import Sdp from './sdp'
+import InsuredEvent from './insuredEvents'
+import './index.css'
+import { LogoutIcon } from '../icons'
+import Logo from '../icons/logo.svg'
+import Popup from '../ui/popup'
+import { logout } from '../redux/reducer'
+import { getInsuredCompanies } from '../redux/reducer/insuredCompanies'
+import { getCity } from '../redux/reducer/city'
+import { getRegion } from '../redux/reducer/region'
+import { getAgents } from '../redux/reducer/agents'
+import { getSdp } from '../redux/reducer/sdp'
+import { setEvents } from '../redux/reducer/events'
+import { setCases } from '../redux/reducer/cases'
+import { getPersons } from '../redux/reducer/insuredPerson'
+import axios from 'axios'
+import { _URL } from '../utils'
+import { getAppraiser } from '../redux/reducer/appraiser'
+import { getAppraiserCompanies } from '../redux/reducer/appraiserComp'
 
 const useStyles = createStyles((theme, _params, getRef) => {
-  const icon = getRef("icon");
+  const icon = getRef('icon')
 
   return {
     navbar: {
       backgroundColor:
-        theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.white,
+        theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
     },
 
     title: {
-      textTransform: "uppercase",
+      textTransform: 'uppercase',
       letterSpacing: -0.25,
     },
 
     link: {
       ...theme.fn.focusStyles(),
-      display: "flex",
-      alignItems: "center",
-      textDecoration: "none",
+      display: 'flex',
+      alignItems: 'center',
+      textDecoration: 'none',
       fontSize: theme.fontSizes.sm,
       color:
-        theme.colorScheme === "dark"
+        theme.colorScheme === 'dark'
           ? theme.colors.dark[1]
           : theme.colors.gray[7],
       padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
       borderRadius: theme.radius.sm,
       fontWeight: 500,
 
-      "&:hover": {
+      '&:hover': {
         backgroundColor:
-          theme.colorScheme === "dark"
+          theme.colorScheme === 'dark'
             ? theme.colors.dark[7]
             : theme.colors.gray[0],
-        color: theme.colorScheme === "dark" ? theme.white : theme.black,
+        color: theme.colorScheme === 'dark' ? theme.white : theme.black,
 
         [`& .${icon}`]: {
-          color: theme.colorScheme === "dark" ? theme.white : theme.black,
+          color: theme.colorScheme === 'dark' ? theme.white : theme.black,
         },
       },
     },
@@ -71,26 +71,26 @@ const useStyles = createStyles((theme, _params, getRef) => {
     linkIcon: {
       ref: icon,
       color:
-        theme.colorScheme === "dark"
+        theme.colorScheme === 'dark'
           ? theme.colors.dark[2]
           : theme.colors.gray[6],
       marginRight: theme.spacing.sm,
     },
 
     linkActive: {
-      "&, &:hover": {
+      '&, &:hover': {
         backgroundColor:
-          theme.colorScheme === "dark"
+          theme.colorScheme === 'dark'
             ? theme.fn.rgba(theme.colors[theme.primaryColor][9], 0.25)
             : theme.colors[theme.primaryColor][0],
         color:
           theme.colors[theme.primaryColor][
-            theme.colorScheme === "dark" ? 4 : 7
+            theme.colorScheme === 'dark' ? 4 : 7
           ],
         [`& .${icon}`]: {
           color:
             theme.colors[theme.primaryColor][
-              theme.colorScheme === "dark" ? 4 : 7
+              theme.colorScheme === 'dark' ? 4 : 7
             ],
         },
       },
@@ -98,69 +98,69 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
     footer: {
       borderTop: `1px solid ${
-        theme.colorScheme === "dark"
+        theme.colorScheme === 'dark'
           ? theme.colors.dark[4]
           : theme.colors.gray[3]
       }`,
       paddingTop: theme.spacing.md,
     },
-  };
-});
+  }
+})
 
 const tabs = {
   superadmin: [
     {
-      link: "/insurance-company",
-      label: "INSURANCE COMPANIES",
+      link: '/insurance-company',
+      label: 'INSURANCE COMPANIES',
       element: <InsuredCompanies />,
     },
-    { link: "/agents", label: "AGENTS", element: <Agents /> },
-    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+    { link: '/agents', label: 'AGENTS', element: <Agents /> },
+    { link: '/persons', label: 'INSURED PERSONS', element: <Persons /> },
 
     {
-      link: "/appraiser-company",
-      label: "APPRAISAL COMPANIES",
+      link: '/appraiser-company',
+      label: 'APPRAISAL COMPANIES',
       element: <AppraiserCompanies />,
     },
-    { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
-    { link: "/sdp", label: "SDP", element: <Sdp /> },
-    { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
+    { link: '/appraisers', label: 'APPRAISERS', element: <Appraisers /> },
+    { link: '/sdp', label: 'SDP', element: <Sdp /> },
+    { link: '/events', label: 'INSURED EVENTS', element: <InsuredEvent /> },
   ],
   insurance_company: [
     {
-      link: "/insurance-company",
-      label: "INSURANCE COMPANIES",
+      link: '/insurance-company',
+      label: 'INSURANCE COMPANIES',
       element: <InsuredCompanies />,
     },
-    { link: "/agents", label: "AGENTS", element: <Agents /> },
-    { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
+    { link: '/agents', label: 'AGENTS', element: <Agents /> },
+    { link: '/persons', label: 'INSURED PERSONS', element: <Persons /> },
 
     {
-      link: "/appraiser-company",
-      label: "APPRAISAL COMPANIES",
+      link: '/appraiser-company',
+      label: 'APPRAISAL COMPANIES',
       element: <AppraiserCompanies />,
     },
-    { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
-    { link: "/sdp", label: "SDP", element: <Sdp /> },
-    { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
+    { link: '/appraisers', label: 'APPRAISERS', element: <Appraisers /> },
+    { link: '/sdp', label: 'SDP', element: <Sdp /> },
+    { link: '/events', label: 'INSURED EVENTS', element: <InsuredEvent /> },
   ],
   appraisal_company: [
     {
-      link: "/appraiser-company",
-      label: "APPRAISAL COMPANIES",
+      link: '/appraiser-company',
+      label: 'APPRAISAL COMPANIES',
       element: <AppraiserCompanies />,
     },
-    { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
+    { link: '/appraisers', label: 'APPRAISERS', element: <Appraisers /> },
     // { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
-    { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
+    { link: '/events', label: 'INSURED EVENTS', element: <InsuredEvent /> },
   ],
-};
+}
 
 export const getSdpFC = (dispatch) => {
   axios.get(`${_URL}/sdp`).then(({ data }) => {
-    dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
-  });
-};
+    dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)))
+  })
+}
 
 export const getInsuredPersonFC = (dispatch) => {
   axios
@@ -168,31 +168,50 @@ export const getInsuredPersonFC = (dispatch) => {
     .then(({ data }) => {
       dispatch(
         getPersons(
-          data?.message?.insured_persons?.filter((item) => !item?.delete)
-        )
-      );
+          data?.message?.insured_persons?.filter((item) => !item?.delete),
+        ),
+      )
     })
-    .catch((err) => {});
-};
+    .catch((err) => {})
+}
+
+export const getEventsAndCasesFC = async (dispatch, user) => {
+  await axios.get(`${_URL}/insurance-case`).then(({ data }) => {
+    dispatch(setCases(data?.message?.insurance_cases))
+    axios
+      .get(
+        `${_URL}/insured-events${
+          user.role === 'insurance_company'
+            ? `?insurance_company_id=${user.insurance_company.id}`
+            : user.role === 'appraisal_company'
+            ? `?appraisal_company_id=${user.appraisal_company.id}`
+            : user.role === 'superadmin' && ''
+        }`,
+      )
+      .then(({ data }) => {
+        dispatch(setEvents(data?.message?.insured_events))
+      })
+  })
+}
 
 export default function AdminPanel() {
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const user = useSelector(({ user }) => user);
-  const { classes, cx } = useStyles();
+  const location = useLocation()
+  const dispatch = useDispatch()
+  const user = useSelector(({ user }) => user)
+  const { classes, cx } = useStyles()
   const links = tabs[user?.role].map((item) => (
     <NavLink className={cx(classes.link)} to={item.link} key={item.label}>
       <span>{item.label}</span>
     </NavLink>
-  ));
+  ))
 
   const RootRoutes = tabs[user?.role].map((item, i) => (
     <Route key={i} path={item?.link} element={item?.element} />
-  ));
+  ))
 
   function Logout() {
-    dispatch(logout());
-    localStorage.removeItem("admin-panel-token-insure-x");
+    dispatch(logout())
+    localStorage.removeItem('admin-panel-token-insure-x')
   }
 
   const getInsuredCompaniesFC = () => {
@@ -201,98 +220,81 @@ export default function AdminPanel() {
       .then(({ data }) => {
         dispatch(
           getInsuredCompanies(
-            data?.message?.insurance_companies?.filter((item) => !item?.delete)
-          )
-        );
+            data?.message?.insurance_companies?.filter((item) => !item?.delete),
+          ),
+        )
       })
       .catch((err) => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
   const cityFC = () => {
     axios
       .get(`${_URL}/city`)
       .then(({ data }) => {
-        dispatch(getCity(data?.message?.cities));
+        dispatch(getCity(data?.message?.cities))
       })
       .catch((err) => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
   const regionFC = () => {
     axios
       .get(`${_URL}/regions`)
       .then(({ data }) => {
-        dispatch(getRegion(data?.message?.regions));
+        dispatch(getRegion(data?.message?.regions))
       })
       .catch((err) => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
   const agentsFC = () => {
     axios
       .get(`${_URL}/agents/select`)
       .then(({ data }) => {
         dispatch(
-          getAgents(data?.message?.agents?.filter((item) => !item?.delete))
-        );
+          getAgents(data?.message?.agents?.filter((item) => !item?.delete)),
+        )
       })
       .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getEventsAndCasesFC = async () => {
-    await axios.get(`${_URL}/insurance-case`).then(({ data }) => {
-      dispatch(setCases(data?.message?.insurance_cases));
-      axios
-        .get(
-          `${_URL}/insured-events${
-            user.role === "insurance_company"
-              ? `?insurance_company_id=${user.insurance_company.id}`
-              : user.role === "appraisal_company"
-              ? `?appraisal_company_id=${user.appraisal_company.id}`
-              : user.role === "superadmin" && ""
-          }`
-        )
-        .then(({ data }) => {
-          dispatch(setEvents(data?.message?.insured_events));
-        });
-    });
-  };
+        console.log(err)
+      })
+  }
 
   const getAppraiserFC = () => {
     axios.get(`${_URL}/appraisers`).then(({ data }) => {
       dispatch(
-        getAppraiser(data?.message?.appraisers?.filter((item) => !item?.delete))
-      );
-    });
-  };
+        getAppraiser(
+          data?.message?.appraisers?.filter((item) => !item?.delete),
+        ),
+      )
+    })
+  }
 
   const getAppraiserCompFC = () => {
     axios.get(`${_URL}/appraisal-companies`).then(({ data }) => {
       dispatch(
         getAppraiserCompanies(
-          data?.message?.appraisal_companies?.filter((item) => !item?.delete)
-        )
-      );
-    });
-  };
+          data?.message?.appraisal_companies?.filter((item) => !item?.delete),
+        ),
+      )
+    })
+  }
 
   React.useInsertionEffect(() => {
-    getInsuredCompaniesFC();
-    cityFC();
-    regionFC();
-    agentsFC();
-    getInsuredPersonFC(dispatch);
-    getSdpFC(dispatch);
-    getAppraiserFC();
-    getAppraiserCompFC();
-    getEventsAndCasesFC();
-  }, [location.pathname]);
+    getInsuredCompaniesFC()
+    cityFC()
+    regionFC()
+    agentsFC()
+    getInsuredPersonFC(dispatch)
+    getSdpFC(dispatch)
+    getAppraiserFC()
+    getAppraiserCompFC()
+    getEventsAndCasesFC(dispatch, user)
+  }, [location.pathname])
 
   return (
     <AppShell
@@ -300,7 +302,7 @@ export default function AdminPanel() {
       asideOffsetBreakpoint="sm"
       navbar={
         <Navbar
-          height={"calc(100vh - 75px)"}
+          height={'calc(100vh - 75px)'}
           width={{ sm: 300 }}
           p="md"
           className={classes.navbar}
@@ -312,7 +314,7 @@ export default function AdminPanel() {
               className={classes.title}
               color="dimmed"
               mb="xs"
-              style={{ marginBottom: "-10px", padding: " 0 10px" }}
+              style={{ marginBottom: '-10px', padding: ' 0 10px' }}
             >
               InsureX Admin Panel <br /> this : {user.role}
             </Text>
@@ -334,7 +336,7 @@ export default function AdminPanel() {
               title="Logout"
               className="header_logout"
               onClick={() => {
-                Logout();
+                Logout()
               }}
             >
               <LogoutIcon />
@@ -345,5 +347,5 @@ export default function AdminPanel() {
     >
       <Routes>{RootRoutes}</Routes>
     </AppShell>
-  );
+  )
 }

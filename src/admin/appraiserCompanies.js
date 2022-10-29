@@ -25,6 +25,10 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
   const [cityValue, setCityValue] = React.useState(
     isCitys.find((options) => Number(options.id) === Number(item?.city_id))?.id,
   )
+  const [regionValue, setRegionValue] = React.useState(
+    isRegions.find((options) => Number(options.id) === Number(item?.region_id))
+      ?.id,
+  )
   const [isChecked, setIsChecked] = React.useState(item?.authentification)
 
   const onSubmit = (data) => {
@@ -167,7 +171,10 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           {...register(`email`)}
         />
         <select
-          onInput={(e) => setIsUpdated(true)}
+          onInput={(e) => {
+            setIsUpdated(true)
+            setRegionValue(e.target.value)
+          }}
           defaultValue={
             isRegions.filter((options) => options.id === item?.region_id)[0]?.id
           }
@@ -198,11 +205,24 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           }
           {...register(`city_id`)}
         >
-          {isCitys.map((options) => (
-            <option key={options?.id} value={options?.id}>
-              {options?.city_name}
-            </option>
-          ))}
+          {isCitys
+            .filter((item) =>
+              regionValue
+                ? Number(item.region_id) === Number(regionValue)
+                : true,
+            )
+            ?.sort((a, b) => {
+              const aa = a?.city_name?.toLowerCase()
+              const bb = b?.city_name?.toLowerCase()
+              if (aa > bb) return -1
+              if (aa < bb) return 1
+              return 0
+            })
+            .map((options) => (
+              <option key={options?.id} value={options?.id}>
+                {options?.city_name}
+              </option>
+            ))}
         </select>
 
         {isUpdated ? (
