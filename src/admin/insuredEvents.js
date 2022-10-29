@@ -226,12 +226,14 @@ function Rows({
               setIsUpdated(true)
               setAppraiser(e.target.value)
             }}
+            required
             value={
               appraiser ??
               appraisers?.find((_app) => _app?.id === item?.appraiser_id)?.id
             }
             {...register(`appraiser_id`)}
           >
+            <option value={undefined}>Choose...</option>
             {appraisers?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -355,6 +357,7 @@ function Rows({
             }}
             defaultValue={item?.address}
             {...register(`address`)}
+            required
           />
           {!isUpdated && (
             <input
@@ -365,6 +368,7 @@ function Rows({
                   ?.city_name ?? 'Choose...'
               }
               readOnly={true}
+              required
             />
           )}
           {isUpdated && (
@@ -483,7 +487,7 @@ function Rows({
             </button>
           )}
           {isUpdated ? (
-            <button type="submit" onClick={() => {}}>
+            <button type="submit">
               {item?.id ? 'Update' : 'Create'}
             </button>
           ) : (
