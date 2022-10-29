@@ -31,9 +31,6 @@ function Rows({
   const [isUpdated, setIsUpdated] = React.useState(false)
   const [isLoading, setIsLoading] = React.useState(false)
   const [isCityOpenSelect, setIsCityOpenSelect] = React.useState(false)
-  const [isCompaniesOpenSelect, setIsCompaniesOpenSelect] = React.useState(
-    false,
-  )
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
     item?.insurance_company_persons_id,
   )
@@ -115,54 +112,31 @@ function Rows({
           {...register(`second_name`)}
         />
 
-        {isCompaniesOpenSelect && (
-          <MultiSelect
-            className="input-multi-select"
-            placeholder="choose..."
-            style={{
-              width: '200px',
-            }}
-            defaultValue={item?.insurance_company_persons_id}
-            onChange={(e) => {
-              setIsUpdated(true)
-              setInsurance_company_ids(e)
-            }}
-            data={isCompanys?.map((item) => ({
-              value: item?.id,
-              label: item?.title,
-              custome_disabled:
-                user.role === 'insurance_company'
-                  ? item?.id !== user.insurance_company.id
-                    ? 'true'
-                    : 'false'
-                  : '',
-            }))}
-            transition="pop-top-left"
-            transitionDuration={80}
-            transitionTimingFunction="ease"
-          />
-        )}
-        {!isCompaniesOpenSelect && (
-          <div onMouseMove={() => setIsCompaniesOpenSelect(true)}>
-            <select
-              type="text"
-              className="custome-input"
-              style={{
-                width: '200px',
-                cursor: 'pointer',
-              }}
-              multiple
-              defaultValue={insurance_company_ids}
-              onClick={() => setIsCompaniesOpenSelect(true)}
-            >
-              {isCompanys
-                ?.filter((cmp) => insurance_company_ids?.includes(cmp.id))
-                ?.map(
-                  (s, i) => i < 5 && <option value={s?.id}>{s.title}</option>,
-                )}
-            </select>
-          </div>
-        )}
+        <MultiSelect
+          className="input-multi-select"
+          placeholder="choose..."
+          style={{
+            width: '200px',
+          }}
+          defaultValue={item?.insurance_company_persons_id}
+          onChange={(e) => {
+            setIsUpdated(true)
+            setInsurance_company_ids(e)
+          }}
+          data={isCompanys?.map((item) => ({
+            value: item?.id,
+            label: item?.title,
+            custome_disabled:
+              user.role === 'insurance_company'
+                ? item?.id !== user.insurance_company.id
+                  ? 'true'
+                  : 'false'
+                : '',
+          }))}
+          transition="pop-top-left"
+          transitionDuration={80}
+          transitionTimingFunction="ease"
+        />
 
         <input
           onInput={(e) => setIsUpdated(true)}
@@ -204,7 +178,7 @@ function Rows({
         {!isCityOpenSelect && (
           <input
             type="text"
-            onFocus={() => setIsCityOpenSelect(true)}
+            onMouseMove={() => setIsCityOpenSelect(true)}
             value={
               isCitys.find((options) => options.id === item?.city_id)?.city_name
             }
@@ -286,7 +260,6 @@ function Rows({
 
 export default function Persons() {
   const dispatch = useDispatch()
-  let isCompanys = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies)
   const isCitys = useSelector(({ city }) => city?.city)
   const agents = useSelector(({ agents }) => agents?.agents)
   const location = useLocation()
@@ -294,12 +267,9 @@ export default function Persons() {
   const elements = useSelector(({ persons }) => persons)
   const [filteredData, setFilteredData] = React.useState([])
   const [inputText, setInputText] = React.useState('')
-
-  React.useInsertionEffect(() => {
-    if (user.role === 'insurance_company') {
-      isCompanys = [user.insurance_company]
-    }
-  }, [])
+  const cmps = useSelector(({ insuredCmp }) => insuredCmp?.insuredCompanies)
+  let isCompanys =
+    user.role === 'insurance_company' ? [user.insurance_company] : cmps
 
   return (
     <>
@@ -391,7 +361,7 @@ export default function Persons() {
             )
         )?.map((item, i) => (
           <Rows
-            key={item?.id ?? i}
+            key={i}
             item={item}
             dispatch={dispatch}
             datas={elements}

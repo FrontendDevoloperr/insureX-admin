@@ -120,6 +120,14 @@ input.error {
   height: 60px;
 }
 
+.ox-scroll .row select[multiple] option {
+  background: #008eff;
+  color: #e7f5ff;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 2px 0;
+}
+
 .ox-scroll .row>input[type="email"] {
   color: #1c7ed6;
 }

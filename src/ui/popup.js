@@ -22,7 +22,7 @@ function Popup() {
   const { toasts } = useToasterStore()
   let song = new Audio(songById)
 
-  React.useInsertionEffect(() => {
+  React.useEffect(() => {
     toasts
       .filter((t) => t.visible)
       .filter((_, i) => i >= 1)

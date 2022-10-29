@@ -215,13 +215,13 @@ export default function Persons() {
   const [inputText, setInputText] = React.useState('')
   const [elements, setElements] = React.useState(companies)
 
-  React.useInsertionEffect(() => {
+  React.useEffect(() => {
     if (user?.role === 'insurance_company') {
       setElements([user?.insurance_company])
       return
     }
     setElements(companies)
-  }, [user?.role, companies])
+  }, [user, companies])
 
   return (
     <>

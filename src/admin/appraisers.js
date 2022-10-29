@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 import {
   LoadingOverlay,
   Header,
@@ -6,16 +6,16 @@ import {
   Grid,
   Checkbox,
   MultiSelect,
-} from "@mantine/core";
-import axios from "axios";
-import { getFormData, _URL } from "../utils";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { PlusUser } from "../icons";
-import { Trash } from "tabler-icons-react";
-import { useSelector, useDispatch } from "react-redux";
-import SearchComponent from "../ui/search";
-import { getAppraiser } from "../redux/reducer/appraiser";
+} from '@mantine/core'
+import axios from 'axios'
+import { getFormData, _URL } from '../utils'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import { PlusUser } from '../icons'
+import { Trash } from 'tabler-icons-react'
+import { useSelector, useDispatch } from 'react-redux'
+import SearchComponent from '../ui/search'
+import { getAppraiser } from '../redux/reducer/appraiser'
 
 function Rows({
   item,
@@ -26,100 +26,105 @@ function Rows({
   appraiselCompanys,
   user,
 }) {
-  const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
-  const [isChecked, setIsChecked] = React.useState(item?.authentification);
-  const [isUpdated, setIsUpdated] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const dispatch = useDispatch()
+  const { register, handleSubmit } = useForm()
+  const [isChecked, setIsChecked] = React.useState(item?.authentification)
+  const [isUpdated, setIsUpdated] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [region, setRegion] = React.useState(
+    item?.region_id ?? isRegions[0]?.id,
+  )
   const [appraisalCompany, setAppraisalCompany] = React.useState(
-    item?.appraisers_company_id
-  );
+    item?.appraisers_company_id,
+  )
 
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
-    item?.insurance_company_persons_id
-  );
+    item?.insurance_company_persons_id,
+  )
 
   const onSubmit = (data) => {
-    data = { ...data, id: item.id };
+    data = { ...data, id: item.id }
 
-    data.appraisers_company_id = appraisalCompany;
+    data.appraisers_company_id = appraisalCompany
     data.insurance_company_persons_id =
-      insurance_company_ids ?? item?.insurance_company_persons_id;
+      insurance_company_ids ?? item?.insurance_company_persons_id
     !data?.appraisal_company_id &&
       (data.appraisal_company_id =
-        item?.appraisal_company_id ?? appraiselCompanys[0]?.id);
+        item?.appraisal_company_id ?? appraiselCompanys[0]?.id)
     !data?.insurance_company_id &&
       (data.insurance_company_id =
-        item?.insurance_company_id ?? isCompanys[0]?.id);
-    !data?.region_id && (data.region_id = item?.region_id ?? isRegions[0]?.id);
+        item?.insurance_company_id ?? isCompanys[0]?.id)
+    !data?.region_id && (data.region_id = region)
 
     if (data?.id) {
-      const formData = { ...data, role: "appraiser" };
-      delete formData.id;
+      const formData = { ...data, role: 'appraiser' }
+      delete formData.id
 
-      setIsLoading(true);
+      setIsLoading(true)
       axios
         .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData))
         .then((res) => {
-          setIsLoading(false);
-          toast.success("Updated");
-          setIsUpdated(false);
+          setIsLoading(false)
+          toast.success('Updated')
+          setIsUpdated(false)
         })
         .catch((err) => {
-          console.log(err);
-          setIsLoading(false);
-          toast.error("Error while updating data");
-        });
+          console.log(err)
+          setIsLoading(false)
+          toast.error('Error while updating data')
+        })
     }
     if (item?.new) {
-      const formData = data;
-      setIsLoading(true);
-      delete formData?.new;
-      delete formData?.id;
+      const formData = data
+      setIsLoading(true)
+      delete formData?.new
+      delete formData?.id
       axios
         .post(`${_URL}/appraisers`, getFormData(formData))
         .then((res) => {
-          setIsLoading(false);
+          setIsLoading(false)
           setElements(
-            [...datas, res.data.message.appraiser].filter((item) => !item.new)
-          );
-          toast.success("Data uploaded, new users created");
-          setIsUpdated(false);
+            [...datas, res.data.message.appraiser].filter((item) => !item.new),
+          )
+          toast.success('Data uploaded, new users created')
+          setIsUpdated(false)
         })
         .catch((err) => {
-          console.log(err);
-          setIsLoading(false);
-          toast.error("Error loading data, please try again");
-        });
+          console.log(err)
+          setIsLoading(false)
+          toast.error('Error loading data, please try again')
+        })
     }
-  };
+  }
 
   const getAppraiserFC = () => {
     axios.get(`${_URL}/appraisers`).then(({ data }) => {
       dispatch(
-        getAppraiser(data?.message?.appraisers?.filter((item) => !item?.delete))
-      );
-    });
-  };
+        getAppraiser(
+          data?.message?.appraisers?.filter((item) => !item?.delete),
+        ),
+      )
+    })
+  }
 
   const patchAutification = (data) => {
     const formData = {
       authentification: !isChecked,
-    };
-    setIsLoading(true);
+    }
+    setIsLoading(true)
     axios
       .patch(`${_URL}/appraisers/${item?.id}`, getFormData(formData))
       .then(({ data }) => {
-        setIsLoading(false);
-        setIsChecked(!isChecked);
-        getAppraiserFC();
+        setIsLoading(false)
+        setIsChecked(!isChecked)
+        getAppraiserFC()
       })
       .catch((err) => {
-        setIsLoading(false);
-        setIsChecked(isChecked);
-        console.log(err);
-      });
-  };
+        setIsLoading(false)
+        setIsChecked(isChecked)
+        console.log(err)
+      })
+  }
 
   return (
     <>
@@ -158,22 +163,22 @@ function Rows({
           className="input-multi-select"
           placeholder="choose..."
           style={{
-            width: "200px",
+            width: '200px',
           }}
           defaultValue={item?.insurance_company_persons_id}
           onChange={(e) => {
-            setIsUpdated(true);
-            setInsurance_company_ids(e);
+            setIsUpdated(true)
+            setInsurance_company_ids(e)
           }}
           data={isCompanys?.map((item) => ({
             value: item?.id,
             label: item?.title,
             custome_disabled:
-              user.role === "appraisal_company"
+              user.role === 'appraisal_company'
                 ? item?.id !== user?.appraisal_company?.id
-                  ? "true"
-                  : "false"
-                : "",
+                  ? 'true'
+                  : 'false'
+                : '',
           }))}
           transition="pop-top-left"
           transitionDuration={80}
@@ -200,22 +205,22 @@ function Rows({
           className="input-multi-select"
           placeholder="choose..."
           style={{
-            width: "200px",
+            width: '200px',
           }}
           defaultValue={item?.appraisers_company_id}
           onChange={(e) => {
-            setIsUpdated(true);
-            setAppraisalCompany(e);
+            setIsUpdated(true)
+            setAppraisalCompany(e)
           }}
           data={appraiselCompanys?.map((item) => ({
             value: item?.id,
             label: item?.appraisal_company_name,
             custome_disabled:
-              user.role === "appraisal_company"
+              user.role === 'appraisal_company'
                 ? item?.id !== user.appraisal_companies.id
-                  ? "true"
-                  : "false"
-                : "",
+                  ? 'true'
+                  : 'false'
+                : '',
           }))}
           transition="pop-top-left"
           transitionDuration={80}
@@ -252,10 +257,11 @@ function Rows({
           {...register(`email`)}
         />
         <select
-          onInput={(e) => setIsUpdated(true)}
-          value={
-            isRegions?.find((options) => options.id === item?.region_id)?.id
-          }
+          onInput={(e) => {
+            setIsUpdated(true)
+            setRegion(e.target.value)
+          }}
+          value={region}
           {...register(`region_id`)}
         >
           {isRegions?.map((options) => (
@@ -271,7 +277,7 @@ function Rows({
           {...register(`address`)}
         />
         {isUpdated ? (
-          <button type="submit">{item?.id ? "Update" : "Create"}</button>
+          <button type="submit">{item?.id ? 'Update' : 'Create'}</button>
         ) : (
           <div
             title="Удалить"
@@ -279,29 +285,27 @@ function Rows({
             className="delete"
             onClick={() => {
               if (!item?.id) {
-                setElements(datas.filter((item) => item?.new !== true));
+                setElements(datas.filter((item) => item?.new !== true))
               }
               if (item?.id) {
-                setIsLoading(true);
+                setIsLoading(true)
                 axios
                   .patch(
                     `${_URL}/appraisers/${item.id}`,
                     getFormData({
                       delete: true,
-                    })
+                    }),
                   )
                   .then((res) => {
-                    setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
-                    );
-                    toast.success("Removed");
+                    setIsLoading(false)
+                    setElements(datas.filter((__res) => __res?.id !== item?.id))
+                    toast.success('Removed')
                   })
                   .catch((err) => {
-                    console.log(err);
-                    setIsLoading(false);
-                    toast.error("Error when deleting data");
-                  });
+                    console.log(err)
+                    setIsLoading(false)
+                    toast.error('Error when deleting data')
+                  })
               }
             }}
           >
@@ -312,67 +316,67 @@ function Rows({
         )}
       </form>
     </>
-  );
+  )
 }
 
 export default function Persons() {
-  const [elements, setElements] = React.useState([]);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isRegions, setIsRegions] = React.useState([]);
-  const [appraiselCompanys, setAppraiselCompanys] = React.useState([]);
-  const user = useSelector((state) => state.user);
-  const GlobalState = useSelector((state) => state);
-  const [filteredData, setFilteredData] = React.useState([]);
-  const [inputText, setInputText] = React.useState("");
+  const [elements, setElements] = React.useState([])
+  const [isCompanys, setIsCompanys] = React.useState([])
+  const [isRegions, setIsRegions] = React.useState([])
+  const [appraiselCompanys, setAppraiselCompanys] = React.useState([])
+  const user = useSelector((state) => state.user)
+  const GlobalState = useSelector((state) => state)
+  const [filteredData, setFilteredData] = React.useState([])
+  const [inputText, setInputText] = React.useState('')
 
-  React.useInsertionEffect(() => {
-    if (user.role === "superadmin") {
-      setElements(GlobalState?.appraiser?.appraiser);
+  React.useEffect(() => {
+    if (user.role === 'superadmin') {
+      setElements(GlobalState?.appraiser?.appraiser)
     }
-    if (user.role === "insurance_company") {
+    if (user.role === 'insurance_company') {
       setElements(
         GlobalState?.appraiser?.appraiser?.filter(
           (res) =>
             Number(res?.insurance_company_id) ===
-            Number(user.insurance_company.id)
-        )
-      );
+            Number(user.insurance_company.id),
+        ),
+      )
     }
-    if (user.role === "appraisal_company") {
+    if (user.role === 'appraisal_company') {
       setElements(
         GlobalState?.appraiser?.appraiser?.filter(
           (res) =>
             Number(res?.appraisal_company_id) ===
-            Number(user.appraisal_company.id)
-        )
-      );
+            Number(user.appraisal_company.id),
+        ),
+      )
     }
-  }, [GlobalState]);
+  }, [GlobalState, user])
 
-  React.useInsertionEffect(() => {
-    if (user.role === "superadmin" || user.role === "appraisal_company") {
+  React.useEffect(() => {
+    if (user.role === 'superadmin' || user.role === 'appraisal_company') {
       axios.get(`${_URL}/insurance-companies?delete=false`).then((res) => {
         setIsCompanys(
           res?.data?.message?.insurance_companies?.filter(
-            (item) => !item?.delete
-          )
-        );
-      });
+            (item) => !item?.delete,
+          ),
+        )
+      })
     }
-    if (user.role === "insurance_company") {
+    if (user.role === 'insurance_company') {
       setIsCompanys(
-        [user.insurance_company] // res?.data?.message?.insurance_companies
-      );
+        [user.insurance_company], // res?.data?.message?.insurance_companies
+      )
     }
-    if (user.role === "superadmin" || user.role === "insurance_company") {
+    if (user.role === 'superadmin' || user.role === 'insurance_company') {
       axios.get(`${_URL}/appraisal-companies?delete=false`).then((res) => {
-        setAppraiselCompanys(res?.data?.message?.appraisal_companies);
-      });
-    } else setAppraiselCompanys([user.appraisal_company]);
+        setAppraiselCompanys(res?.data?.message?.appraisal_companies)
+      })
+    } else setAppraiselCompanys([user.appraisal_company])
     axios.get(`${_URL}/regions`).then((res) => {
-      setIsRegions(res?.data?.message?.regions);
-    });
-  }, [GlobalState]);
+      setIsRegions(res?.data?.message?.regions)
+    })
+  }, [GlobalState, user])
 
   return (
     <>
@@ -384,16 +388,16 @@ export default function Persons() {
               onClick={() => {
                 if (elements.filter((item) => item?.new)?.length) {
                   toast.error(
-                    "You cannot add new entries until you finish the previous one."
-                  );
+                    'You cannot add new entries until you finish the previous one.',
+                  )
                 } else {
-                  setElements(elements?.concat([{ new: true }])?.reverse());
-                  toast.success("You can fill in a new entry");
+                  setElements(elements?.concat([{ new: true }])?.reverse())
+                  toast.success('You can fill in a new entry')
                 }
               }}
             >
               <span>Add </span>
-              <PlusUser color={"#fff"} />
+              <PlusUser color={'#fff'} />
             </button>
           </Grid.Col>
           <Grid.Col span={3}>
@@ -402,11 +406,11 @@ export default function Persons() {
               setFilteredData={setFilteredData}
               setInputText={setInputText}
               type={[
-                "first_name",
-                "second_name",
-                "phone",
-                "passport_id",
-                "email",
+                'first_name',
+                'second_name',
+                'phone',
+                'passport_id',
+                'email',
               ]}
             />
           </Grid.Col>
@@ -414,54 +418,54 @@ export default function Persons() {
       </Header>
       <div
         className="ox-scroll"
-        style={{ minHeight: "max-content", overflow: "hidden" }}
+        style={{ minHeight: 'max-content', overflow: 'hidden' }}
       >
         <div className="row">
           <input
             className="disabled"
             readOnly={true}
-            value={"auth"}
-            style={{ width: "50px" }}
+            value={'auth'}
+            style={{ width: '50px' }}
           />
           <input
             className="disabled multiples-select"
             readOnly={true}
-            value={"insurance_company "}
+            value={'insurance_company '}
             style={{
-              width: "200px",
+              width: '200px',
             }}
           />
           <input
             className="disabled"
             readOnly={true}
-            value={"appraisal_company"}
+            value={'appraisal_company'}
             style={{
-              width: "200px",
+              width: '200px',
             }}
           />
-          <input className="disabled" readOnly={true} value={"fist_name"} />
-          <input className="disabled" readOnly={true} value={"last_name"} />
-          <input className="disabled" readOnly={true} value={"phone"} />
-          <input className="disabled" readOnly={true} value={"Login ID"} />
-          <input className="disabled" readOnly={true} value={"email"} />
-          <input className="disabled" readOnly={true} value={"region"} />
-          <input className="disabled" readOnly={true} value={"address"} />
+          <input className="disabled" readOnly={true} value={'fist_name'} />
+          <input className="disabled" readOnly={true} value={'last_name'} />
+          <input className="disabled" readOnly={true} value={'phone'} />
+          <input className="disabled" readOnly={true} value={'Login ID'} />
+          <input className="disabled" readOnly={true} value={'email'} />
+          <input className="disabled" readOnly={true} value={'region'} />
+          <input className="disabled" readOnly={true} value={'address'} />
           <input
             className="disabled"
             style={{ width: 66 }}
             readOnly={true}
-            value={"delete"}
+            value={'delete'}
           />
         </div>
       </div>
       <div
         className="ox-scroll"
         onScroll={(e) => {
-          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
+          ;[...Array(document.querySelectorAll('.ox-scroll').length)].map(
             (_, i) =>
-              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
-                e.target.scrollLeft)
-          );
+              (document.querySelectorAll('.ox-scroll')[i].scrollLeft =
+                e.target.scrollLeft),
+          )
         }}
       >
         {(inputText?.length
@@ -469,7 +473,7 @@ export default function Persons() {
           : elements?.filter((resp) => !resp.delete)
         )
           .sort(
-            (a, b) => Number(b.authentification) - Number(a.authentification)
+            (a, b) => Number(b.authentification) - Number(a.authentification),
           )
           .map((item, i) => (
             <Rows
@@ -485,5 +489,5 @@ export default function Persons() {
           ))}
       </div>
     </>
-  );
+  )
 }
