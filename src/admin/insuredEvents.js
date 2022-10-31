@@ -566,7 +566,7 @@ function SendAppraiserMessage(
         ?.first_name,
       GlobalState?.persons?.find((res) => Number(res?.id) === Number(customer))
         ?.first_name,
-      item?.id,
+      caseID,
       nameEvent,
       GlobalState?.appraiser?.appraiser?.find(
         (res) => Number(res?.id) === Number(changeId)

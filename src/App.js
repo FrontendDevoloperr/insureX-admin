@@ -11,7 +11,7 @@ import {
 } from './redux/reducer'
 
 function App() {
-  console.log('new version GMT +5 23:00 29/10/2022/year')
+  console.log('new version GMT +5 23:00 31/10/2022/year')
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const user = useSelector((state) => state.user)
