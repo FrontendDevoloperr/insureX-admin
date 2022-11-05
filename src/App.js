@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AdminPanel from "./admin";
 import Login from "./login";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,7 +13,6 @@ import {
 function App() {
   console.log("new version GMT +5 23:00 03/10/2022/year");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   let token = JSON.parse(
     localStorage.getItem("admin-panel-token-insure-x") ?? "{}"
@@ -34,7 +33,7 @@ function App() {
         dispatch(setRole(token?.role));
         dispatch(isInsuranceCompany(token?.insurance_company));
         dispatch(isAppraisalCompany(token?.appraisal_company));
-      } else navigate("/login");
+      }
     }
   }, [user?.auth, token]);
   return (
