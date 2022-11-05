@@ -20,7 +20,7 @@ import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
 
 function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
   const dispatch = useDispatch();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [cityValue, setCityValue] = React.useState(
@@ -37,16 +37,12 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
 
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
-    // !data.insurance_company_ids &&
-    //   (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
-
     !data.region_id && (data.region_id = item.region_id);
     data.city_id = !!data?.city_id.length ? data?.city_id : item?.city_id;
     if (data?.id) {
       setIsLoading(true);
-      data.insurance_company_id =
-        data.insurance_company_ids || insuranceCompany;
-      delete data.insurance_company_ids;
+      data.insurance_company_ids = insuranceCompany;
+      data.insurance_company_id = insuranceCompany;
       delete data.id;
       axios
         .patch(`${_URL}/appraisal-companies/${item?.id}`, data)
@@ -147,22 +143,6 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           defaultValue={item?.oao_ie_number}
           {...register(`oao_ie_number`)}
         />
-        {/* <select
-          className="multiples-select"
-          onInput={(e) => setIsUpdated(true)}
-          defaultValue={
-            isCompanys?.find((resp) =>
-              item?.insurance_company_ids?.some((res) => res === resp?.id),
-            )?.id
-          }
-          {...register(`insurance_company_ids`)}
-        >
-          {isCompanys?.map((options) => (
-            <option key={options.id} value={options.id}>
-              {options.title}
-            </option>
-          ))}
-        </select> */}
 
         <MultiSelect
           className="input-multi-select"
@@ -170,11 +150,11 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           style={{
             width: "200px",
           }}
-          defaultValue={item?.insurance_company_ids}
-          {...register(`insurance_company_ids`)}
+          defaultValue={item?.insurance_company_ids || insuranceCompany}
           onChange={(e) => {
             setIsUpdated(true);
             setInsuranceCompany(e);
+            setValue("insurance_company_ids", e);
           }}
           data={isCompanys?.map((item) => ({
             value: item?.id,
@@ -301,7 +281,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
   );
 }
 
-export default function Persons() {
+export default function AppComps() {
   const [elements, setElements] = React.useState([]);
   const [isCompanys, setIsCompanys] = React.useState([]);
   const [isCitys, setIsCitys] = React.useState([]);
