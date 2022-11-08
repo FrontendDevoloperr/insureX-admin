@@ -16,7 +16,7 @@ import { GoogDriveIcon, PlusUser } from "../icons";
 import { Trash } from "tabler-icons-react";
 import { setCases } from "../redux/reducer/cases";
 import SearchComponent from "../ui/search";
-import { getEventsAndCasesFC } from ".";
+import { getEventsAndCasesFC } from "../utils/request";
 
 function Rows({
   item,
@@ -155,7 +155,7 @@ function Rows({
                 GlobalState,
                 item?.id
               );
-              getEventsAndCasesFC(dispatch, user);
+              getEventsAndCasesFC(dispatch, user, "/events");
             })
             .catch((err) => {
               console.log(err);
@@ -175,9 +175,10 @@ function Rows({
       axios
         .post(`${_URL}/insurance-case`, getFormData(formData))
         .then((res) => {
-          toast.success("Data uploaded, new event created");
+          getEventsAndCasesFC(dispatch, user, "/events");
           setIsUpdated(false);
-          getEventsAndCasesFC(dispatch, user);
+          setIsLoading(false);
+          toast.success("Data uploaded, new event created");
         })
         .catch((err) => {
           console.log(err);
@@ -215,7 +216,14 @@ function Rows({
             {...register(`appraisal_company_id`)}
           >
             {appComp?.map((options) => (
-              <option key={options?.id} value={options?.id}>
+              <option
+                disabled={
+                  user?.role === "appraisal_company" &&
+                  options?.id !== user?.appraisal_company?.id
+                }
+                key={options?.id}
+                value={options?.id}
+              >
                 {options?.appraisal_company_name}
               </option>
             ))}
@@ -318,7 +326,14 @@ function Rows({
             {...register(`insurance_company_id`)}
           >
             {isCompanys?.map((options) => (
-              <option key={options.id} value={options.id}>
+              <option
+                disabled={
+                  user?.role === "insurance_company" &&
+                  options?.id !== user?.insurance_company?.id
+                }
+                key={options.id}
+                value={options.id}
+              >
                 {options.title}
               </option>
             ))}
@@ -583,7 +598,7 @@ export default function InsuredEvents() {
   const dispatch = useDispatch();
   const person = useSelector(({ persons }) => persons);
   const events = useSelector(({ event }) => event);
-  const elements = useSelector(({ cases }) => cases);
+  const cases = useSelector(({ cases }) => cases);
   const { insuredCompanies } = useSelector(({ insuredCmp }) => insuredCmp);
   const { city } = useSelector(({ city }) => city);
   const { region } = useSelector(({ region }) => region);
@@ -596,7 +611,12 @@ export default function InsuredEvents() {
   const [loading, setLoading] = React.useState(false);
   const GlobalState = useSelector((state) => state);
   const [filteredData, setFilteredData] = React.useState([]);
+  const [elements, setElements] = React.useState(cases ?? []);
   const [inputText, setInputText] = React.useState("");
+
+  React.useEffect(() => {
+    setElements(cases);
+  }, [cases]);
 
   return (
     <>

@@ -94,6 +94,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
   };
 
   const patchAutification = (data) => {
+    if (!item.id) return setIsChecked(false);
     const formData = {
       authentification: !isChecked,
       update: "authentification",
@@ -226,6 +227,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
               if (aa < bb) return 1;
               return 0;
             })
+
             .map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.city_name}
@@ -413,6 +415,11 @@ export default function AppComps() {
           ? filteredData
           : elements?.filter((resp) => !resp.delete)
         )
+          .sort((a, b) => {
+            if (a?.id > b?.id) return -1;
+            if (a?.id < b?.id) return 1;
+            return 0;
+          })
           .sort(
             (a, b) => Number(b.authentification) - Number(a.authentification)
           )

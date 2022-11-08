@@ -11,7 +11,6 @@ import {
 } from "./redux/reducer";
 
 function App() {
-  console.log("new version GMT +5 23:00 03/10/2022/year");
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   let token = JSON.parse(

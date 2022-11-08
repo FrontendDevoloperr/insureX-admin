@@ -10,6 +10,7 @@ import appraiser from "./reducer/appraiser";
 import appComp from "./reducer/appraiserComp";
 import cases from "./reducer/cases";
 import event from "./reducer/events";
+import loading from "./reducer/loading";
 
 export default configureStore({
   reducer: {
@@ -24,5 +25,6 @@ export default configureStore({
     appComp,
     cases,
     event,
+    loading,
   },
 });

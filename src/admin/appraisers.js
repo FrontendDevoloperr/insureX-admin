@@ -1,4 +1,9 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useForm } from "react-hook-form";
+import axios from "axios";
+import { Trash } from "tabler-icons-react";
+import toast from "react-hot-toast";
 import {
   LoadingOverlay,
   Header,
@@ -7,15 +12,10 @@ import {
   Checkbox,
   MultiSelect,
 } from "@mantine/core";
-import axios from "axios";
 import { getFormData, _URL } from "../utils";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
-import { Trash } from "tabler-icons-react";
-import { useSelector, useDispatch } from "react-redux";
 import SearchComponent from "../ui/search";
-import { getAppraiser } from "../redux/reducer/appraiser";
+import { getAppraiserCompFC } from "../utils/request";
 
 function Rows({
   item,
@@ -97,15 +97,8 @@ function Rows({
     }
   };
 
-  const getAppraiserFC = () => {
-    axios.get(`${_URL}/appraisers`).then(({ data }) => {
-      dispatch(
-        getAppraiser(data?.message?.appraisers?.filter((item) => !item?.delete))
-      );
-    });
-  };
-
   const patchAutification = (data) => {
+    if (!item.id) return setIsChecked(false);
     const formData = {
       authentification: !isChecked,
     };
@@ -115,7 +108,7 @@ function Rows({
       .then(({ data }) => {
         setIsLoading(false);
         setIsChecked(!isChecked);
-        getAppraiserFC();
+        getAppraiserCompFC(dispatch);
       })
       .catch((err) => {
         setIsLoading(false);
@@ -135,28 +128,6 @@ function Rows({
           onChange={patchAutification}
           className="checkbox_inp"
         />
-        {/* <select
-          className="multiples-select"
-          onInput={(e) => {
-            e.target.value !== item?.insurance_company_id
-              ? setIsUpdated(true)
-              : setIsUpdated(false);
-            item.insurance_company_id = e.target.value;
-          }}
-          value={
-            isCompanys?.filter(
-              (options) => options.id === item?.insurance_company_id
-            )[0]?.id
-          }
-          {...register(`insurance_company_id`)}
-        >
-          {isCompanys?.map((options) => (
-            <option key={options.id} value={options.id}>
-              {options.title}
-            </option>
-          ))}
-        </select> */}
-
         <MultiSelect
           className="input-multi-select"
           placeholder="choose..."
@@ -182,23 +153,6 @@ function Rows({
           transitionDuration={80}
           transitionTimingFunction="ease"
         />
-
-        {/* <select
-          onInput={(e) => setIsUpdated(true)}
-          defaultValue={
-            appraiselCompanys?.find(
-              (options) => options?.id === item?.appraisal_company_id,
-            )?.id
-          }
-          {...register(`appraisal_company_id`)}
-        >
-          {appraiselCompanys?.map((options) => (
-            <option key={options?.id} value={options?.id}>
-              {options?.appraisal_company_name}
-            </option>
-          ))}
-        </select> */}
-
         <MultiSelect
           className="input-multi-select"
           placeholder="choose..."
@@ -320,63 +274,20 @@ function Rows({
 }
 
 export default function Persons() {
-  const [elements, setElements] = React.useState([]);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isRegions, setIsRegions] = React.useState([]);
-  const [appraiselCompanys, setAppraiselCompanys] = React.useState([]);
-  const user = useSelector((state) => state.user);
   const GlobalState = useSelector((state) => state);
+  const [elements, setElements] = React.useState(
+    GlobalState?.appraiser?.appraiser ?? []
+  );
+  const user = GlobalState?.user;
   const [filteredData, setFilteredData] = React.useState([]);
   const [inputText, setInputText] = React.useState("");
+  const isCompanys = GlobalState?.insuredCmp?.insuredCompanies;
+  const isRegions = GlobalState?.region?.region;
+  const appraiselCompanys = GlobalState?.appComp;
 
   React.useEffect(() => {
-    if (user.role === "superadmin") {
-      setElements(GlobalState?.appraiser?.appraiser);
-    }
-    if (user.role === "insurance_company") {
-      setElements(
-        GlobalState?.appraiser?.appraiser?.filter(
-          (res) =>
-            Number(res?.insurance_company_id) ===
-            Number(user.insurance_company.id)
-        )
-      );
-    }
-    if (user.role === "appraisal_company") {
-      setElements(
-        GlobalState?.appraiser?.appraiser?.filter((res) =>
-          res?.appraisers_company_id?.includes(
-            Number(user?.appraisal_company?.id)
-          )
-        )
-      );
-    }
-  }, [GlobalState, user]);
-
-  React.useEffect(() => {
-    if (user.role === "superadmin" || user.role === "appraisal_company") {
-      axios.get(`${_URL}/insurance-companies?delete=false`).then((res) => {
-        setIsCompanys(
-          res?.data?.message?.insurance_companies?.filter(
-            (item) => !item?.delete
-          )
-        );
-      });
-    }
-    if (user.role === "insurance_company") {
-      setIsCompanys(
-        [user.insurance_company] // res?.data?.message?.insurance_companies
-      );
-    }
-    if (user.role === "superadmin" || user.role === "insurance_company") {
-      axios.get(`${_URL}/appraisal-companies?delete=false`).then((res) => {
-        setAppraiselCompanys(res?.data?.message?.appraisal_companies);
-      });
-    } else setAppraiselCompanys([user.appraisal_company]);
-    axios.get(`${_URL}/regions`).then((res) => {
-      setIsRegions(res?.data?.message?.regions);
-    });
-  }, [GlobalState, user]);
+    setElements(GlobalState?.appraiser?.appraiser);
+  }, [GlobalState?.appraiser?.appraiser]);
 
   return (
     <>
@@ -472,6 +383,11 @@ export default function Persons() {
           ? filteredData
           : elements?.filter((resp) => !resp.delete)
         )
+          .sort((a, b) => {
+            if (a?.id > b?.id) return -1;
+            if (a?.id < b?.id) return 1;
+            return 0;
+          })
           .sort(
             (a, b) => Number(b.authentification) - Number(a.authentification)
           )

@@ -1,6 +1,13 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Navbar, Text, createStyles, AppShell, Header } from "@mantine/core";
+import {
+  Navbar,
+  Text,
+  createStyles,
+  AppShell,
+  Header,
+  LoadingOverlay,
+} from "@mantine/core";
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import Persons from "./persons";
 import Agents from "./agents";
@@ -14,18 +21,17 @@ import { LogoutIcon } from "../icons";
 import Logo from "../icons/logo.svg";
 import Popup from "../ui/popup";
 import { logout } from "../redux/reducer";
-import { getInsuredCompanies } from "../redux/reducer/insuredCompanies";
-import { getCity } from "../redux/reducer/city";
-import { getRegion } from "../redux/reducer/region";
-import { getAgents } from "../redux/reducer/agents";
-import { getSdp } from "../redux/reducer/sdp";
-import { setEvents } from "../redux/reducer/events";
-import { setCases } from "../redux/reducer/cases";
-import { getPersons } from "../redux/reducer/insuredPerson";
-import axios from "axios";
-import { _URL } from "../utils";
-import { getAppraiser } from "../redux/reducer/appraiser";
-import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
+import {
+  getAgentsFC,
+  getAppraiserCompFC,
+  getAppraiserFC,
+  getInsuredCompaniesFC,
+  getInsuredPersonFC,
+  getSdpFC,
+  getEventsAndCasesFC,
+  cityFC,
+  regionFC,
+} from "../utils/request";
 
 const useStyles = createStyles((theme, _params, getRef) => {
   const icon = getRef("icon");
@@ -110,7 +116,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
 const tabs = {
   superadmin: [
     {
-      link: "/insurance-company",
+      link: "/insurance-companies",
       label: "INSURANCE COMPANIES",
       element: <InsuredCompanies />,
     },
@@ -118,7 +124,7 @@ const tabs = {
     { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
 
     {
-      link: "/appraiser-company",
+      link: "/appraisal-companies",
       label: "APPRAISAL COMPANIES",
       element: <AppraiserCompanies />,
     },
@@ -128,7 +134,7 @@ const tabs = {
   ],
   insurance_company: [
     {
-      link: "/insurance-company",
+      link: "/insurance-companies",
       label: "INSURANCE COMPANIES",
       element: <InsuredCompanies />,
     },
@@ -136,7 +142,7 @@ const tabs = {
     { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
 
     {
-      link: "/appraiser-company",
+      link: "/appraisal-companies",
       label: "APPRAISAL COMPANIES",
       element: <AppraiserCompanies />,
     },
@@ -146,58 +152,20 @@ const tabs = {
   ],
   appraisal_company: [
     {
-      link: "/appraiser-company",
+      link: "/appraisal-companies",
       label: "APPRAISAL COMPANIES",
       element: <AppraiserCompanies />,
     },
     { link: "/appraisers", label: "APPRAISERS", element: <Appraisers /> },
-    // { link: "/persons", label: "INSURED PERSONS", element: <Persons /> },
     { link: "/events", label: "INSURED EVENTS", element: <InsuredEvent /> },
   ],
-};
-
-export const getSdpFC = (dispatch) => {
-  axios.get(`${_URL}/sdp`).then(({ data }) => {
-    dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
-  });
-};
-
-export const getInsuredPersonFC = (dispatch) => {
-  axios
-    .get(`${_URL}/insured-persons`)
-    .then(({ data }) => {
-      dispatch(
-        getPersons(
-          data?.message?.insured_persons?.filter((item) => !item?.delete)
-        )
-      );
-    })
-    .catch((err) => {});
-};
-
-export const getEventsAndCasesFC = async (dispatch, user) => {
-  await axios.get(`${_URL}/insurance-case`).then(({ data }) => {
-    dispatch(setCases(data?.message?.insurance_cases));
-    axios
-      .get(
-        `${_URL}/insured-events${
-          user.role === "insurance_company"
-            ? `?insurance_company_id=${user.insurance_company.id}`
-            : user.role === "appraisal_company"
-            ? `?appraisal_company_id=${user.appraisal_company.id}`
-            : user.role === "superadmin" && ""
-        }`
-      )
-      .then(({ data }) => {
-        dispatch(setEvents(data?.message?.insured_events));
-      });
-  });
 };
 
 export default function AdminPanel() {
   const location = useLocation();
   const dispatch = useDispatch();
   const user = useSelector(({ user }) => user);
+  const loading = useSelector(({ loading }) => loading);
   const { classes, cx } = useStyles();
   const links = tabs[user?.role].map((item) => (
     <NavLink className={cx(classes.link)} to={item.link} key={item.label}>
@@ -215,85 +183,23 @@ export default function AdminPanel() {
     window.location.reload();
   }
 
-  const getInsuredCompaniesFC = () => {
-    axios
-      .get(`${_URL}/insurance-companies`)
-      .then(({ data }) => {
-        dispatch(
-          getInsuredCompanies(
-            data?.message?.insurance_companies?.filter((item) => !item?.delete)
-          )
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  React.useInsertionEffect(() => {
+    getInsuredCompaniesFC(dispatch, user, location.pathname);
 
-  const cityFC = () => {
-    axios
-      .get(`${_URL}/city`)
-      .then(({ data }) => {
-        dispatch(getCity(data?.message?.cities));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const regionFC = () => {
-    axios
-      .get(`${_URL}/regions`)
-      .then(({ data }) => {
-        dispatch(getRegion(data?.message?.regions));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const agentsFC = () => {
-    axios
-      .get(`${_URL}/agents/select`)
-      .then(({ data }) => {
-        dispatch(
-          getAgents(data?.message?.agents?.filter((item) => !item?.delete))
-        );
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getAppraiserFC = () => {
-    axios.get(`${_URL}/appraisers`).then(({ data }) => {
-      dispatch(
-        getAppraiser(data?.message?.appraisers?.filter((item) => !item?.delete))
-      );
-    });
-  };
-
-  const getAppraiserCompFC = () => {
-    axios.get(`${_URL}/appraisal-companies`).then(({ data }) => {
-      dispatch(
-        getAppraiserCompanies(
-          data?.message?.appraisal_companies?.filter((item) => !item?.delete)
-        )
-      );
-    });
-  };
+    getAgentsFC(dispatch, user, location.pathname);
+    getInsuredPersonFC(dispatch, user, location.pathname);
+    getSdpFC(dispatch, location.pathname);
+    getAppraiserFC(dispatch, location.pathname);
+    getAppraiserCompFC(dispatch, location.pathname);
+    getEventsAndCasesFC(dispatch, user, location.pathname);
+    console.clear();
+    console.log("new version GMT +5 19:00 07/11/2022/year");
+  }, [location.pathname, dispatch, user]);
 
   React.useInsertionEffect(() => {
-    getInsuredCompaniesFC();
-    cityFC();
-    regionFC();
-    agentsFC();
-    getInsuredPersonFC(dispatch);
-    getSdpFC(dispatch);
-    getAppraiserFC();
-    getAppraiserCompFC();
-    getEventsAndCasesFC(dispatch, user);
-  }, [location.pathname]);
+    cityFC(dispatch);
+    regionFC(dispatch);
+  }, []);
 
   return (
     <AppShell
@@ -344,6 +250,7 @@ export default function AdminPanel() {
         </Header>
       }
     >
+      <LoadingOverlay visible={loading} />
       <Routes>{RootRoutes}</Routes>
     </AppShell>
   );

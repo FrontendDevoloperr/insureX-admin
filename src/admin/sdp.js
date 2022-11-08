@@ -1,93 +1,94 @@
-import React from 'react'
+import React from "react";
 import {
   LoadingOverlay,
   Header,
   ActionIcon,
   Grid,
   Checkbox,
-} from '@mantine/core'
-import axios from 'axios'
-import { _URL, getFormData, supplier_types } from '../utils'
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
-import { PlusUser } from '../icons'
-import { Trash } from 'tabler-icons-react'
-import { useSelector, useDispatch } from 'react-redux'
-import { getSdp } from '../redux/reducer/sdp'
-import SearchComponent from '../ui/search'
+} from "@mantine/core";
+import axios from "axios";
+import { _URL, getFormData, supplier_types } from "../utils";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { PlusUser } from "../icons";
+import { Trash } from "tabler-icons-react";
+import { useSelector, useDispatch } from "react-redux";
+import { getSdp } from "../redux/reducer/sdp";
+import SearchComponent from "../ui/search";
 
 function Rows({ item, isCompanys, isCitys, dispatch }) {
-  const { register, handleSubmit } = useForm()
-  const [isUpdated, setIsUpdated] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [isChecked, setIsChecked] = React.useState(item?.authentification)
+  const { register, handleSubmit } = useForm();
+  const [isUpdated, setIsUpdated] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [isChecked, setIsChecked] = React.useState(item?.authentification);
 
   const onSubmit = (data) => {
-    data = { ...data, id: item.id }
+    data = { ...data, id: item.id };
     !data.insurance_company_ids &&
-      (data.insurance_company_ids = item?.insurance_company_ids?.[0])
-    !data.city_id && (data.city_id = item.city_id)
+      (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
+    !data.city_id && (data.city_id = item.city_id);
     if (data?.id) {
-      let formData = { ...data, role: 'sdp' }
-      delete formData.id
-      setIsLoading(true)
+      let formData = { ...data, role: "sdp" };
+      delete formData.id;
+      setIsLoading(true);
       axios
         .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
         .then((res) => {
-          setIsLoading(false)
-          toast.success('Updated')
-          setIsUpdated(false)
+          setIsLoading(false);
+          toast.success("Updated");
+          setIsUpdated(false);
         })
         .catch((err) => {
-          console.log(err)
-          setIsLoading(false)
-          toast.error('Error while updating data')
-        })
+          console.log(err);
+          setIsLoading(false);
+          toast.error("Error while updating data");
+        });
     }
     if (!item.id) {
-      setIsLoading(true)
-      delete data?.new
-      delete data?.id
+      setIsLoading(true);
+      delete data?.new;
+      delete data?.id;
       axios
         .post(`${_URL}/sdp`, getFormData(data))
         .then((res) => {
-          setIsLoading(false)
-          getSdpFC(dispatch)
-          toast.success('Data uploaded, new users created')
-          setIsUpdated(false)
+          setIsLoading(false);
+          getSdpFC(dispatch);
+          toast.success("Data uploaded, new users created");
+          setIsUpdated(false);
         })
         .catch((err) => {
-          console.log(err)
-          setIsLoading(false)
-          toast.error('Error loading data, please try again')
-        })
+          console.log(err);
+          setIsLoading(false);
+          toast.error("Error loading data, please try again");
+        });
     }
-  }
+  };
 
   const getSdpFC = (dispatch) => {
     axios.get(`${_URL}/sdp`).then(({ data }) => {
-      dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)))
-    })
-  }
+      dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
+    });
+  };
 
   const patchAutification = (data) => {
+    if (!item.id) return setIsChecked(false);
     const formData = {
       authentification: !isChecked,
-    }
-    setIsLoading(true)
+    };
+    setIsLoading(true);
     axios
       .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
       .then(({ data }) => {
-        setIsLoading(false)
-        setIsChecked(!isChecked)
-        getSdpFC()
+        setIsLoading(false);
+        setIsChecked(!isChecked);
+        getSdpFC();
       })
       .catch((err) => {
-        setIsChecked(isChecked)
-        setIsLoading(false)
-        console.log(err)
-      })
-  }
+        setIsChecked(isChecked);
+        setIsLoading(false);
+        console.log(err);
+      });
+  };
 
   return (
     <form className="row" onSubmit={handleSubmit(onSubmit)}>
@@ -104,7 +105,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         onInput={() => setIsUpdated(true)}
         defaultValue={
           isCompanys?.filter(
-            (options) => options.id === item?.insurance_company_ids?.[0],
+            (options) => options.id === item?.insurance_company_ids?.[0]
           )[0]?.id
         }
         {...register(`insurance_company_ids`)}
@@ -183,7 +184,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         onInput={(e) => setIsUpdated(true)}
         defaultValue={
           supplier_types?.find((options) =>
-            item?.supplier_type_ids?.includes(options?.id),
+            item?.supplier_type_ids?.includes(options?.id)
           )?.id
         }
         {...register(`supplier_type_ids`)}
@@ -196,7 +197,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
       </select>
       {isUpdated ? (
         <button type="submit" onClick={() => {}}>
-          {item?.id ? 'Update' : 'Create'}
+          {item?.id ? "Update" : "Create"}
         </button>
       ) : (
         <div
@@ -205,27 +206,27 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
           className="delete"
           onClick={() => {
             if (!item?.id) {
-              getSdpFC(dispatch)
+              getSdpFC(dispatch);
             }
             if (item?.id) {
-              setIsLoading(true)
+              setIsLoading(true);
               axios
                 .patch(
                   `${_URL}/sdp/${item.id}`,
                   getFormData({
                     delete: true,
-                  }),
+                  })
                 )
                 .then((res) => {
-                  setIsLoading(false)
-                  getSdpFC(dispatch)
-                  toast.success('Deleted')
+                  setIsLoading(false);
+                  getSdpFC(dispatch);
+                  toast.success("Deleted");
                 })
                 .catch((err) => {
-                  console.log(err)
-                  setIsLoading(false)
-                  toast.error('Error when deleting data')
-                })
+                  console.log(err);
+                  setIsLoading(false);
+                  toast.error("Error when deleting data");
+                });
             }
           }}
         >
@@ -235,19 +236,19 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         </div>
       )}
     </form>
-  )
+  );
 }
 
 export default function Sdp() {
-  const dispatch = useDispatch()
-  const elements = useSelector(({ sdp }) => sdp?.sdp)
-  const user = useSelector((state) => state.user)
-  const isCitys = useSelector(({ city }) => city.city)
+  const dispatch = useDispatch();
+  const elements = useSelector(({ sdp }) => sdp?.sdp);
+  const user = useSelector((state) => state.user);
+  const isCitys = useSelector(({ city }) => city.city);
   const isCompanys = useSelector(
-    ({ insuredCmp }) => insuredCmp?.insuredCompanies,
-  )
-  const [filteredData, setFilteredData] = React.useState([])
-  const [inputText, setInputText] = React.useState('')
+    ({ insuredCmp }) => insuredCmp?.insuredCompanies
+  );
+  const [filteredData, setFilteredData] = React.useState([]);
+  const [inputText, setInputText] = React.useState("");
 
   return (
     <>
@@ -259,33 +260,35 @@ export default function Sdp() {
               onClick={() => {
                 if (elements?.filter((item) => item?.new)?.length) {
                   toast.error(
-                    'You cannot add new entries until you finish the previous one.',
-                  )
+                    "You cannot add new entries until you finish the previous one."
+                  );
                 } else {
-                  dispatch(getSdp(elements?.concat([{ new: true }])?.reverse()))
-                  toast.success('You can fill in a new entry')
+                  dispatch(
+                    getSdp(elements?.concat([{ new: true }])?.reverse())
+                  );
+                  toast.success("You can fill in a new entry");
                 }
               }}
             >
               <span>Add </span>
-              <PlusUser color={'#fff'} />
+              <PlusUser color={"#fff"} />
             </button>
           </Grid.Col>
           <Grid.Col span={3}>
             <SearchComponent
               data={elements?.filter((resp) =>
-                !resp.delete && user.role === 'insurance_company'
+                !resp.delete && user.role === "insurance_company"
                   ? !resp.insurance_company_id === user?.insurance_company?.id
-                  : resp,
+                  : resp
               )}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
               type={[
-                'first_name',
-                'second_name',
-                'email',
-                'phone',
-                'passport_id',
+                "first_name",
+                "second_name",
+                "email",
+                "phone",
+                "passport_id",
               ]}
             />
           </Grid.Col>
@@ -294,60 +297,65 @@ export default function Sdp() {
 
       <div
         className="ox-scroll"
-        style={{ minHeight: 'max-content', overflow: 'hidden' }}
+        style={{ minHeight: "max-content", overflow: "hidden" }}
       >
         <div className="row">
           <input
             className="disabled"
             readOnly={true}
-            value={'auth'}
-            style={{ width: '50px' }}
+            value={"auth"}
+            style={{ width: "50px" }}
           />
           <input
             className="disabled "
             readOnly={true}
-            value={'insurance_company_id'}
+            value={"insurance_company_id"}
           />
-          <input className="disabled" readOnly={true} value={'first_name'} />
-          <input className="disabled" readOnly={true} value={'last_name'} />
-          <input className="disabled " readOnly={true} value={'phone'} />
-          <input className="disabled " readOnly={true} value={'email'} />
-          <input className="disabled " readOnly={true} value={'city'} />
-          <input className="disabled " readOnly={true} value={'address'} />
-          <input className="disabled " readOnly={true} value={'login_id'} />
+          <input className="disabled" readOnly={true} value={"first_name"} />
+          <input className="disabled" readOnly={true} value={"last_name"} />
+          <input className="disabled " readOnly={true} value={"phone"} />
+          <input className="disabled " readOnly={true} value={"email"} />
+          <input className="disabled " readOnly={true} value={"city"} />
+          <input className="disabled " readOnly={true} value={"address"} />
+          <input className="disabled " readOnly={true} value={"login_id"} />
           <input
             className="disabled "
             readOnly={true}
-            value={'supplier_type'}
+            value={"supplier_type"}
           />
           <input
             className="disabled"
             style={{ width: 66 }}
             readOnly={true}
-            value={'delete'}
+            value={"delete"}
           />
         </div>
       </div>
       <div
         className="ox-scroll"
         onScroll={(e) => {
-          ;[...Array(document.querySelectorAll('.ox-scroll').length)].map(
+          [...Array(document.querySelectorAll(".ox-scroll").length)].map(
             (_, i) =>
-              (document.querySelectorAll('.ox-scroll')[i].scrollLeft =
-                e.target.scrollLeft),
-          )
+              (document.querySelectorAll(".ox-scroll")[i].scrollLeft =
+                e.target.scrollLeft)
+          );
         }}
       >
         {(inputText?.length
           ? filteredData
           : elements?.filter((resp) =>
-              !resp.delete && user.role === 'insurance_company'
+              !resp.delete && user.role === "insurance_company"
                 ? !resp.insurance_company_id === user?.insurance_company?.id
-                : resp,
+                : resp
             )
         )
+          .sort((a, b) => {
+            if (a?.id > b?.id) return -1;
+            if (a?.id < b?.id) return 1;
+            return 0;
+          })
           .sort(
-            (a, b) => Number(b.authentification) - Number(a.authentification),
+            (a, b) => Number(b.authentification) - Number(a.authentification)
           )
           .map((item, i) => (
             <Rows
@@ -362,5 +370,5 @@ export default function Sdp() {
           ))}
       </div>
     </>
-  )
+  );
 }

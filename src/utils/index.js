@@ -139,63 +139,6 @@ export const typeCase = [
   },
 ];
 
-//  export const StatusesData = [
-//   {
-//     id: 1,
-//     description: "פתיחת אירוע תאונת דרכים",
-//     ru_description: "Открытие страхового случая",
-//     inbox_notification: false,
-//   },
-//   {
-//     id: 2,
-//     description: "ממתינים למספר תביעה השלמת את מילוי טופס התביעה,",
-//     ru_description: "Заполнена претензия",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 3,
-//     description: "התקבל מספר תביעה",
-//     ru_description: "Случай зарегистрирован",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 4,
-//     description: "הרכב נקלט במוסך",
-//     ru_description: "Авто забрали в гараж",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 5,
-//     description: "בוצעה בדיקת שמאי",
-//     ru_description: "Проведена оценка",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 6,
-//     description: 'דו"ח שמאי נשלח לחברת הביטוח',
-//     ru_description: "Отчет об оценке отправлен в страховую компанию",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 7,
-//     description: "ממתינים לאישור חברת הביטוח",
-//     ru_description: "В ожидании одобрения страховой компании",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 8,
-//     description: "הרכב בתיקון במוסך",
-//     ru_description: "Авто на ремонте в гараже",
-//     inbox_notification: true,
-//   },
-//   {
-//     id: 9,
-//     description: "תיקון הרכב הושלם",
-//     ru_description: "Ремонт завершен",
-//     inbox_notification: true,
-//   },
-// ];
-
 export const StatusesData = (isType) => {
   return ["accident", "carburglary", "theftcar"]?.includes(isType)
     ? [

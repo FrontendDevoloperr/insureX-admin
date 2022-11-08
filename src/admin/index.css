@@ -120,6 +120,32 @@ input.error {
   height: 60px;
 }
 
+.ox-scroll .row select:hover,
+.ox-scroll .row>input:hover,
+.ox-scroll .row .custome-input:hover,
+.input-multi-select:hover,
+.checkbox_inp:hover {
+  position: relative;
+  z-index: 51;
+  background: #e7f5ff;
+}
+
+.ox-scroll .row input.disabled[value="delete"] {
+  background: #efb0b0;
+  position: relative;
+  z-index: 51;
+  color: #fff;
+  text-align: center;
+  text-transform: capitalize;
+  border-color: #efb0b0;
+}
+
+.ox-scroll .row div.delete:hover {
+  position: relative;
+  z-index: 51;
+  background: #fff5f5;
+}
+
 .ox-scroll .row select[multiple] option {
   background: #008eff;
   color: #e7f5ff;
@@ -171,6 +197,7 @@ input.error {
 
 [custome_disabled="true"] {
   opacity: 0.5;
+  pointer-events: none;
 }
 
 .ox-scroll .row .multiples-select {

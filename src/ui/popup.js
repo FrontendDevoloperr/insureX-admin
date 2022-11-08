@@ -183,14 +183,14 @@ function Popup() {
                         message?.user_type ===
                         ("appraisal_company" || "event_create")
                       ) {
-                        navigate(`/appraiser-company`);
+                        navigate(`/appraisal-companies`);
                         setOpened(false);
                       }
                       if (
                         message?.user_type ===
                         ("insurance_company" || "event_create")
                       ) {
-                        navigate(`/insurance-company`);
+                        navigate(`/insurance-companies`);
                         setOpened(false);
                       }
                     }}
