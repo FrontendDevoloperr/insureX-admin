@@ -189,7 +189,7 @@ export default function AdminPanel() {
     getAgentsFC(dispatch, user, location.pathname);
     getInsuredPersonFC(dispatch, user, location.pathname);
     getSdpFC(dispatch, location.pathname);
-    getAppraiserFC(dispatch, location.pathname);
+    getAppraiserFC(dispatch, user, location.pathname);
     getAppraiserCompFC(dispatch, location.pathname);
     getEventsAndCasesFC(dispatch, user, location.pathname);
     console.clear();

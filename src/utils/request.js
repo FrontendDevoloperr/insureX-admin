@@ -102,13 +102,24 @@ export const getAppraiserCompFC = (dispatch, pathname) => {
   }
 };
 
-export const getAppraiserFC = (dispatch, pathname) => {
+export const getAppraiserFC = (dispatch, user, pathname) => {
+  const isAppraiserComp = user?.role === "appraisal_company";
   if (["/appraisers", "/events"].includes(pathname)) {
     dispatch(setLoader(true));
     axios
       .get(`${_URL}/appraisers?delete=false`)
       .then(({ data }) => {
-        dispatch(getAppraiser(data?.message?.appraisers));
+        dispatch(
+          getAppraiser(
+            data?.message?.appraisers?.filter((item) =>
+              isAppraiserComp
+                ? item?.appraisers_company_id?.includes(
+                    user?.appraisal_company?.id
+                  )
+                : true
+            )
+          )
+        );
       })
       .catch(() => console.clear())
       .finally(() => dispatch(setLoader(false)));

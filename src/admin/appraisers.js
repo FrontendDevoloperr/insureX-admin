@@ -313,7 +313,7 @@ export default function Persons() {
           </Grid.Col>
           <Grid.Col span={3}>
             <SearchComponent
-              data={elements?.filter((resp) => !resp.delete)}
+              data={elements}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
               type={[
