@@ -314,8 +314,8 @@ export default function Persons() {
       >
         {(inputText.length > 2 ? filteredData : elements)
           ?.sort((a, b) => {
-            if (a?.id > b?.id) return -1;
-            if (a?.id < b?.id) return 1;
+            if (a?.id > b?.id) return 1;
+            if (a?.id < b?.id) return -1;
             return 0;
           })
           .reverse()
