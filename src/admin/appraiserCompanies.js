@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Trash } from "tabler-icons-react";
 import {
@@ -8,18 +8,26 @@ import {
   Grid,
   Checkbox,
   MultiSelect,
+  Select,
 } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { PlusUser } from "../icons";
-
 import SearchComponent from "../ui/search";
-import { getAppraiserCompanies } from "../redux/reducer/appraiserComp";
+import { getAppraiserCompFC } from "../utils/request";
 
-function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
-  const dispatch = useDispatch();
+function Rows({
+  item,
+  setElements,
+  datas,
+  isCompanys,
+  isRegions,
+  isCitys,
+  dispatch,
+  user,
+}) {
   const { register, handleSubmit, setValue } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -36,9 +44,11 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
   );
 
   const onSubmit = (data) => {
+    if (!cityValue || !insuranceCompany[0])
+      return toast.error("Fill them all in");
     data = { ...data, id: item.id };
-    !data.region_id && (data.region_id = item.region_id);
-    data.city_id = !!data?.city_id.length ? data?.city_id : item?.city_id;
+    data.region_id = regionValue;
+    data.city_id = cityValue;
     if (data?.id) {
       setIsLoading(true);
       data.insurance_company_ids = insuranceCompany;
@@ -47,9 +57,10 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
       axios
         .patch(`${_URL}/appraisal-companies/${item?.id}`, data)
         .then((res) => {
+          getAppraiserCompFC(dispatch, user, "/appraisal-companies");
           setIsLoading(false);
-          toast.success("Updated");
           setIsUpdated(false);
+          toast.success("Updated");
         })
         .catch((err) => {
           console.log(err);
@@ -66,14 +77,10 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
       axios
         .post(`${_URL}/appraisal-companies`, getFormData(data))
         .then((res) => {
-          setIsLoading(false);
-          setElements(
-            [...datas, res?.data?.message?.appraiser].filter(
-              (item) => !item?.new
-            )
-          );
+          getAppraiserCompFC(dispatch, user, "/appraisal-companies");
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
+          setIsLoading(false);
         })
         .catch((err) => {
           console.log(err);
@@ -81,16 +88,6 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           toast.error("Error loading data, please try again");
         });
     }
-  };
-
-  const getAppraiserCompFC = () => {
-    axios.get(`${_URL}/appraisal-companies`).then(({ data }) => {
-      dispatch(
-        getAppraiserCompanies(
-          data?.message?.appraisal_companies?.filter((item) => !item?.delete)
-        )
-      );
-    });
   };
 
   const patchAutification = (data) => {
@@ -108,7 +105,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
       .then(({ data }) => {
         setIsLoading(false);
         setIsChecked(!isChecked);
-        getAppraiserCompFC();
+        getAppraiserCompFC(dispatch, user, "/appraisal-companies");
       })
       .catch((err) => {
         setIsLoading(false);
@@ -160,6 +157,12 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           data={isCompanys?.map((item) => ({
             value: item?.id,
             label: item?.title,
+            custome_disabled:
+              user.role === "insurance_company"
+                ? item?.id !== user?.insurance_company?.id
+                  ? "true"
+                  : "false"
+                : "",
           }))}
           transition="pop-top-left"
           transitionDuration={80}
@@ -200,40 +203,27 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
           defaultValue={item?.office_address}
           {...register(`office_address`)}
         />
-
-        <select
-          onInput={(e) => {
-            setIsUpdated(true);
-            setCityValue(e.target.value);
+        <Select
+          className="input-multi-select"
+          style={{
+            width: "120px",
           }}
-          value={
+          searchable
+          value={`${
             cityValue ??
             isCitys.find(
               (options) => Number(options.id) === Number(item?.city_id)
             )?.id
-          }
-          {...register(`city_id`)}
-        >
-          {isCitys
-            .filter((item) =>
-              regionValue
-                ? Number(item.region_id) === Number(regionValue)
-                : true
-            )
-            ?.sort((a, b) => {
-              const aa = a?.city_name?.toLowerCase();
-              const bb = b?.city_name?.toLowerCase();
-              if (aa > bb) return -1;
-              if (aa < bb) return 1;
-              return 0;
-            })
-
-            .map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.city_name}
-              </option>
-            ))}
-        </select>
+          }`}
+          onChange={(e) => {
+            setIsUpdated(true);
+            setCityValue(e);
+          }}
+          data={isCitys.map((item) => ({
+            label: item.city_name,
+            value: `${item.id}`,
+          }))}
+        />
 
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
@@ -260,9 +250,7 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
                   )
                   .then((res) => {
                     setIsLoading(false);
-                    setElements(
-                      datas.filter((__res) => __res?.id !== item?.id)
-                    );
+                    getAppraiserCompFC(dispatch, user, "/appraisal-companies");
                     toast.success("Removed");
                   })
                   .catch((err) => {
@@ -284,44 +272,63 @@ function Rows({ item, setElements, datas, isCompanys, isRegions, isCitys }) {
 }
 
 export default function AppComps() {
-  const [elements, setElements] = React.useState([]);
-  const [isCompanys, setIsCompanys] = React.useState([]);
-  const [isCitys, setIsCitys] = React.useState([]);
-  const user = useSelector((state) => state.user);
   const GlobalState = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const [elements, setElements] = React.useState([...GlobalState?.appComp]);
+  const [isCompanys, setIsCompanys] = React.useState([]);
+  const isCitys = useSelector(({ city }) => city?.city);
+  const user = useSelector(({ user }) => user);
+
   const isRegions = useSelector(({ region }) => region?.region);
 
   const [filteredData, setFilteredData] = React.useState([]);
   const [inputText, setInputText] = React.useState("");
 
   React.useEffect(() => {
-    if (user.role === "superadmin") {
-      setElements(GlobalState?.appComp);
-    }
-
-    if (user.role === "insurance_company") {
-      setElements(
-        GlobalState?.appComp?.filter((res) =>
-          res?.insurance_company_ids?.includes(user.insurance_company.id)
-        )
-      );
-    }
     if (user.role === "appraisal_company") {
       setElements([user.appraisal_company]);
-    }
-  }, [user, GlobalState]);
+    } else setElements([...GlobalState?.appComp]);
+  }, [user, GlobalState?.appComp]);
 
   React.useEffect(() => {
-    if (user.role === "insurance_company") {
-      setIsCompanys(
-        [user.insurance_company] // res?.data?.message?.insurance_companies
-      );
-    }
-    if (user.role === "superadmin" || user.role === "appraisal_company") {
-      setIsCompanys(GlobalState?.insuredCmp?.insuredCompanies);
-    }
-    setIsCitys(GlobalState?.city?.city);
-  }, [GlobalState, user]);
+    setIsCompanys(GlobalState?.insuredCmp?.insuredCompanies);
+  }, [GlobalState?.insuredCmp?.insuredCompanies, user]);
+
+  const Form = useCallback(() => {
+    return (
+      inputText?.length
+        ? filteredData
+        : elements?.filter((resp) => !resp.delete)
+    )
+      .sort((a, b) => {
+        if (a?.id > b?.id) return -1;
+        if (a?.id < b?.id) return 1;
+        return 0;
+      })
+      .sort((a, b) => Number(b.authentification) - Number(a.authentification))
+      .map((item, i) => (
+        <Rows
+          key={item?.id ?? i}
+          item={item}
+          setElements={setElements}
+          datas={elements}
+          isCompanys={isCompanys}
+          isRegions={isRegions}
+          isCitys={isCitys}
+          dispatch={dispatch}
+          user={user}
+        />
+      ));
+  }, [
+    user,
+    isRegions,
+    isCitys,
+    elements,
+    inputText,
+    filteredData,
+    isCompanys,
+    dispatch,
+  ]);
 
   return (
     <>
@@ -411,29 +418,7 @@ export default function AppComps() {
           );
         }}
       >
-        {(inputText?.length
-          ? filteredData
-          : elements?.filter((resp) => !resp.delete)
-        )
-          .sort((a, b) => {
-            if (a?.id > b?.id) return -1;
-            if (a?.id < b?.id) return 1;
-            return 0;
-          })
-          .sort(
-            (a, b) => Number(b.authentification) - Number(a.authentification)
-          )
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              setElements={setElements}
-              datas={elements}
-              isCompanys={isCompanys}
-              isRegions={isRegions}
-              isCitys={isCitys}
-            />
-          ))}
+        <Form />
       </div>
     </>
   );

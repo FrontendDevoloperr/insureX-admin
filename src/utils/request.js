@@ -48,7 +48,8 @@ export const getInsuredCompaniesFC = (dispatch, user, pathname) => {
 };
 
 export const getAgentsFC = (dispatch, user, pathname) => {
-  const isCompany = user?.role === "insurance_company";
+  const isCompany =
+    user?.role === "insurance_company" && pathname === "/agents";
   if (["/agents", "/persons", "/events"].includes(pathname)) {
     dispatch(setLoader(true));
     axios
@@ -70,7 +71,8 @@ export const getAgentsFC = (dispatch, user, pathname) => {
 };
 
 export const getInsuredPersonFC = (dispatch, user, pathname) => {
-  const isCompany = user?.role === "insurance_company";
+  const isCompany =
+    user?.role === "insurance_company" && pathname === "/persons";
   if (["/persons", "/events"].includes(pathname)) {
     dispatch(setLoader(true));
     axios
@@ -89,13 +91,25 @@ export const getInsuredPersonFC = (dispatch, user, pathname) => {
   }
 };
 
-export const getAppraiserCompFC = (dispatch, pathname) => {
+export const getAppraiserCompFC = (dispatch, user, pathname) => {
+  const isInsuranceComp =
+    user?.role === "insurance_company" && pathname === "/appraisal-companies";
   if (["/appraisal-companies", "/appraisers", "/events"].includes(pathname)) {
     dispatch(setLoader(true));
     axios
       .get(`${_URL}/appraisal-companies?delete=false`)
       .then(({ data }) => {
-        dispatch(getAppraiserCompanies(data?.message?.appraisal_companies));
+        dispatch(
+          getAppraiserCompanies(
+            data?.message?.appraisal_companies?.filter((item) =>
+              isInsuranceComp
+                ? item?.insurance_company_ids?.includes(
+                    user?.insurance_company?.id
+                  )
+                : true
+            )
+          )
+        );
       })
       .catch(() => console.clear())
       .finally(() => dispatch(setLoader(false)));
@@ -103,7 +117,10 @@ export const getAppraiserCompFC = (dispatch, pathname) => {
 };
 
 export const getAppraiserFC = (dispatch, user, pathname) => {
-  const isAppraiserComp = user?.role === "appraisal_company";
+  const isAppraiserComp =
+    user?.role === "appraisal_company" && pathname === "/appraisers";
+  const isInsuranceComp =
+    user?.role === "insurance_company" && pathname === "/appraisers";
   if (["/appraisers", "/events"].includes(pathname)) {
     dispatch(setLoader(true));
     axios
@@ -116,6 +133,10 @@ export const getAppraiserFC = (dispatch, user, pathname) => {
                 ? item?.appraisers_company_id?.includes(
                     user?.appraisal_company?.id
                   )
+                : isInsuranceComp
+                ? item?.insurance_company_persons_id?.includes(
+                    user?.insurance_company?.id
+                  )
                 : true
             )
           )
@@ -126,13 +147,25 @@ export const getAppraiserFC = (dispatch, user, pathname) => {
   }
 };
 
-export const getSdpFC = (dispatch, pathname) => {
+export const getSdpFC = (dispatch, user, pathname) => {
+  const isInsuranceComp =
+    user?.role === "insurance_company" && pathname === "/sdp";
   if (["/sdp", "/events"].includes(pathname)) {
     dispatch(setLoader(true));
     axios
       .get(`${_URL}/sdp?delete=false`)
       .then(({ data }) => {
-        dispatch(getSdp(data?.message?.sdp));
+        dispatch(
+          getSdp(
+            data?.message?.sdp?.filter((item) =>
+              isInsuranceComp
+                ? item?.insurance_company_ids?.includes(
+                    user?.insurance_company?.id
+                  )
+                : true
+            )
+          )
+        );
       })
       .catch(() => console.clear())
       .finally(() => dispatch(setLoader(false)));

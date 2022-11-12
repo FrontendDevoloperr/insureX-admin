@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   LoadingOverlay,
   Header,
   ActionIcon,
   Grid,
   MultiSelect,
+  Select,
 } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData } from "../utils";
@@ -31,18 +32,21 @@ function Rows({
   const { register, handleSubmit, setValue } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isCityOpenSelect, setIsCityOpenSelect] = React.useState(false);
+  const [cityValue, setCityValue] = React.useState(
+    isCitys.find((options) => Number(options.id) === Number(item?.city_id))?.id
+  );
   const [insurance_company_ids, setInsurance_company_ids] = React.useState(
     item?.insurance_company_persons_id
   );
 
   const onSubmit = (data) => {
-    if (!insurance_company_ids[0]) {
-      return toast.error("Insurance company not found");
+    if (!insurance_company_ids[0] || !cityValue) {
+      return toast.error("Fill all required");
     }
     data = { ...data, id: item.id };
     data.insurance_company_persons_id = `{${insurance_company_ids}}`;
     data.insurance_company_id = insurance_company_ids[0];
+    data.city_id = cityValue;
     if (data?.id) {
       let formData = { ...data, role: "insured_person" };
       delete formData.id;
@@ -156,25 +160,29 @@ function Rows({
             </option>
           ))}
         </select>
-        {!isCityOpenSelect && (
-          <input
-            type="text"
-            onMouseMove={() => setIsCityOpenSelect(true)}
-            value={
-              isCitys.find((options) => options.id === item?.city_id)?.city_name
-            }
-            readOnly={true}
-          />
-        )}
-        {isCityOpenSelect && (
-          <select onInput={() => setIsUpdated(true)} {...register(`city_id`)}>
-            {isCitys.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.city_name}
-              </option>
-            ))}
-          </select>
-        )}
+
+        <Select
+          className="input-multi-select"
+          style={{
+            width: "120px",
+          }}
+          searchable
+          error={!cityValue}
+          value={`${
+            cityValue ??
+            isCitys.find(
+              (options) => Number(options.id) === Number(item?.city_id)
+            )?.id
+          }`}
+          onChange={(e) => {
+            setIsUpdated(true);
+            setCityValue(e);
+          }}
+          data={isCitys.map((item) => ({
+            label: item.city_name,
+            value: `${item.id}`,
+          }))}
+        />
         {isUpdated ? (
           <button type="submit" onClick={() => {}}>
             {item?.id ? "Update" : "Create"}
@@ -236,6 +244,41 @@ export default function Persons() {
   React.useEffect(() => {
     setElements([...persons]);
   }, [persons]);
+  const Form = useCallback(() => {
+    return (inputText.length > 2 ? filteredData : elements)
+      ?.sort((a, b) => {
+        if (a?.id > b?.id) return 1;
+        if (a?.id < b?.id) return -1;
+        return 0;
+      })
+      .reverse()
+      .sort((a, b) => Number(b.new ?? false) - Number(a.new ?? false))
+
+      .map((item, i) => (
+        <Rows
+          key={item?.id ?? i}
+          item={item}
+          dispatch={dispatch}
+          datas={elements}
+          isCompanys={cmps}
+          isCitys={isCitys}
+          agents={agents}
+          isNowEdit={Number(location.hash.split("#")[1]) === Number(item?.id)}
+          user={user}
+          setElements={setElements}
+        />
+      ));
+  }, [
+    inputText,
+    user,
+    agents,
+    location,
+    isCitys,
+    elements,
+    filteredData,
+    cmps,
+    dispatch,
+  ]);
 
   return (
     <>
@@ -312,31 +355,7 @@ export default function Persons() {
           );
         }}
       >
-        {(inputText.length > 2 ? filteredData : elements)
-          ?.sort((a, b) => {
-            if (a?.id > b?.id) return 1;
-            if (a?.id < b?.id) return -1;
-            return 0;
-          })
-          .reverse()
-          .sort((a, b) => Number(b.new ?? false) - Number(a.new ?? false))
-
-          .map((item, i) => (
-            <Rows
-              key={item?.id ?? i}
-              item={item}
-              dispatch={dispatch}
-              datas={elements}
-              isCompanys={cmps}
-              isCitys={isCitys}
-              agents={agents}
-              isNowEdit={
-                Number(location.hash.split("#")[1]) === Number(item?.id)
-              }
-              user={user}
-              setElements={setElements}
-            />
-          ))}
+        <Form />
       </div>
     </>
   );

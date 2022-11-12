@@ -76,13 +76,15 @@ function Popup() {
         if (user?.role === "insurance_company") {
           dispatch(
             message(
-              data?.messages?.filter((res) =>
-                Number(res?.insurance_company_id)
-                  ? Number(res?.insurance_company_id) ===
-                      Number(user?.insurance_company?.id) && res?.admin_type
-                  : res?.insurance_company_ids
-                      ?.split(",")
-                      ?.includes(`${user?.insurance_company?.id}`)
+              data?.messages?.filter(
+                (res) =>
+                  res?.admin_type &&
+                  (Number(res?.insurance_company_id)
+                    ? Number(res?.insurance_company_id) ===
+                      Number(user?.insurance_company?.id)
+                    : res?.insurance_company_ids
+                        ?.split(",")
+                        ?.includes(`${user?.insurance_company?.id}`))
               )
             )
           );

@@ -213,6 +213,7 @@ input.error {
   width: inherit !important;
   height: inherit !important;
   margin: 0 !important;
+  max-width: 100%;
 }
 
 .ox-scroll .row input.fc {

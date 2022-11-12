@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { LoadingOverlay, Header, ActionIcon } from "@mantine/core";
+import { LoadingOverlay, Header, ActionIcon, Select } from "@mantine/core";
 import {
   _URL,
   getFormData,
@@ -41,6 +41,7 @@ function Rows({
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [statustId, setStatustId] = React.useState(item?.status_id ?? 1);
+  const [cityValue, setCityValue] = React.useState(item?.city_id);
 
   const [appCom, setAppCom] = React.useState(
     appComp?.find(
@@ -66,11 +67,13 @@ function Rows({
     events?.find((eve) => eve?.id === item?.insured_event_id)
       ?.insurance_company_id
   );
-  const [isCity, setIsCity] = React.useState(
-    isCitys.find((options) => options.id === item?.city_id)?.id
-  );
   const [regionId, setRegionId] = React.useState(
-    region.find((options) => options.id === item?.region_id)?.id
+    region.find(
+      (options) =>
+        options.id ===
+        events.find((options) => options.id === item?.insured_event_id)
+          ?.region_id
+    )?.id
   );
   const [typeCaseIds, setTypeCaseIds] = React.useState(
     JSON.stringify({
@@ -80,7 +83,7 @@ function Rows({
   );
   if (item?.id) {
     if (
-      !events ||
+      !events?.find((eve) => eve?.id === item?.insured_event_id) ||
       !person.find((_person) => _person?.id === item?.insured_person_id)?.id
     )
       return null;
@@ -89,13 +92,13 @@ function Rows({
   const onSubmit = (data) => {
     data = { ...data, id: item.id };
     let formData = {
-      insured_person_id: personId ?? item.insured_person_id ?? person[0].id,
+      insured_person_id: personId ?? item.insured_person_id,
       address: data.address,
       insured_number: data.insured_number,
-      city_id: isCity ?? item.city_id ?? isCitys[0]?.id,
-      agent_id: agent ?? item.agent_id ?? agents[0].id,
-      appraiser_id: appraiser ?? item.appraiser_id ?? appraisers[0].id,
-      sdp_id: sdpId ?? item.sdp_id ?? sdp[0].id,
+      city_id: cityValue,
+      agent_id: agent ?? item.agent_id,
+      appraiser_id: appraiser ?? item.appraiser_id,
+      sdp_id: sdpId ?? item.sdp_id,
       event_type_id:
         JSON.parse(typeCaseIds ?? "{}")?.event_type_id ??
         item.event_type_id ??
@@ -104,24 +107,18 @@ function Rows({
         JSON.parse(typeCaseIds ?? "{}")?.property_type_id ??
         item.property_type_id ??
         1,
-      document_date: item?.document_date ?? new Date().toISOString(),
+      document_date: item?.document_date,
       status_id: statustId ?? item.status_id,
     };
 
     let eventFormData = {
-      insurance_company_id:
-        insComp ?? item.insurance_company_id ?? isCompanys[0]?.id,
-      insured_person_id: personId ?? item.insured_person_id ?? person[0]?.id,
-      region_id: regionId ?? item.region_id ?? region[0]?.id,
+      insurance_company_id: insComp ?? item.insurance_company_id,
+      insured_person_id: personId ?? item.insured_person_id,
+      region_id: regionId ?? item.region_id,
       address: item.address,
-      date: data?.date ?? item?.document_date ?? new Date().toISOString(),
-      agent_id: agent ?? item.agent_id ?? agents[0]?.id,
-      appraisal_company_id:
-        appCom ??
-        data?.appraisal_company_id ??
-        events.find((eve) => eve?.id === item?.insured_event_id)
-          ?.appraisal_company_id ??
-        appComp[0]?.id,
+      date: data?.date ?? item?.document_date,
+      agent_id: agent ?? item.agent_id,
+      appraisal_company_id: appCom ?? data?.appraisal_company_id,
       appraiser_id: appraiser ?? item.appraiser_id ?? appraisers[0]?.id,
     };
 
@@ -200,19 +197,12 @@ function Rows({
             style={{ width: 50 }}
           />
           <select
+            required
             onInput={(e) => {
               setIsUpdated(true);
               setAppCom(e.target.value);
             }}
-            defaultValue={
-              appCom ??
-              appComp?.find(
-                (app) =>
-                  app?.id ===
-                  events?.find((eve) => eve?.id === item?.insured_event_id)
-                    ?.appraisal_company_id
-              )?.id
-            }
+            value={appCom}
             {...register(`appraisal_company_id`)}
           >
             {appComp?.map((options) => (
@@ -241,7 +231,7 @@ function Rows({
             }
             {...register(`appraiser_id`)}
           >
-            <option value={undefined}>Choose...</option>
+            <option>Choose...</option>
             {appraisers?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
@@ -250,6 +240,7 @@ function Rows({
           </select>
 
           <select
+            required
             onInput={(e) => {
               setIsUpdated(true);
               setSdpId(e.target.value);
@@ -268,6 +259,7 @@ function Rows({
           </select>
 
           <select
+            required
             onInput={(e) => {
               setIsUpdated(true);
               setAgent(e.target.value);
@@ -286,10 +278,14 @@ function Rows({
           </select>
 
           <input
+            required
             style={!item?.new && !isUpdated ? {} : { display: "none" }}
             readOnly={true}
             onFocus={() => {
-              if (item?.insured_person_id) {
+              if (
+                item?.insured_person_id &&
+                user.role !== "appraisal_company"
+              ) {
                 navigate("/persons#" + item?.insured_person_id);
               }
             }}
@@ -300,6 +296,7 @@ function Rows({
           />
 
           <select
+            required
             style={!item?.new && !isUpdated ? { display: "none" } : {}}
             onInput={(e) => {
               setIsUpdated(true);
@@ -324,6 +321,7 @@ function Rows({
                 ?.insurance_company_id
             }
             {...register(`insurance_company_id`)}
+            required
           >
             {isCompanys?.map((options) => (
               <option
@@ -344,6 +342,7 @@ function Rows({
             }}
             value={item?.insured_number}
             {...register(`insured_number`)}
+            required
           />
           <input
             style={{
@@ -365,6 +364,7 @@ function Rows({
             }}
             defaultValue={item?.document_date}
             {...register(`document_date`)}
+            required
           />
           <input
             onInput={(e) => {
@@ -374,50 +374,31 @@ function Rows({
             {...register(`address`)}
             required
           />
-          {!isUpdated && (
-            <input
-              type="text"
-              onMouseDown={() => setIsUpdated(true)}
-              value={
-                isCitys.find((options) => options.id === item?.city_id)
-                  ?.city_name ?? "Choose..."
-              }
-              readOnly={true}
-              required
-            />
-          )}
-          {isUpdated && (
-            <select
-              onInput={(e) => {
-                setIsUpdated(true);
-                setIsCity(e.target.value);
-              }}
-              defaultValue={
-                isCity ??
-                isCitys.find((options) => options.id === item?.city_id)?.id
-              }
-              {...register(`city_id`)}
-            >
-              {isCitys
-                ?.filter((item) =>
-                  regionId ? Number(item.region_id) === Number(regionId) : true
-                )
-                ?.sort((a, b) => {
-                  const aa = a?.city_name?.toLowerCase();
-                  const bb = b?.city_name?.toLowerCase();
-                  if (aa > bb) return -1;
-                  if (aa < bb) return 1;
-                  return 0;
-                })
-                .map((options) => (
-                  <option key={options?.id} value={options?.id}>
-                    {options?.city_name}
-                  </option>
-                ))}
-            </select>
-          )}
+          <Select
+            className="input-multi-select"
+            style={{
+              width: "120px",
+            }}
+            searchable
+            error={!cityValue}
+            value={`${
+              cityValue ??
+              isCitys.find(
+                (options) => Number(options.id) === Number(item?.city_id)
+              )?.id
+            }`}
+            onChange={(e) => {
+              setIsUpdated(true);
+              setCityValue(e);
+            }}
+            data={isCitys.map((item) => ({
+              label: item.city_name,
+              value: `${item.id}`,
+            }))}
+          />
 
           <select
+            required
             onInput={(e) => {
               setIsUpdated(true);
               setRegionId(e.target.value);
@@ -441,6 +422,7 @@ function Rows({
             ))}
           </select>
           <select
+            required
             onInput={(e) => {
               setIsUpdated(true);
               setTypeCaseIds(e.target.value);
@@ -466,6 +448,7 @@ function Rows({
             ))}
           </select>
           <select
+            required
             onInput={(e) => {
               setStatustId(e.target.value);
               setIsUpdated(true);
@@ -617,6 +600,54 @@ export default function InsuredEvents() {
   React.useEffect(() => {
     setElements(cases);
   }, [cases]);
+
+  const Form = useCallback(() => {
+    return [...(inputText?.length ? filteredData : elements)]
+      .sort((a, b) => Number(b.id) - Number(a.id))
+      .map((item, i) => (
+        <React.Fragment key={item?.id ?? i}>
+          {i < paginationCustome && (
+            <Rows
+              key={item?.id ?? "craete"}
+              item={item}
+              setElements={setCases}
+              datas={elements}
+              isCompanys={insuredCompanies}
+              isCitys={city}
+              agents={agents}
+              person={person}
+              sdp={sdp}
+              appraisers={appraiser}
+              events={events}
+              appComp={appComp}
+              region={region}
+              dispatch={dispatch}
+              loading={loading}
+              GlobalState={GlobalState}
+              user={user}
+            />
+          )}
+        </React.Fragment>
+      ));
+  }, [
+    city,
+    person,
+    sdp,
+    inputText,
+    GlobalState,
+    user,
+    loading,
+    region,
+    dispatch,
+    appComp,
+    events,
+    paginationCustome,
+    insuredCompanies,
+    agents,
+    appraiser,
+    elements,
+    filteredData,
+  ]);
 
   return (
     <>
@@ -801,42 +832,7 @@ export default function InsuredEvents() {
         }}
       >
         <LoadingOverlay visible={loading} />
-
-        {(inputText?.length
-          ? filteredData
-          : elements?.filter(
-              (_res) =>
-                !_res.delete &&
-                _res?.insured_event_id ===
-                  events?.find((_eve) => _eve.id === _res?.insured_event_id)?.id
-            )
-        )
-          .sort((a, b) => Number(b.id) - Number(a.id))
-          .map((item, i) => (
-            <React.Fragment key={item?.id ?? i}>
-              {i < paginationCustome && (
-                <Rows
-                  key={item?.id ?? i}
-                  item={item}
-                  setElements={setCases}
-                  datas={elements}
-                  isCompanys={insuredCompanies}
-                  isCitys={city}
-                  agents={agents}
-                  person={person}
-                  sdp={sdp}
-                  appraisers={appraiser}
-                  events={events}
-                  appComp={appComp}
-                  region={region}
-                  dispatch={dispatch}
-                  loading={loading}
-                  GlobalState={GlobalState}
-                  user={user}
-                />
-              )}
-            </React.Fragment>
-          ))}
+        <Form />
       </div>
     </>
   );

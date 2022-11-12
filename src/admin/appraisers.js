@@ -15,7 +15,7 @@ import {
 import { getFormData, _URL } from "../utils";
 import { PlusUser } from "../icons";
 import SearchComponent from "../ui/search";
-import { getAppraiserCompFC } from "../utils/request";
+import { getAppraiserFC } from "../utils/request";
 
 function Rows({
   item,
@@ -64,6 +64,7 @@ function Rows({
       axios
         .patch(`${_URL}/appraisers/${item.id}`, getFormData(formData))
         .then((res) => {
+          getAppraiserFC(dispatch, user, "/appraisers");
           setIsLoading(false);
           toast.success("Updated");
           setIsUpdated(false);
@@ -83,9 +84,7 @@ function Rows({
         .post(`${_URL}/appraisers`, getFormData(formData))
         .then((res) => {
           setIsLoading(false);
-          setElements(
-            [...datas, res.data.message.appraiser].filter((item) => !item.new)
-          );
+          getAppraiserFC(dispatch, user, "/appraisers");
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
         })
@@ -108,7 +107,7 @@ function Rows({
       .then(({ data }) => {
         setIsLoading(false);
         setIsChecked(!isChecked);
-        getAppraiserCompFC(dispatch);
+        getAppraiserFC(dispatch, user, "/appraisers");
       })
       .catch((err) => {
         setIsLoading(false);

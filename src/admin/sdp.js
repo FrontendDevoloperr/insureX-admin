@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   LoadingOverlay,
   Header,
   ActionIcon,
   Grid,
   Checkbox,
+  MultiSelect,
+  Select,
 } from "@mantine/core";
 import axios from "axios";
 import { _URL, getFormData, supplier_types } from "../utils";
@@ -15,18 +17,26 @@ import { Trash } from "tabler-icons-react";
 import { useSelector, useDispatch } from "react-redux";
 import { getSdp } from "../redux/reducer/sdp";
 import SearchComponent from "../ui/search";
+import { getSdpFC } from "../utils/request";
 
-function Rows({ item, isCompanys, isCitys, dispatch }) {
+function Rows({ item, isCompanys, isCitys, dispatch, user }) {
   const { register, handleSubmit } = useForm();
   const [isUpdated, setIsUpdated] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isChecked, setIsChecked] = React.useState(item?.authentification);
+  const [cityValue, setCityValue] = React.useState(
+    isCitys.find((options) => Number(options.id) === Number(item?.city_id))?.id
+  );
+  const [insurance_company_ids, setInsurance_company_ids] = React.useState(
+    item?.insurance_company_ids
+  );
 
   const onSubmit = (data) => {
+    if (!insurance_company_ids[0] || !cityValue)
+      return toast.error("Please select insurance_company");
     data = { ...data, id: item.id };
-    !data.insurance_company_ids &&
-      (data.insurance_company_ids = item?.insurance_company_ids?.[0]);
-    !data.city_id && (data.city_id = item.city_id);
+    data.insurance_company_ids = `{${insurance_company_ids}}`;
+    data.city_id = cityValue;
     if (data?.id) {
       let formData = { ...data, role: "sdp" };
       delete formData.id;
@@ -34,6 +44,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
       axios
         .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
         .then((res) => {
+          getSdpFC(dispatch, user, "/sdp");
           setIsLoading(false);
           toast.success("Updated");
           setIsUpdated(false);
@@ -52,7 +63,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         .post(`${_URL}/sdp`, getFormData(data))
         .then((res) => {
           setIsLoading(false);
-          getSdpFC(dispatch);
+          getSdpFC(dispatch, user, "/sdp");
           toast.success("Data uploaded, new users created");
           setIsUpdated(false);
         })
@@ -64,12 +75,6 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
     }
   };
 
-  const getSdpFC = (dispatch) => {
-    axios.get(`${_URL}/sdp`).then(({ data }) => {
-      dispatch(getSdp(data?.message?.sdp?.filter((item) => !item?.delete)));
-    });
-  };
-
   const patchAutification = (data) => {
     if (!item.id) return setIsChecked(false);
     const formData = {
@@ -79,9 +84,9 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
     axios
       .patch(`${_URL}/sdp/${item?.id}`, getFormData(formData))
       .then(({ data }) => {
+        getSdpFC(dispatch, user, "/sdp");
         setIsLoading(false);
         setIsChecked(!isChecked);
-        getSdpFC();
       })
       .catch((err) => {
         setIsChecked(isChecked);
@@ -100,22 +105,31 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         onChange={patchAutification}
         className="checkbox_inp"
       />
-      <select
-        className=""
-        onInput={() => setIsUpdated(true)}
-        defaultValue={
-          isCompanys?.filter(
-            (options) => options.id === item?.insurance_company_ids?.[0]
-          )[0]?.id
-        }
-        {...register(`insurance_company_ids`)}
-      >
-        {isCompanys?.map((options) => (
-          <option key={options.id} value={options.id}>
-            {options.title}
-          </option>
-        ))}
-      </select>
+      <MultiSelect
+        className="input-multi-select"
+        placeholder="choose..."
+        style={{
+          width: "200px",
+        }}
+        defaultValue={item?.insurance_company_ids}
+        onChange={(e) => {
+          setIsUpdated(true);
+          setInsurance_company_ids(e);
+        }}
+        data={isCompanys?.map((item) => ({
+          value: item?.id,
+          label: item?.title,
+          custome_disabled:
+            user.role === "insurance_company"
+              ? item?.id !== user?.insurance_company?.id
+                ? "true"
+                : "false"
+              : "",
+        }))}
+        transition="pop-top-left"
+        transitionDuration={80}
+        transitionTimingFunction="ease"
+      />
       <input
         onInput={(e) => setIsUpdated(true)}
         defaultValue={item?.first_name}
@@ -140,33 +154,28 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
         {...register(`email`)}
       />
 
-      {isUpdated && (
-        <select
-          onInput={(e) => setIsUpdated(true)}
-          value={isCitys?.find((options) => options?.id === item?.city_id)?.id}
-          {...register(`city_id`)}
-        >
-          {isCitys?.map((options) => (
-            <option
-              // selected={options.id === item?.city_id}
-              key={options?.id}
-              value={options?.id}
-            >
-              {options?.city_name}
-            </option>
-          ))}
-        </select>
-      )}
-      {!isUpdated && (
-        <input
-          type="text"
-          onMouseDown={() => setIsUpdated(true)}
-          value={
-            isCitys?.find((options) => options?.id === item?.city_id)?.city_name
-          }
-          readOnly
-        />
-      )}
+      <Select
+        className="input-multi-select"
+        style={{
+          width: "120px",
+        }}
+        searchable
+        error={!cityValue}
+        value={`${
+          cityValue ??
+          isCitys.find(
+            (options) => Number(options.id) === Number(item?.city_id)
+          )?.id
+        }`}
+        onChange={(e) => {
+          setIsUpdated(true);
+          setCityValue(e);
+        }}
+        data={isCitys.map((item) => ({
+          label: item.city_name,
+          value: `${item.id}`,
+        }))}
+      />
       <input
         onInput={(e) => setIsUpdated(true)}
         defaultValue={item?.address}
@@ -206,7 +215,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
           className="delete"
           onClick={() => {
             if (!item?.id) {
-              getSdpFC(dispatch);
+              getSdpFC(dispatch, user, "/sdp");
             }
             if (item?.id) {
               setIsLoading(true);
@@ -219,7 +228,7 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
                 )
                 .then((res) => {
                   setIsLoading(false);
-                  getSdpFC(dispatch);
+                  getSdpFC(dispatch, user, "/sdp");
                   toast.success("Deleted");
                 })
                 .catch((err) => {
@@ -241,14 +250,17 @@ function Rows({ item, isCompanys, isCitys, dispatch }) {
 
 export default function Sdp() {
   const dispatch = useDispatch();
-  const elements = useSelector(({ sdp }) => sdp?.sdp);
+  const sdps = useSelector(({ sdp }) => sdp?.sdp);
   const user = useSelector((state) => state.user);
   const isCitys = useSelector(({ city }) => city.city);
   const isCompanys = useSelector(
     ({ insuredCmp }) => insuredCmp?.insuredCompanies
   );
+  const [elements, setElements] = React.useState([...sdps]);
   const [filteredData, setFilteredData] = React.useState([]);
   const [inputText, setInputText] = React.useState("");
+
+  useEffect(() => setElements([...sdps]), [sdps]);
 
   return (
     <>
@@ -276,11 +288,7 @@ export default function Sdp() {
           </Grid.Col>
           <Grid.Col span={3}>
             <SearchComponent
-              data={elements?.filter((resp) =>
-                !resp.delete && user.role === "insurance_company"
-                  ? !resp.insurance_company_id === user?.insurance_company?.id
-                  : resp
-              )}
+              data={elements}
               setFilteredData={setFilteredData}
               setInputText={setInputText}
               type={[
@@ -307,7 +315,7 @@ export default function Sdp() {
             style={{ width: "50px" }}
           />
           <input
-            className="disabled "
+            className="disabled multiples-select"
             readOnly={true}
             value={"insurance_company_id"}
           />
@@ -341,14 +349,7 @@ export default function Sdp() {
           );
         }}
       >
-        {(inputText?.length
-          ? filteredData
-          : elements?.filter((resp) =>
-              !resp.delete && user.role === "insurance_company"
-                ? !resp.insurance_company_id === user?.insurance_company?.id
-                : resp
-            )
-        )
+        {[...(inputText?.length ? filteredData : elements)]
           .sort((a, b) => {
             if (a?.id > b?.id) return -1;
             if (a?.id < b?.id) return 1;
@@ -366,6 +367,7 @@ export default function Sdp() {
               isCompanys={isCompanys}
               isCitys={isCitys}
               dispatch={dispatch}
+              user={user}
             />
           ))}
       </div>

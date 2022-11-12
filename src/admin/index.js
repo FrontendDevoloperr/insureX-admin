@@ -188,9 +188,9 @@ export default function AdminPanel() {
 
     getAgentsFC(dispatch, user, location.pathname);
     getInsuredPersonFC(dispatch, user, location.pathname);
-    getSdpFC(dispatch, location.pathname);
+    getSdpFC(dispatch, user, location.pathname);
     getAppraiserFC(dispatch, user, location.pathname);
-    getAppraiserCompFC(dispatch, location.pathname);
+    getAppraiserCompFC(dispatch, user, location.pathname);
     getEventsAndCasesFC(dispatch, user, location.pathname);
     console.clear();
     console.log("new version GMT +5 19:00 08/11/2022/year");
@@ -250,7 +250,7 @@ export default function AdminPanel() {
         </Header>
       }
     >
-      <LoadingOverlay visible={loading} />
+      <LoadingOverlay overlayColor="#e7f5ff4a" visible={loading} />
       <Routes>{RootRoutes}</Routes>
     </AppShell>
   );
