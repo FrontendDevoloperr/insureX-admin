@@ -542,9 +542,22 @@ const msAppraiser51 = (
   nameEvent,
   nameAppraiser
 ) =>
-  `שלום ${nameAppraiser}, נפתח אירוע ${nameEvent} מס' ${numberEvent} ע"י ${nameCustomer}, קבע שיחת וידאו עם  ${
-    nameSdp ?? ""
-  } `;
+  JSON.stringify([
+    `שלום`,
+    `${nameAppraiser},`,
+    `נפתח`,
+    `אירוע`,
+    nameEvent,
+    `מס'`,
+    numberEvent,
+    `ע"י`,
+    nameCustomer,
+    `קבע`,
+    `שיחת`,
+    `וידאו`,
+    `עם`,
+    nameSdp ?? "",
+  ]);
 
 function SendAppraiserMessage(
   id,
