@@ -193,7 +193,10 @@ export default function AdminPanel() {
     getAppraiserCompFC(dispatch, user, location.pathname);
     getEventsAndCasesFC(dispatch, user, location.pathname);
     console.clear();
-    console.log("new version GMT +5 19:00 08/11/2022/year");
+    console.log(
+      "new version GMT +5 21:00 16/11/2022/year",
+      `שלום  ${user?.role}`
+    );
   }, [location.pathname, dispatch, user]);
 
   React.useInsertionEffect(() => {
