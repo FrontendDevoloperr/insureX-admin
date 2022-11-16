@@ -90,15 +90,17 @@ function Rows({
   }
 
   const onSubmit = (data) => {
+    if (!cityValue) return toast.error("City not found");
+    if (data.appraiser_id === "Choose...") delete data.appraiser_id;
     data = { ...data, id: item.id };
     let formData = {
-      insured_person_id: personId ?? item.insured_person_id,
+      insured_person_id:
+        data.insured_person_id ?? personId ?? item.insured_person_id,
       address: data.address,
       insured_number: data.insured_number,
       city_id: cityValue,
-      agent_id: agent ?? item.agent_id,
-      appraiser_id: appraiser ?? item.appraiser_id,
-      sdp_id: sdpId ?? item.sdp_id,
+      agent_id: data.agent_id ?? agent ?? item.agent_id,
+      sdp_id: data.sdp_id ?? sdpId ?? item.sdp_id,
       event_type_id:
         JSON.parse(typeCaseIds ?? "{}")?.event_type_id ??
         item.event_type_id ??
@@ -107,10 +109,10 @@ function Rows({
         JSON.parse(typeCaseIds ?? "{}")?.property_type_id ??
         item.property_type_id ??
         1,
-      document_date: item?.document_date,
+      document_date: data.document_date ?? item?.document_date,
       status_id: statustId ?? item.status_id,
     };
-
+    if (data.appraiser_id === "Choose...") delete formData.appraiser_id;
     let eventFormData = {
       insurance_company_id: insComp ?? item.insurance_company_id,
       insured_person_id: personId ?? item.insured_person_id,
@@ -246,8 +248,7 @@ function Rows({
               setSdpId(e.target.value);
             }}
             defaultValue={
-              sdpId ??
-              sdp?.filter((options) => options.id === item?.sdp_id)[0]?.id
+              sdpId ?? sdp?.find((options) => options.id === item?.sdp_id)?.id
             }
             {...register(`sdp_id`)}
           >
@@ -292,7 +293,6 @@ function Rows({
             value={
               person.find((_person) => _person?.id === personId)?.first_name
             }
-            {...register(`insured_person_id`)}
           />
 
           <select
@@ -303,6 +303,7 @@ function Rows({
               setPersonId(e.target.value);
             }}
             value={personId}
+            {...register(`insured_person_id`)}
           >
             {person?.map((options) => (
               <option key={options?.id} value={options?.id}>
