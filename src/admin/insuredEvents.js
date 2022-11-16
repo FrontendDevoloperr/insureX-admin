@@ -543,19 +543,20 @@ const msAppraiser51 = (
   nameAppraiser
 ) =>
   JSON.stringify([
+    //שלום (name appraiser), נפתח אירוע (name event) מס' (nomber event) ע"י (name customer), קבע שיחת וידאו עם  (specialist) (name sdp)
     `שלום`,
     `${nameAppraiser},`,
-    `נפתח`,
     `אירוע`,
+    `נפתח`,
     nameEvent,
     `מס'`,
     numberEvent,
     `ע"י`,
-    nameCustomer,
-    `קבע`,
-    `שיחת`,
-    `וידאו`,
+    `${nameCustomer},`,
     `עם`,
+    `וידאו`,
+    `שיחת`,
+    `קבע`,
     nameSdp ?? "",
   ]);
 
