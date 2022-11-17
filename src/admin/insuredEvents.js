@@ -97,6 +97,7 @@ function Rows({
       insured_person_id:
         data.insured_person_id ?? personId ?? item.insured_person_id,
       address: data.address,
+      appraiser_id: data.appraiser_id,
       insured_number: data.insured_number,
       city_id: cityValue,
       agent_id: data.agent_id ?? agent ?? item.agent_id,

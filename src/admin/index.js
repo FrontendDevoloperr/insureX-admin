@@ -194,7 +194,7 @@ export default function AdminPanel() {
     getEventsAndCasesFC(dispatch, user, location.pathname);
     console.clear();
     console.log(
-      "new version GMT +5 00:00 17/11/2022/year",
+      "new version GMT +5 00:30 17/11/2022/year",
       `שלום  ${user?.role}`
     );
   }, [location.pathname, dispatch, user]);
