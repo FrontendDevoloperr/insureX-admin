@@ -550,7 +550,7 @@ const msAppraiser51 = (
     `נפתח`,
     `אירוע`,
     nameEvent,
-    `מס'`,
+    `מסי`,
     numberEvent,
     `ע"י`,
     `${nameCustomer},`,
