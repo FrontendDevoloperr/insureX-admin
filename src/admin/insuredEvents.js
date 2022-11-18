@@ -547,17 +547,17 @@ const msAppraiser51 = (
     //שלום (name appraiser), נפתח אירוע (name event) מס' (nomber event) ע"י (name customer), קבע שיחת וידאו עם  (specialist) (name sdp)
     `שלום`,
     `${nameAppraiser},`,
-    `אירוע`,
     `נפתח`,
+    `אירוע`,
     nameEvent,
     `מס'`,
     numberEvent,
     `ע"י`,
     `${nameCustomer},`,
+    `קבע `,
+    `שיחת `,
+    `וידאו `,
     `עם`,
-    `וידאו`,
-    `שיחת`,
-    `קבע`,
     nameSdp ?? "",
   ]);
 
