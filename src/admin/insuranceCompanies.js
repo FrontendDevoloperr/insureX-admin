@@ -148,7 +148,9 @@ function Rows({ item, datas, user, dispatch }) {
           <div
             title="Удалить"
             type="button"
-            className="delete"
+            className={`delete  ${
+              user?.role === "insurance_company" ? "disabled" : ""
+            } `}
             onClick={() => {
               if (!item?.id) {
                 dispatch(

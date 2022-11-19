@@ -59,7 +59,7 @@ input.error {
 }
 
 .ox-scroll .row:after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -74,11 +74,10 @@ input.error {
   background: rgba(0, 0, 0, 0.04);
 }
 
-.ox-scroll .now-edit.row>input,
-.ox-scroll .now-edit.row>select {
+.ox-scroll .now-edit.row > input,
+.ox-scroll .now-edit.row > select {
   animation: now-edit-input 1500ms linear forwards;
 }
-
 
 @keyframes now-edit-input {
   0% {
@@ -108,7 +107,7 @@ input.error {
 }
 
 .ox-scroll .row select,
-.ox-scroll .row>input,
+.ox-scroll .row > input,
 .ox-scroll .row .custome-input {
   border: none;
   border-top: 1px solid #ccc;
@@ -121,7 +120,7 @@ input.error {
 }
 
 .ox-scroll .row select:hover,
-.ox-scroll .row>input:hover,
+.ox-scroll .row > input:hover,
 .ox-scroll .row .custome-input:hover,
 .input-multi-select:hover,
 .checkbox_inp:hover {
@@ -154,44 +153,44 @@ input.error {
   margin: 2px 0;
 }
 
-.ox-scroll .row>input[type="email"] {
+.ox-scroll .row > input[type="email"] {
   color: #1c7ed6;
 }
 
-.ox-scroll .row>input[value="first_name"][readonly],
-.ox-scroll .row>input[value="auth"][readonly],
-.ox-scroll .row>input[value="insurance_company_id"][readonly],
-.ox-scroll .row>input[value="appraisal_company_name"][readonly],
-.ox-scroll .row>input[value="insurance_company "][readonly],
-.ox-scroll .row>input[name="title"],
-.ox-scroll .row>[name="insurance_company_ids"],
-.ox-scroll .row>input[value="insured_person"][readonly],
-.ox-scroll .row>input[name="appraisal_company_name"],
-.ox-scroll .row>[name="insurance_company_id"],
-.ox-scroll .row>input[name="first_name"] {
+.ox-scroll .row > input[value="first_name"][readonly],
+.ox-scroll .row > input[value="auth"][readonly],
+.ox-scroll .row > input[value="insurance_company_id"][readonly],
+.ox-scroll .row > input[value="appraisal_company_name"][readonly],
+.ox-scroll .row > input[value="insurance_company "][readonly],
+.ox-scroll .row > input[name="title"],
+.ox-scroll .row > [name="insurance_company_ids"],
+.ox-scroll .row > input[value="insured_person"][readonly],
+.ox-scroll .row > input[name="appraisal_company_name"],
+.ox-scroll .row > [name="insurance_company_id"],
+.ox-scroll .row > input[name="first_name"] {
   color: #008eff;
   font-weight: 600;
 }
 
-.ox-scroll .row>input[name="insured_person_id"][readonly] {
+.ox-scroll .row > input[name="insured_person_id"][readonly] {
   color: #03a9f4;
   font-weight: 600;
   background: #51abff42;
   cursor: alias;
 }
 
-.ox-scroll .row>input[value="appraisal_company"][readonly],
-.ox-scroll .row>[name="appraisal_company_id"] {
+.ox-scroll .row > input[value="appraisal_company"][readonly],
+.ox-scroll .row > [name="appraisal_company_id"] {
   color: #ff5722;
   font-weight: 600;
 }
 
-.ox-scroll .row>input[name="ie_number"],
-.ox-scroll .row>input[type="tel"] {
+.ox-scroll .row > input[name="ie_number"],
+.ox-scroll .row > input[type="tel"] {
   color: rgb(16, 152, 173);
 }
 
-.ox-scroll .row>input[name="address"] {
+.ox-scroll .row > input[name="address"] {
   color: #e91e63;
 }
 
@@ -246,6 +245,11 @@ input.error {
   justify-content: center;
   gap: 10px;
   border-radius: 5px;
+}
+
+.ox-scroll .row div.delete.disabled {
+  pointer-events: none;
+  opacity: 0.3;
 }
 
 .adder:hover {

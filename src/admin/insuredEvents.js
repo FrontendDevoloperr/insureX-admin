@@ -92,6 +92,7 @@ function Rows({
   const onSubmit = (data) => {
     if (!cityValue) return toast.error("City not found");
     if (data.appraiser_id === "Choose...") delete data.appraiser_id;
+    if (data.sdp_id === "Choose...") delete data.sdp_id;
     data = { ...data, id: item.id };
     let formData = {
       insured_person_id:
@@ -113,7 +114,9 @@ function Rows({
       document_date: data.document_date ?? item?.document_date,
       status_id: statustId ?? item.status_id,
     };
-    if (data.appraiser_id === "Choose...") delete formData.appraiser_id;
+    if (data.appraiser_id === "Choose..." || !data.appraiser_id)
+      delete formData.appraiser_id;
+    if (data.sdp_id === "Choose..." || !data.sdp_id) delete formData.sdp_id;
     let eventFormData = {
       insurance_company_id: insComp ?? item.insurance_company_id,
       insured_person_id: personId ?? item.insured_person_id,
@@ -253,6 +256,7 @@ function Rows({
             }
             {...register(`sdp_id`)}
           >
+            <option value={undefined}>{"Choose..."}</option>
             {sdp?.map((options) => (
               <option key={options?.id} value={options?.id}>
                 {options?.first_name}
