@@ -185,7 +185,6 @@ export default function AdminPanel() {
 
   React.useInsertionEffect(() => {
     getInsuredCompaniesFC(dispatch, user, location.pathname);
-
     getAgentsFC(dispatch, user, location.pathname);
     getInsuredPersonFC(dispatch, user, location.pathname);
     getSdpFC(dispatch, user, location.pathname);
