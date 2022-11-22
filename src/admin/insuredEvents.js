@@ -211,18 +211,20 @@ function Rows({
             value={appCom}
             {...register(`appraisal_company_id`)}
           >
-            {appComp?.map((options) => (
-              <option
-                disabled={
-                  user?.role === "appraisal_company" &&
-                  options?.id !== user?.appraisal_company?.id
-                }
-                key={options?.id}
-                value={options?.id}
-              >
-                {options?.appraisal_company_name}
-              </option>
-            ))}
+            {appComp
+              ?.filter((item) => item.authentification)
+              ?.map((options) => (
+                <option
+                  disabled={
+                    user?.role === "appraisal_company" &&
+                    options?.id !== user?.appraisal_company?.id
+                  }
+                  key={options?.id}
+                  value={options?.id}
+                >
+                  {options?.appraisal_company_name}
+                </option>
+              ))}
           </select>
 
           <select
@@ -238,11 +240,13 @@ function Rows({
             {...register(`appraiser_id`)}
           >
             <option>Choose...</option>
-            {appraisers?.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.first_name}
-              </option>
-            ))}
+            {appraisers
+              ?.filter((item) => item.authentification)
+              ?.map((options) => (
+                <option key={options?.id} value={options?.id}>
+                  {options?.first_name}
+                </option>
+              ))}
           </select>
 
           <select
@@ -257,11 +261,13 @@ function Rows({
             {...register(`sdp_id`)}
           >
             <option value={undefined}>{"Choose..."}</option>
-            {sdp?.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.first_name}
-              </option>
-            ))}
+            {sdp
+              ?.filter((item) => item.authentification)
+              .map((options) => (
+                <option key={options?.id} value={options?.id}>
+                  {options?.first_name}
+                </option>
+              ))}
           </select>
 
           <select
@@ -276,11 +282,13 @@ function Rows({
             }
             {...register(`agent_id`)}
           >
-            {agents.map((options) => (
-              <option key={options?.id} value={options?.id}>
-                {options?.first_name}
-              </option>
-            ))}
+            {agents
+              ?.filter((item) => item.authentification)
+              .map((options) => (
+                <option key={options?.id} value={options?.id}>
+                  {options?.first_name}
+                </option>
+              ))}
           </select>
 
           <input
