@@ -33,7 +33,7 @@ function Rows({ item, isCompanys, isCitys, dispatch, user }) {
 
   const onSubmit = (data) => {
     if (!insurance_company_ids[0] || !cityValue)
-      return toast.error("Please select insurance_company");
+      return toast.error("Fill all required");
     data = { ...data, id: item.id };
     data.insurance_company_ids = `{${insurance_company_ids}}`;
     data.city_id = cityValue;
