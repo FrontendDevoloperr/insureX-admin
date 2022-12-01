@@ -1,0 +1,368 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  max-width: 100vw;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+a.active {
+  background-color: #e7f5ff;
+  color: #1c7ed6;
+}
+
+input.error {
+  border: 1px solid #ff0000 !important;
+}
+
+.ox-scroll {
+  overflow: auto;
+  min-height: 80%;
+  max-width: calc(100vw - 350px);
+  max-height: calc(95vh - 175px);
+  position: relative;
+}
+
+.ox-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: #f1f1f1;
+  border-radius: 20px;
+}
+
+.ox-scroll::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 20px;
+}
+
+.btn-drive-link {
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: bold;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  overflow: none;
+  padding: 5px;
+  background: transparent;
+}
+
+.ox-scroll .row {
+  display: flex;
+  width: max-content;
+  position: relative;
+  height: 60px;
+}
+
+.ox-scroll .row:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 50;
+  pointer-events: none;
+  transition: 300ms ease;
+}
+
+.ox-scroll .row:hover:after {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ox-scroll .now-edit.row > input,
+.ox-scroll .now-edit.row > select {
+  animation: now-edit-input 1500ms linear forwards;
+}
+
+@keyframes now-edit-input {
+  0% {
+    opacity: 0;
+    border-top: #1c7ed6 1px solid;
+    border-bottom: 0.1px solid #1c7ed6;
+    background-color: #1c7fd649;
+  }
+
+  100% {
+    opacity: 1;
+    border-top: 1px solid #ccc;
+    background: inherit;
+  }
+}
+
+.input-multi-select {
+  border-top: 1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
+  height: 100%;
+  padding: 15px 8px;
+}
+
+.input-multi-select div div div div {
+  max-height: 34px;
+  overflow-y: auto;
+}
+
+.ox-scroll .row select,
+.ox-scroll .row > input,
+.ox-scroll .row .custome-input {
+  border: none;
+  border-top: 1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
+  border-radius: 0px;
+  padding: 15px 8px;
+  outline: none;
+  width: 110px;
+  height: 60px;
+}
+
+.ox-scroll .row select:hover,
+.ox-scroll .row > input:hover,
+.ox-scroll .row .custome-input:hover,
+.input-multi-select:hover,
+.checkbox_inp:hover {
+  position: relative;
+  z-index: 51;
+  background: #e7f5ff;
+}
+
+.ox-scroll .row input.disabled[value="delete"] {
+  background: #efb0b0;
+  position: relative;
+  z-index: 51;
+  color: #fff;
+  text-align: center;
+  text-transform: capitalize;
+  border-color: #efb0b0;
+}
+
+.ox-scroll .row div.delete:hover {
+  position: relative;
+  z-index: 51;
+  background: #fff5f5;
+}
+
+.ox-scroll .row select[multiple] option {
+  background: #008eff;
+  color: #e7f5ff;
+  padding: 5px;
+  border-radius: 5px;
+  margin: 2px 0;
+}
+
+.ox-scroll .row > input[type="email"] {
+  color: #1c7ed6;
+}
+
+.ox-scroll .row > input[value="first_name"][readonly],
+.ox-scroll .row > input[value="auth"][readonly],
+.ox-scroll .row > input[value="insurance_company_id"][readonly],
+.ox-scroll .row > input[value="appraisal_company_name"][readonly],
+.ox-scroll .row > input[value="insurance_company "][readonly],
+.ox-scroll .row > input[name="title"],
+.ox-scroll .row > [name="insurance_company_ids"],
+.ox-scroll .row > input[value="insured_person"][readonly],
+.ox-scroll .row > input[name="appraisal_company_name"],
+.ox-scroll .row > [name="insurance_company_id"],
+.ox-scroll .row > input[name="first_name"] {
+  color: #008eff;
+  font-weight: 600;
+}
+
+.ox-scroll .row > input[name="insured_person_id"][readonly] {
+  color: #03a9f4;
+  font-weight: 600;
+  background: #51abff42;
+  cursor: alias;
+}
+
+.ox-scroll .row > input[value="appraisal_company"][readonly],
+.ox-scroll .row > [name="appraisal_company_id"] {
+  color: #ff5722;
+  font-weight: 600;
+}
+
+.ox-scroll .row > input[name="ie_number"],
+.ox-scroll .row > input[type="tel"] {
+  color: rgb(16, 152, 173);
+}
+
+.ox-scroll .row > input[name="address"] {
+  color: #e91e63;
+}
+
+[custome_disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.ox-scroll .row .multiples-select {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  position: relative;
+}
+
+.mantine-Select-wrapper input {
+  width: inherit !important;
+  height: inherit !important;
+  margin: 0 !important;
+  max-width: 100%;
+}
+
+.ox-scroll .row input.fc {
+  width: max-content;
+}
+
+.ox-scroll .row input.disabled {
+  background-color: #f5f5f5;
+  color: #000;
+  padding: 15px 8px;
+}
+
+.ox-scroll .row button[type="submit"],
+.ox-scroll .row div.delete,
+.adder {
+  width: max-content;
+  box-sizing: border-box;
+  border-width: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0.5rem 18px;
+  line-height: 1.75;
+  cursor: pointer;
+  background-color: #1890ff;
+  border: 1px solid #fff;
+  color: #ffffff;
+  transition: all 150ms linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 5px;
+}
+
+.ox-scroll .row div.delete.disabled {
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.adder:hover {
+  background-color: #51abff;
+  transform: translateY(-2px);
+}
+
+.ox-scroll .row button[type="submit"]:hover {
+  background-color: #51abff;
+  transform: translateX(2px);
+}
+
+.mantine-Header-root {
+  padding: 0px;
+}
+
+.ox-scroll .row div.delete {
+  background-color: transparent;
+  border-top: 1px solid #ccc;
+  border-bottom: 0.1px solid #ccc;
+  border-radius: 0;
+}
+
+.ox-scroll .row div.delete svg {
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1) 150ms;
+  width: 30px;
+  height: 30px;
+}
+
+.ox-scroll .row div.delete svg:active {
+  transform: scale(0.98) translateY(2px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: center;
+  gap: 10px;
+}
+
+.header_icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header_logo img {
+  width: 50px;
+  height: 50px;
+}
+
+.notification_icon {
+  background: transparent;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.notification_icon:hover {
+  background: transparent;
+}
+
+.mantine-Button-filled {
+  padding: 0;
+}
+
+.notification_flex {
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+}
+
+.header_notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header_settings {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header_logout {
+  padding: 10px;
+  display: flex;
+  border-radius: 50%;
+  align-items: center;
+  cursor: pointer;
+}
+
+.popup-notification:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: red;
+}
+
+.checkbox_inp {
+  width: 50px;
+  border-bottom: 0.1px solid #ccc;
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+}
+
+.checkbox_inp input {
+  cursor: pointer;
+}
